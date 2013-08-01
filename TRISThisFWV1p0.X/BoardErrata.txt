@@ -1,0 +1,2 @@
+1. Check U7V, U7D.  These are not set up as followers
+2. LED8 is connected to RG3 which is an input only

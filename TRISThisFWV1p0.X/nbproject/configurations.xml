@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="62">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <logicalFolder name="f2" displayName="Configuration" projectFiles="true">
+        <itemPath>include/configuration.h</itemPath>
+        <itemPath>include/firmwareConfiguration.h</itemPath>
+        <itemPath>include/hardwareConfiguration.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f1" displayName="Microchip" projectFiles="true">
+        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/spi_5xx_6xx_7xx.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/spi.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/i2c.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/int.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/int_5xx_6xx_7xx.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/proc/p32mx795f512l.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/plib.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/timer.h</itemPath>
+      </logicalFolder>
+      <itemPath>include/mainv1p0.h</itemPath>
+      <itemPath>include/common.h</itemPath>
+      <itemPath>include/I2C_Bus_Master.h</itemPath>
+      <itemPath>include/tick.h</itemPath>
+      <itemPath>include/delay.h</itemPath>
+      <itemPath>include/LED.h</itemPath>
+      <itemPath>include/PAC1710.h</itemPath>
+      <itemPath>include/MCP4461.h</itemPath>
+      <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/SPI_Port_Mappings.h</itemPath>
+      <itemPath>include/commsToRPi.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="LinkerScript"
+                   displayName="Linker Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>source/mainv1p0.c</itemPath>
+      <itemPath>source/general_exception_handler.c</itemPath>
+      <itemPath>source/I2C_Bus_Master.c</itemPath>
+      <itemPath>source/tick.c</itemPath>
+      <itemPath>source/delay.c</itemPath>
+      <itemPath>source/LED.c</itemPath>
+      <itemPath>source/PAC1710.c</itemPath>
+      <itemPath>source/MCP4461.c</itemPath>
+      <itemPath>source/commsToRPi.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>BoardErrata.txt</itemPath>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>/opt/microchip/xc32/v1.21/pic32mx/include</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="default" type="2">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <targetDevice>PIC32MX795F512L</targetDevice>
+        <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
+        <platformTool>RealICEPlatformTool</platformTool>
+        <languageToolchain>XC32</languageToolchain>
+        <languageToolchainVersion>1.21</languageToolchainVersion>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+        <loading>
+          <useAlternateLoadableFile>false</useAlternateLoadableFile>
+          <alternateLoadableFile></alternateLoadableFile>
+        </loading>
+      </compileType>
+      <makeCustomizationType>
+        <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
+        <makeCustomizationPreStep></makeCustomizationPreStep>
+        <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
+        <makeCustomizationPostStep></makeCustomizationPostStep>
+        <makeCustomizationPutChecksumInUserID>false</makeCustomizationPutChecksumInUserID>
+        <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
+        <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
+      </makeCustomizationType>
+      <C32>
+        <property key="additional-warnings" value="false"/>
+        <property key="enable-app-io" value="false"/>
+        <property key="enable-omit-frame-pointer" value="false"/>
+        <property key="enable-symbols" value="true"/>
+        <property key="enable-unroll-loops" value="false"/>
+        <property key="exclude-floating-point" value="false"/>
+        <property key="extra-include-directories"
+                  value="include;/opt/microchip/xc32/v1.21/pic32mx/include/peripheral"/>
+        <property key="generate-16-bit-code" value="false"/>
+        <property key="isolate-each-function" value="false"/>
+        <property key="make-warnings-into-errors" value="false"/>
+        <property key="optimization-level" value=""/>
+        <property key="place-data-into-section" value="false"/>
+        <property key="post-instruction-scheduling" value="default"/>
+        <property key="pre-instruction-scheduling" value="default"/>
+        <property key="preprocessor-macros" value=""/>
+        <property key="strict-ansi" value="false"/>
+        <property key="support-ansi" value="false"/>
+        <property key="use-cci" value="false"/>
+        <property key="use-indirect-calls" value="false"/>
+      </C32>
+      <C32-AS>
+        <property key="assembler-symbols" value=""/>
+        <property key="enable-symbols" value="true"/>
+        <property key="exclude-floating-point-library" value="false"/>
+        <property key="expand-macros" value="false"/>
+        <property key="extra-include-directories-for-assembler" value=""/>
+        <property key="extra-include-directories-for-preprocessor" value=""/>
+        <property key="false-conditionals" value="false"/>
+        <property key="keep-locals" value="false"/>
+        <property key="list-assembly" value="false"/>
+        <property key="list-source" value="false"/>
+        <property key="list-symbols" value="false"/>
+        <property key="oXC32asm-list-to-file" value="false"/>
+        <property key="omit-debug-dirs" value="false"/>
+        <property key="omit-forms" value="false"/>
+        <property key="preprocessor-macros" value=""/>
+        <property key="warning-level" value=""/>
+      </C32-AS>
+      <C32-LD>
+      </C32-LD>
+      <C32CPP>
+      </C32CPP>
+      <C32Global>
+        <property key="legacy-libc" value="false"/>
+        <property key="save-temps" value="false"/>
+      </C32Global>
+      <RealICEPlatformTool>
+      </RealICEPlatformTool>
+    </conf>
+  </confs>
+</configurationDescriptor>
