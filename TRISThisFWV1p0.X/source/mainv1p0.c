@@ -23,16 +23,19 @@ UINT16 monitorVoltageReadings[100];
 
 int main(void)
 {
-    BOOL digipotGet=TRUE;
+    /* variables local to main()                                              */
     UINT8 dataRead;
     TICK_TYPE timeoutTime;
     I2CBUS_COMMAND_TYPE command;
     UINT16_VAL vSource;
-    BOOL readStarted=FALSE;
     INT16 readingHoldingSigned;
     UINT16 readingHoldingUnsigned;
+    BOOL digipotGet=TRUE;
+    BOOL readStarted=FALSE;
+    /**************************************************************************/
     int currentIndex=0;
     int voltageIndex=0;
+    /**************************************************************************/
     /* Configure, enable the cache for the best performance */
     SYSTEMConfig(GetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
     /* Enable multiple interrupt vectors */
