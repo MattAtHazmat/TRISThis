@@ -140,3 +140,8 @@ int main(void)
         }
     }
 }
+//
+//void __ISR(_DefaultInterrupt,IPL7AUTO) _DefaultInterrupt(void)
+//{
+//    while(TRUE);
+//}

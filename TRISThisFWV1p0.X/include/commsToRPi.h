@@ -19,7 +19,7 @@
     #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC0bits.SPI1EIE
     #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS0bits.SPI1EIF
 
-    //#define SPI_INTERRUPT                   _SPI_1_VECTOR
+    #define RPI_SPI_INTERRUPT                   _SPI_1_VECTOR
 
 #elif (RPI_SPI_CHANNEL==2)
 
@@ -32,7 +32,7 @@
     #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC1bits.SPI2EIE
     #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS1bits.SPI2EIF
 
-    //#define SPI_INTERRUPT                _SPI_2_VECTOR
+    #define RPI_SPI_INTERRUPT                _SPI_2_VECTOR
 
 #else
     #error "RPI_SPI_CHANNEL not defined"
