@@ -18,6 +18,11 @@ BOOL ConfigSPIComms(void)
 {
     SpiChnClose(RPI_SPI_CHANNEL);
     /* do I need to configure this? */
+    INTEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL),INT_DISABLED);
+    INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
+    INTEnable(INT_SOURCE_SPI_ERROR(RPI_SPI_CHANNEL),INT_DISABLED);
+    INTEnable(INT_SOURCE_SPI(RPI_SPI_CHANNEL),INT_DISABLED);
+    RPI_SPI_BUF=0x00;
     SPI_DATA_IN_DIRECTION = TRIS_IN;
     SPI_DATA_OUT_DIRECTION = TRIS_OUT;
     SPI_CLOCK_IN_DIRECTION = TRIS_IN;
@@ -94,7 +99,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 }
                 case SPI_ADDRESS_LSB:
                 {
-                    SPI.address.byte.HB=temp;
+                    SPI.address.byte.LB=temp;
                     break;
                 }
                 default:
