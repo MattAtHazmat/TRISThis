@@ -40,7 +40,7 @@ BOOL ConfigSPIComms(void)
     //IFS1=0;
     //IFS2=0;
     /* so interrupt doesn't immediately happen once the */
-    SPI2BUF=0x55;
+    RPI_SPI_BUF=0x55;
     INTSetVectorPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL), INT_PRIORITY_LEVEL_3);
     INTSetVectorSubPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL),INT_SUB_PRIORITY_LEVEL_1);
 
@@ -57,45 +57,47 @@ BOOL ConfigSPIComms(void)
     INTEnable(INT_SOURCE_SPI(RPI_SPI_CHANNEL),INT_ENABLED);
     return TRUE;
 }
-UINT8 inputData[4];
+UINT8 inputData[255];
+UINT8 inputDataIndex;
 //UINT8 = 0;
 SPI_TYPE SPI;
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
-    UINT8_VAL temp;
+    UINT8 temp;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
         /* first byte is */
-        if(SPI1STATbits.SPIRBF)
+        temp=RPI_SPI_BUF;
+        if(RPI_SPI_BUF_FULL)
         {
             switch(SPI.RXCount)
             {
                 case SPI_COMMAND:
                 {
-                    SPI.command=RPI_SPI_BUF;
+                    SPI.command=temp;
                     break;
                 }
                 case SPI_ADDRESS_MSB:
                 {
                     SPI.address.Val=0;
-                    SPI.address.byte.UB=RPI_SPI_BUF;
+                    SPI.address.byte.UB=temp;
                     break;
                 }
                 case SPI_ADDRESS_2SB:
                 {
-                    SPI.address.byte.HB=RPI_SPI_BUF;
+                    SPI.address.byte.HB=temp;
                     break;
                 }
                 case SPI_ADDRESS_LSB:
                 {
-                    SPI.address.byte.HB=RPI_SPI_BUF;
+                    SPI.address.byte.HB=temp;
                     break;
                 }
                 default:
                 {
                     if(SPI.command==SPI_WRITE)
                     {
-                        
+                        inputData[inputDataIndex++]=temp;
                     }
                 }
             }
@@ -112,6 +114,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
+        RPI_SPI_BUF=0x55;
         SPI_TX_INTERRUPT_FLAG=FALSE;
     }
     if(SPI_RX_INTERRUPT_ERROR_ENABLE&&SPI_RX_INTERRUPT_ERROR_FLAG)

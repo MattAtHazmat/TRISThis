@@ -29,6 +29,7 @@
       <itemPath>include/PAC1710.h</itemPath>
       <itemPath>include/MCP4461.h</itemPath>
       <itemPath>include/commsToRPi.h</itemPath>
+      <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/GenericTypeDefs.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

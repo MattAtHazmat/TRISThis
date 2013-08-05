@@ -21,6 +21,7 @@
 
     #define RPI_SPI_INTERRUPT               _SPI_1_VECTOR
     #define RPI_SPI_BUF                     SPI1BUF
+    #define RPI_SPI_BUF_FULL                SPI1STATbits.SPIRBF
 
 #elif (RPI_SPI_CHANNEL==2)
 
@@ -35,6 +36,7 @@
 
     #define RPI_SPI_INTERRUPT                _SPI_2_VECTOR
     #define RPI_SPI_BUF                     SPI2BUF
+    #define RPI_SPI_BUF_FULL                SPI2STATbits.SPIRBF
 #else
     #error "RPI_SPI_CHANNEL not defined"
 #endif
