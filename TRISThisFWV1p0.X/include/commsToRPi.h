@@ -34,7 +34,7 @@
     #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC1bits.SPI2EIE
     #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS1bits.SPI2EIF
 
-    #define RPI_SPI_INTERRUPT                _SPI_2_VECTOR
+    #define RPI_SPI_INTERRUPT               _SPI_2_VECTOR
     #define RPI_SPI_BUF                     SPI2BUF
     #define RPI_SPI_BUF_FULL                SPI2STATbits.SPIRBF
 #else

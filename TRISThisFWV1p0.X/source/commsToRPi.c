@@ -12,6 +12,8 @@
 #include <peripheral/spi.h>
 #include <peripheral/int.h>
 
+SPI_TYPE SPI;
+
 BOOL ConfigSPIComms(void)
 {
     SpiChnClose(RPI_SPI_CHANNEL);
@@ -32,6 +34,9 @@ BOOL ConfigSPIComms(void)
 //    {
 //        Nop();
 //    }
+    SPI.RXCount=0;
+    SPI.address.Val=0;
+    SPI.command=0;
     SpiChnOpen(RPI_SPI_CHANNEL,
                SPI_OPEN_SLVEN|SPI_OPEN_CKP_HIGH|SPI_OPEN_MODE8|SPI_OPEN_FRMEN|SPI_OPEN_FRM_CNT1|SPI_OPEN_SSEN,
                0);
@@ -60,16 +65,15 @@ BOOL ConfigSPIComms(void)
 UINT8 inputData[255];
 UINT8 inputDataIndex;
 //UINT8 = 0;
-SPI_TYPE SPI;
+
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
     UINT8 temp;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
-    {
-        /* first byte is */
-        temp=RPI_SPI_BUF;
+    {   
         if(RPI_SPI_BUF_FULL)
         {
+            temp=RPI_SPI_BUF;
             switch(SPI.RXCount)
             {
                 case SPI_COMMAND:
@@ -99,6 +103,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                     {
                         inputData[inputDataIndex++]=temp;
                     }
+                    break;
                 }
             }
             if(SPI.RXCount==0xFF)
