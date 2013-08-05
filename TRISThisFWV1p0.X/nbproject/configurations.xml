@@ -18,6 +18,7 @@
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/plib.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/timer.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/int_5xx_6xx_7xx.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/SPI_Port_Mappings.h</itemPath>
       </logicalFolder>
       <itemPath>include/mainv1p0.h</itemPath>
       <itemPath>include/common.h</itemPath>
@@ -27,7 +28,6 @@
       <itemPath>include/LED.h</itemPath>
       <itemPath>include/PAC1710.h</itemPath>
       <itemPath>include/MCP4461.h</itemPath>
-      <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/SPI_Port_Mappings.h</itemPath>
       <itemPath>include/commsToRPi.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"

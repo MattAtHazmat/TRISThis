@@ -59,24 +59,59 @@ BOOL ConfigSPIComms(void)
 }
 UINT8 inputData[4];
 //UINT8 = 0;
-UINT16 count=0;
+SPI_TYPE SPI;
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
     UINT8_VAL temp;
-    count++;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
         /* first byte is */
         if(SPI1STATbits.SPIRBF)
         {
-            Nop();
-            temp.Val=SPI1BUF;
+            switch(SPI.RXCount)
+            {
+                case SPI_COMMAND:
+                {
+                    SPI.command=RPI_SPI_BUF;
+                    break;
+                }
+                case SPI_ADDRESS_MSB:
+                {
+                    SPI.address.Val=0;
+                    SPI.address.byte.UB=RPI_SPI_BUF;
+                    break;
+                }
+                case SPI_ADDRESS_2SB:
+                {
+                    SPI.address.byte.HB=RPI_SPI_BUF;
+                    break;
+                }
+                case SPI_ADDRESS_LSB:
+                {
+                    SPI.address.byte.HB=RPI_SPI_BUF;
+                    break;
+                }
+                default:
+                {
+                    if(SPI.command==SPI_WRITE)
+                    {
+                        
+                    }
+                }
+            }
+            if(SPI.RXCount==0xFF)
+            {
+                /* error-- went too long*/
+            }
+            else
+            {
+                SPI.RXCount++;
+            }
         }
         SPI_RX_INTERRUPT_FLAG=FALSE;
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
-        //SPI2BUF=0x55;
         SPI_TX_INTERRUPT_FLAG=FALSE;
     }
     if(SPI_RX_INTERRUPT_ERROR_ENABLE&&SPI_RX_INTERRUPT_ERROR_FLAG)

@@ -19,7 +19,8 @@
     #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC0bits.SPI1EIE
     #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS0bits.SPI1EIF
 
-    #define RPI_SPI_INTERRUPT                   _SPI_1_VECTOR
+    #define RPI_SPI_INTERRUPT               _SPI_1_VECTOR
+    #define RPI_SPI_BUF                     SPI1BUF
 
 #elif (RPI_SPI_CHANNEL==2)
 
@@ -33,10 +34,27 @@
     #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS1bits.SPI2EIF
 
     #define RPI_SPI_INTERRUPT                _SPI_2_VECTOR
-
+    #define RPI_SPI_BUF                     SPI2BUF
 #else
     #error "RPI_SPI_CHANNEL not defined"
 #endif
+typedef struct
+{
+    UINT32_VAL  address;
+    UINT8       command;
+    UINT8       RXCount;
+} SPI_TYPE;
+
+/* commands */
+
+#define SPI_READ    (0b00000011)
+#define SPI_WRITE   (0b00000010)
+
+#define SPI_COMMAND     (0)
+#define SPI_ADDRESS_MSB (1)
+#define SPI_ADDRESS_2SB (2)
+#define SPI_ADDRESS_LSB (3)
+
 /******************************************************************************/
 /* Prototypes                                                                 */
 /******************************************************************************/
