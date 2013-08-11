@@ -1,0 +1,38 @@
+Partlist exported from C:/projects/TRISThis/TRISThisv2p0.sch at 4/20/2013 12:33:09 PM
+
+Qty Value               Device              Parts                                                                                    
+8                       LEDCHIPLED_0603     LED1, LED2, LED3, LED4, LED5, LED6, LED7, LED8                                           
+1                       SOD-123             D21                                                                                      
+4   0                   R_SMT0603           R23, R24, R25, R26                                                                       
+11  0.1uF               CU_SMT0603          C6, C7, C8, C9, C10, C12, C13, C16, C20, C21, C22                                        
+1   0.02                R_SMT1210           R10                                                                                      
+1   0.022uF             CU_SMT0603          C1                                                                                       
+1   2P_HEADER           2P_HEADER           J2                                                                                       
+10  4.7K                R_SMT0603           R11, R12, R13, R14, R15, R16, R17, R18, R36, R53                                         
+1   4.7uF               CU_SMT0603          C23                                                                                      
+3   4.7uF               CU_SMT0805          C18, C19, C24                                                                            
+2   4.7uH               L_SMTWE-PD          L1, L2                                                                                   
+1   5P_HEADER           5P_HEADER           J3                                                                                       
+1   8.00 MHz            CS10                Y1                                                                                       
+18  10                  R_SMT0603           R19, R21, R37, R38, R39, R40, R41, R42, R43, R44, R45, R46, R47, R48, R49, R50, R51, R52 
+4   10K                 R_SMT0603           R1, R2, R3, R9                                                                           
+2   10P_HEADER          10P_HEADER          J4, J5                                                                                   
+4   10uF                CU_SMT0805          C4, C5, C14, C15                                                                         
+3   22uF                CU_SMT0805          C2, C3, C11                                                                              
+2   33pF                CU_SMT0603          C54, C55                                                                                 
+8   180                 R_SMT0603           R27, R28, R29, R30, R31, R32, R33, R34                                                   
+20  BAT54S              BAT54S              D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D13, D14, D15, D16, D17, D18, D19, D20
+1   HAZMATSYMBOL        HAZMATSYMBOL        U$1                                                                                      
+1   ICSP0.1_HEADER      ICSP0.1_HEADER      ICSP1                                                                                    
+1   MCP1525-TT          MCP1525-TT          U8                                                                                       
+1   MCP1603/)S          MCP1603/OS          U5                                                                                       
+1   MCP4461-103E/ST     MCP4461/ST          U6                                                                                       
+1   MCP6074/SL          MCP6074/SL          U7                                                                                       
+1   MCP16322-NG         MCP16322-NG         U1                                                                                       
+4   MOUNTING            MOUNTING            M1, M2, M3, M4                                                                           
+1   NP                  CU_SMT0805          C25                                                                                      
+3   NP                  R_SMT0603           R20, R22, R35                                                                            
+1   PAC1710-1-AIA       PAC1710-1-AIA       U3                                                                                       
+1   PIC32MX795F512L--PF PIC32MX795F512L--PF U2                                                                                       
+1   POWER_CONNECTOR     POWER_CONNECTOR     CONN1                                                                                    
+1   RASPBERRY_PI        RASPBERRY_PI        RPI1                                                                                     
