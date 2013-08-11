@@ -44,6 +44,7 @@
 #define SPI_CLOCK_IN_DIRECTION  TRISDbits.TRISD10
 
 #define SPI_SELECT_IN           PORTDbits.RD9
+#define SPI_SELECT_IN_OUT       LATDbits.LATD9
 #define SPI_SELECT_IN_DIRECTION TRISDbits.TRISD9
 
 /******************************************************************************/
