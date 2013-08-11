@@ -3,6 +3,7 @@
 /* Author: Matt Bennett                                                       */
 /*                                                                            */
 /* Created on December 16, 2012, 3:51 PM                                      */
+/* Updated August 2013                                                        */
 /******************************************************************************/
 
 #include <common.h>
