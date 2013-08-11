@@ -27,7 +27,15 @@ BOOL ConfigSPIComms(void)
     SPI_DATA_OUT_DIRECTION = TRIS_OUT;
     SPI_CLOCK_IN_DIRECTION = TRIS_IN;
     SPI_SELECT_IN_DIRECTION = TRIS_IN;
-//    while(SPI_SELECT_IN)
+
+    SPI_DATA_OUT_DIRECTION = TRIS_IN;
+    SPI_SELECT_IN_DIRECTION = TRIS_OUT;
+    while(TRUE)
+    {
+        SPI_SELECT_IN_OUT^=1;
+    }
+
+    //    while(SPI_SELECT_IN)
 //    {
 //        Nop();
 //    }
