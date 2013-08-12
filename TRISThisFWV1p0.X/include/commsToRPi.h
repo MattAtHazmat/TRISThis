@@ -50,7 +50,7 @@ typedef struct
 /* commands */
 
 #define SPI_READ    (0b00000011)
-#define SPI_WRITE   (0b00000010)
+#define SPI_WRITE   (0b11111111)//(0b00000010)
 
 #define SPI_COMMAND     (0)
 #define SPI_ADDRESS_MSB (1)
