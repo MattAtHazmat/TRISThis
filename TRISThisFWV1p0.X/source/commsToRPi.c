@@ -81,11 +81,13 @@ UINT8 inputDataIndex;
 
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
+    static UINT8 txVal=0;
     UINT8 temp;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {   
-        if(RPI_SPI_BUF_FULL)
+        if(RPI_SPI_RX_BUF_FULL)
         {
+            /* data in the buffer, read it */
             temp=RPI_SPI_BUF;
             switch(SPI.RXCount)
             {
@@ -132,7 +134,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
-        RPI_SPI_BUF=0x55;
+        RPI_SPI_BUF=txVal++;
         SPI_TX_INTERRUPT_FLAG=FALSE;
     }
     if(SPI_RX_INTERRUPT_ERROR_ENABLE&&SPI_RX_INTERRUPT_ERROR_FLAG)
