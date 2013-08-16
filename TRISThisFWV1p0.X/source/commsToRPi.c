@@ -124,6 +124,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
             if(SPI.RXCount==0xFF)
             {
                 /* error-- went too long*/
+                Nop();
             }
             else
             {
