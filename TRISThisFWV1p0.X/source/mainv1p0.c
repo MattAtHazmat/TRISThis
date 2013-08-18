@@ -31,13 +31,15 @@ int main(void)
     UINT16_VAL vSource;
     INT16 readingHoldingSigned;
     UINT16 readingHoldingUnsigned;
-    BOOL digipotGet=TRUE;
-    BOOL readStarted=FALSE;
-    /**************************************************************************/
+    /* local to main() and initialized*/
     int currentIndex=0;
     int voltageIndex=0;
+    #ifdef USE_DIGIPOT
+        BOOL digipotGet=TRUE;
+    #endif
+    /**************************************************************************/
     InitializeSystem();
-    if(!MasterI2CStartup())// <editor-fold defaultstate="collapsed" desc="comment">
+    if(!MasterI2CStartup())// <editor-fold defaultstate="collapsed" desc="...">
     {
         LED1_OUT = LED_ON;
         LED2_OUT = LED_OFF;
@@ -64,14 +66,12 @@ int main(void)
         while(TRUE);
     }
     LED4_OUT=LED_ON;
-    WDTCONSET = 0x8000;
+    #ifndef __DEBUG
+        WDTCONSET = 0x8000;
+    #endif
     while(TRUE)
     {
-
-        #ifndef __DEBUG
-            //ClrWdt;
-            WDTCONSET = 0x01;
-        #endif
+        clrwdt();
         DoPowerMonState();
         DoLEDs();
         #ifdef USE_DIGIPOT
