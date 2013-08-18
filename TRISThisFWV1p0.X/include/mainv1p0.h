@@ -8,6 +8,11 @@
 #ifndef _MAINV1P0_H_
 #define	_MAINV1P0_H_
 
+/******************************************************************************/
+/* Prototypes                                                                 */
+/******************************************************************************/
+
+void InitializeSystem(void);
 
 #else
     #warning "Redundant include of mainv1p0.h"

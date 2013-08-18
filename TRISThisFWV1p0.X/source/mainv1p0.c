@@ -36,16 +36,7 @@ int main(void)
     /**************************************************************************/
     int currentIndex=0;
     int voltageIndex=0;
-    /**************************************************************************/
-    /* Configure, enable the cache for the best performance */
-    SYSTEMConfig(GetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
-    /* Enable multiple interrupt vectors */
-    INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
-    INTEnableInterrupts();
-    TickInitialize();
-    AD1PCFG=0xFFFF;
-    P5V_POWER_GOOD_DIRECTION=TRIS_IN;
-    LEDInitialize();
+    InitializeSystem();
     if(!MasterI2CStartup())// <editor-fold defaultstate="collapsed" desc="comment">
     {
         LED1_OUT = LED_ON;
@@ -146,3 +137,18 @@ int main(void)
 //{
 //    while(TRUE);
 //}
+
+void InitializeSystem(void)
+{
+    /**************************************************************************/
+    /* Configure, enable the cache for the best performance */
+    SYSTEMConfig(GetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
+    /* Enable multiple interrupt vectors */
+    INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
+    AD1PCFG=0xFFFF;
+    P5V_POWER_GOOD_DIRECTION=TRIS_IN;
+    LEDInitialize();
+    INTEnableInterrupts();
+    TickInitialize();
+
+}
