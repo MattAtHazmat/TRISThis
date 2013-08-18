@@ -1,3 +1,13 @@
+/******************************************************************************/
+/* File:   PAC1710.c                                                          */
+/* Author: Matt Bennett                                                       */
+/*                                                                            */
+/* Created on                                                                 */
+/* Updated August 2013                                                        */
+/******************************************************************************/
+/* code to talk to the PAC1710 power/voltage/current monitor                  */
+/******************************************************************************/
+
 #include <common.h>
 #include <PAC1710.h>
 #include <I2C_Bus_Master.h>
@@ -11,6 +21,7 @@ UINT16_VAL monitorCurrentHolding;
 UINT16_VAL monitorVoltageHolding;
 
 /******************************************************************************/
+/* PAC1710SubsystemInitialize(UINT8 address)                                  */
 
 BOOL PAC1710SubsystemInitialize(UINT8 address)
 {

@@ -18,6 +18,7 @@
 /******************************************************************************/
 extern UINT16_VAL currentHolding;
 extern UINT16_VAL voltageHolding;
+/* file scope for DMCI */
 INT16 monitorCurrentReadings[100];
 UINT16 monitorVoltageReadings[100];
 /******************************************************************************/
