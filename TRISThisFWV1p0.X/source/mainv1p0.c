@@ -70,6 +70,7 @@ int main(void)
     #ifndef __DEBUG
         WDTCONSET = 0x8000;
     #endif
+        //SPI1CONbits.ON=0;
     while(TRUE)
     {
         clrwdt();

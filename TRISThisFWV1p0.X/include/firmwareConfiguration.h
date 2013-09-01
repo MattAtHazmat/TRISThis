@@ -33,7 +33,7 @@
 #endif
 /* SPI Definitions */
 
-#define RPI_SPI_CHANNEL         (2)
+#define RPI_SPI_CHANNEL         (1)
 #define RPI_COMMS_INT_PRIORITY  IPL3SOFT
 
 /* tick */
