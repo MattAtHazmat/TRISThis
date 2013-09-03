@@ -47,6 +47,9 @@
 #define SPI_SELECT_IN_OUT       LATDbits.LATD9
 #define SPI_SELECT_IN_DIRECTION TRISDbits.TRISD9
 
+#define SPI_SELECT_CN_IN        PORTBbits.RB5
+#define SPI_SELECT_CN_DIRECTION TRISBbits.TRISB5
+
 /******************************************************************************/
 /* */
 /******************************************************************************/

@@ -75,11 +75,30 @@ BOOL ConfigSPIComms(void)
 
     INTClearFlag(INT_SOURCE_SPI(RPI_SPI_CHANNEL));
     INTEnable(INT_SOURCE_SPI(RPI_SPI_CHANNEL),INT_ENABLED);
+    /* configure change notice, as I can't figure out any other way to        */
+    /* trigger the beginning of the slave select with just the SPI peripheral */
+    /* buuut the change notice pins are not on the SS pins, so a white wire is*/
+    /* needed /
+    /* tie chip enable CE0 to pin20/RE5 CE1 */
+    SPI_SELECT_CN_DIRECTION=TRIS_IN;
+    CNCONbits.w=0;
+    CNCONbits.ON=TRUE;
+    CNENbits.w=0;
+    CNENbits.CNEN7=TRUE;
+    INTClearFlag(INT_CN);
+    INTSetVectorPriority(INT_CHANGE_NOTICE_VECTOR, INT_PRIORITY_LEVEL_2);
+    INTSetVectorSubPriority(INT_CHANGE_NOTICE_VECTOR, INT_SUB_PRIORITY_LEVEL_1);
+    INTEnable(INT_CN,INT_ENABLED);
     return TRUE;
 }
 UINT8 inputData[255];
 UINT8 inputDataIndex;
 //UINT8 = 0;
+
+void __ISR(INT_CHANGE_NOTICE_VECTOR , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
+{
+    CHANGE_NOTICE_INTERRUPT_FLAG=FALSE;
+}
 
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
@@ -128,6 +147,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 /* error-- went too long*/
                 Nop();
             }
+            //Interrupt on a change notice pin on the SS?
             else
             {
                 SPI.RXCount++;
