@@ -12,6 +12,9 @@
 #include <peripheral/spi.h>
 #include <peripheral/int.h>
 
+UINT8 inputData[255];
+UINT8 inputDataIndex;
+BOOL RPiCEStatus;
 SPI_TYPE SPI;
 
 BOOL ConfigSPIComms(void)
@@ -85,19 +88,35 @@ BOOL ConfigSPIComms(void)
     CNCONbits.ON=TRUE;
     CNENbits.w=0;
     CNENbits.CNEN7=TRUE;
+    RPiCEStatus=FALSE;
     INTClearFlag(INT_CN);
     INTSetVectorPriority(INT_CHANGE_NOTICE_VECTOR, INT_PRIORITY_LEVEL_2);
     INTSetVectorSubPriority(INT_CHANGE_NOTICE_VECTOR, INT_SUB_PRIORITY_LEVEL_1);
     INTEnable(INT_CN,INT_ENABLED);
     return TRUE;
 }
-UINT8 inputData[255];
-UINT8 inputDataIndex;
-//UINT8 = 0;
 
-void __ISR(INT_CHANGE_NOTICE_VECTOR , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
+void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_INT_PRIORITY) RPiSPICNInterrutpt(void)
 {
-    CHANGE_NOTICE_INTERRUPT_FLAG=FALSE;
+    IFS1bits.CNIF=FALSE;
+    if((RPiCEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
+    {
+        RPiCEStatus=TRUE;
+    }
+    else if((RPiCEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
+    {
+        RPiCEStatus=FALSE;
+    }
+
+}
+
+BOOL RPiSelectStatus(void)
+{
+    BOOL returnValue;
+    INTEnable(INT_CN,INT_DISABLED);
+    returnValue=RPiCEStatus;
+    INTEnable(INT_CN,INT_ENABLED);
+    return returnValue;
 }
 
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)

@@ -12,31 +12,37 @@
 
     #define SPI_RX_INTERRUPT_ENABLE         IEC0bits.SPI1RXIE
     #define SPI_RX_INTERRUPT_FLAG           IFS0bits.SPI1RXIF
+    #define SPI_RX_INTERRUPT_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1RXIF_MASK
 
     #define SPI_TX_INTERRUPT_ENABLE         IEC0bits.SPI1TXIE
     #define SPI_TX_INTERRUPT_FLAG           IFS0bits.SPI1TXIF
+    #define SPI_TX_INTERRUPT_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1TXIF_MASK
 
     #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC0bits.SPI1EIE
     #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS0bits.SPI1EIF
+    #define SPI_RX_INTERRUPT_ERROR_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1EIF_MASK
 
     #define RPI_SPI_INTERRUPT               _SPI_1_VECTOR
     #define RPI_SPI_BUF                     SPI1BUF
-    #define RPI_SPI_RX_BUF_FULL                SPI1STATbits.SPIRBF
+    #define RPI_SPI_RX_BUF_FULL             SPI1STATbits.SPIRBF
 
 #elif (RPI_SPI_CHANNEL==2)
 
     #define SPI_RX_INTERRUPT_ENABLE         IEC1bits.SPI2RXIE
     #define SPI_RX_INTERRUPT_FLAG           IFS1bits.SPI2RXIF
+    #define SPI_RX_INTERRUPT_FLAG_CLEAR     IFS1CLR=_IFS1_SPI2RXIF_MASK
 
     #define SPI_TX_INTERRUPT_ENABLE         IEC1bits.SPI2TXIE
     #define SPI_TX_INTERRUPT_FLAG           IFS1bits.SPI2TXIF
+    #define SPI_TX_INTERRUPT_FLAG_CLEAR     IFS1CLR=_IFS1_SPI2TXIF_MASK
 
     #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC1bits.SPI2EIE
     #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS1bits.SPI2EIF
+    #define SPI_RX_INTERRUPT_ERROR_FLAG_CLEAR     IFS1CLR=_IFS1_SPI2EIF
 
     #define RPI_SPI_INTERRUPT               _SPI_2_VECTOR
     #define RPI_SPI_BUF                     SPI2BUF
-    #define RPI_SPI_RX_BUF_FULL                SPI2STATbits.SPIRBF
+    #define RPI_SPI_RX_BUF_FULL             SPI2STATbits.SPIRBF
 #else
     #error "RPI_SPI_CHANNEL not defined"
 #endif
@@ -62,6 +68,7 @@ typedef struct
 /******************************************************************************/
 
 BOOL ConfigSPIComms(void);
+BOOL RPiSelectStatus(void);
 
 
 #else
