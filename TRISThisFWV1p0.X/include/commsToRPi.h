@@ -68,7 +68,7 @@ typedef struct
 /******************************************************************************/
 
 BOOL ConfigSPIComms(void);
-BOOL RPiSelectStatus(void);
+inline BOOL RPiSelectStatus(void);
 
 
 #else

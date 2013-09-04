@@ -110,12 +110,17 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_INT_PRIORITY) RPiSPICNInterrutpt(vo
 
 }
 
-BOOL RPiSelectStatus(void)
+inline BOOL RPiSelectStatus(void)
 {
     BOOL returnValue;
+    unsigned int intEnabled;
+    intEnabled=INTGetEnable(INT_CN);
     INTEnable(INT_CN,INT_DISABLED);
     returnValue=RPiCEStatus;
-    INTEnable(INT_CN,INT_ENABLED);
+    if(intEnabled)
+    {
+        INTEnable(INT_CN,INT_ENABLED);
+    }
     return returnValue;
 }
 
