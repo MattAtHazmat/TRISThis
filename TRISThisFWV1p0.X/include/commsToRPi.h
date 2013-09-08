@@ -59,9 +59,20 @@ typedef union
         unsigned RXOverrunError:1;
         unsigned RXOverflow:1;
         unsigned RXOverrun:1;
+        unsigned RXMysteryState:1;
     };
     UINT32 w;
 } SPI_STATUS;
+
+enum SPI_RX_STATE
+{
+    STATE_SPI_RX_COMMAND=0,
+    STATE_SPI_RX_ADDRESS_MSB,
+    STATE_SPI_RX_ADDRESS_2SB,
+    STATE_SPI_RX_ADDRESS_LSB,
+    STATE_SPI_RX_DATA,
+    STATE_RX_SPI_COMPLETE
+};
 
 typedef struct
 {
@@ -72,6 +83,7 @@ typedef struct
     SPI_STATUS  status;
     UINT8 RXData[255];
     UINT8 RXIndex;
+    enum SPI_RX_STATE RXState;
 } SPI_TYPE;
 
 /* commands */
@@ -79,10 +91,11 @@ typedef struct
 #define SPI_READ    (0b00000011)
 #define SPI_WRITE   (0b00000010)
 
-#define SPI_COMMAND     (0)
-#define SPI_ADDRESS_MSB (1)
-#define SPI_ADDRESS_2SB (2)
-#define SPI_ADDRESS_LSB (3)
+//#define SPI_COMMAND     (0)
+//#define SPI_ADDRESS_MSB (1)
+//#define SPI_ADDRESS_2SB (2)
+//#define SPI_ADDRESS_LSB (3)
+
 
 /******************************************************************************/
 /* Prototypes                                                                 */

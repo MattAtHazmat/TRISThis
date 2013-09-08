@@ -72,7 +72,6 @@ BOOL ConfigSPIComms(void)
 
 void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
 {
-    //IFS1bits.CNIF=FALSE;
     IFS1CLR=_IFS1_CNIF_MASK;
     if((SPI.status.CEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
     {
@@ -83,15 +82,16 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
             SPI.status.RXDataReady=FALSE;
             SPI.status.RXOverrun=TRUE;
         }
+        SPI.RXState=STATE_SPI_RX_COMMAND;
         SPI.status.CEStatus=TRUE;
         SPI.RXCount=0;
     }
     else if((SPI.status.CEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
     {
+        SPI.RXState=STATE_RX_SPI_COMPLETE;
         SPI.status.RXDataReady=TRUE;
         SPI.status.CEStatus=FALSE;
     }
-
 }
 
 inline BOOL RPiSelectStatus(void)
@@ -114,45 +114,45 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
     SPIIntCounter++;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
-        SPIIntRXCounter++;
+        
         SPI_RX_INTERRUPT_FLAG_CLEAR;
-        SPITemp=RPI_SPI_BUF;
         if(RPI_SPI_RX_BUF_FULL)
         {
+            SPIIntRXCounter++;
             /* data in the buffer, read it */
             SPITemp=RPI_SPI_BUF;
-            if(RPI_SPI_RX_BUF_FULL)
+            switch(SPI.RXState)
             {
-                Nop();
-            }
-            switch(SPI.RXCount)
-            {
-                case SPI_COMMAND:
+                case STATE_SPI_RX_COMMAND:
                 {
                     SPI.command=SPITemp;
+                    SPI.RXState=STATE_SPI_RX_ADDRESS_MSB;
                     break;
                 }
-                case SPI_ADDRESS_MSB:
+                case STATE_SPI_RX_ADDRESS_MSB:
                 {
                     SPI.address.Val=0;
+                    SPI.RXState=STATE_SPI_RX_ADDRESS_2SB;
                     SPI.address.byte.UB=SPITemp;
                     break;
                 }
-                case SPI_ADDRESS_2SB:
+                case STATE_SPI_RX_ADDRESS_2SB:
                 {
+                    SPI.RXState=STATE_SPI_RX_ADDRESS_LSB;
                     SPI.address.byte.HB=SPITemp;
                     break;
                 }
-                case SPI_ADDRESS_LSB:
+                case STATE_SPI_RX_ADDRESS_LSB:
                 {
+                    SPI.RXState=STATE_SPI_RX_DATA;
                     SPI.address.byte.LB=SPITemp;
                     break;
                 }
-                default:
+                case STATE_SPI_RX_DATA:
                 {
                     if(!SPI.status.RXOverrunError)
                     {
-                        if(SPI.command==SPI_WRITE)
+                        if(SPI.command==0x00)//SPI_WRITE)
                         {
                             SPI.RXData[SPI.RXCount++]=SPITemp;
                             if(SPI.RXCount==0)
@@ -164,13 +164,13 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                     }
                     break;
                 }
+                default:
+                {
+                    SPI.status.RXMysteryState=TRUE;
+                    break;
+                }
             }
-        }
-        else
-        {
-            /* should never get here! */
-            //while(TRUE);
-        }
+        }        
         //SPI_RX_INTERRUPT_FLAG_CLEAR;
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
