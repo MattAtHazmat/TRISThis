@@ -12,8 +12,9 @@
 #include <peripheral/spi.h>
 #include <peripheral/int.h>
 
-UINT8 txVal=0;
 SPI_TYPE SPI;
+UINT32 SPIIntCounter=0;
+UINT32 SPIIntRXCounter=0;
 
 BOOL ConfigSPIComms(void)
 {
@@ -29,25 +30,6 @@ BOOL ConfigSPIComms(void)
     SPI_CLOCK_IN_DIRECTION = TRIS_IN;
     SPI_SELECT_IN_DIRECTION = TRIS_IN;
 
-//    SPI_DATA_OUT_DIRECTION = TRIS_IN;
-//    SPI_SELECT_IN_DIRECTION = TRIS_OUT;
-//    while(TRUE)
-//    {
-//        SPI_SELECT_IN_OUT^=1;
-//    }
-
-    //    while(SPI_SELECT_IN)
-//    {
-//        Nop();
-//    }
-//    while(!SPI_SELECT_IN)
-//    {
-//        Nop();
-//    }
-//    while(SPI_SELECT_IN)
-//    {
-//        Nop();
-//    }
     SPI.RXCount=0;
     SPI.address.Val=0;
     SPI.command=0;
@@ -90,17 +72,23 @@ BOOL ConfigSPIComms(void)
 
 void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
 {
-    IFS1bits.CNIF=FALSE;
+    //IFS1bits.CNIF=FALSE;
+    IFS1CLR=_IFS1_CNIF_MASK;
     if((SPI.status.CEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
     {
-        RPI_SPI_BUF=0xFF;
+        RPI_SPI_BUF=0x55;
+        if(SPI.status.RXDataReady)
+        {
+            /* we missed some data */
+            SPI.status.RXDataReady=FALSE;
+            SPI.status.RXOverrun=TRUE;
+        }
         SPI.status.CEStatus=TRUE;
         SPI.RXCount=0;
-        SPI.address.Val=0;
-        txVal=0;
     }
     else if((SPI.status.CEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
     {
+        SPI.status.RXDataReady=TRUE;
         SPI.status.CEStatus=FALSE;
     }
 
@@ -122,72 +110,78 @@ inline BOOL RPiSelectStatus(void)
 
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
-    if(SPI.status.CEStatus)//RPiSelectStatus())
-    {
-        SPI.RXCount=0;
-    }
+    static UINT8 SPITemp;
+    SPIIntCounter++;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
+        SPIIntRXCounter++;
         SPI_RX_INTERRUPT_FLAG_CLEAR;
+        SPITemp=RPI_SPI_BUF;
         if(RPI_SPI_RX_BUF_FULL)
         {
             /* data in the buffer, read it */
+            SPITemp=RPI_SPI_BUF;
+            if(RPI_SPI_RX_BUF_FULL)
+            {
+                Nop();
+            }
             switch(SPI.RXCount)
             {
                 case SPI_COMMAND:
                 {
-                    SPI.command=RPI_SPI_BUF;
+                    SPI.command=SPITemp;
                     break;
                 }
                 case SPI_ADDRESS_MSB:
                 {
                     SPI.address.Val=0;
-                    SPI.address.byte.UB=RPI_SPI_BUF;
+                    SPI.address.byte.UB=SPITemp;
                     break;
                 }
                 case SPI_ADDRESS_2SB:
                 {
-                    SPI.address.byte.HB=RPI_SPI_BUF;
+                    SPI.address.byte.HB=SPITemp;
                     break;
                 }
                 case SPI_ADDRESS_LSB:
                 {
-                    SPI.address.byte.LB=RPI_SPI_BUF;
+                    SPI.address.byte.LB=SPITemp;
                     break;
                 }
                 default:
                 {
-                    if(SPI.command==SPI_WRITE)
+                    if(!SPI.status.RXOverrunError)
                     {
-                        SPI.RXData[SPI.RXCount++]=RPI_SPI_BUF;
+                        if(SPI.command==SPI_WRITE)
+                        {
+                            SPI.RXData[SPI.RXCount++]=SPITemp;
+                            if(SPI.RXCount==0)
+                            {
+                                /* error-- went too long*/
+                                SPI.status.RXOverrunError=TRUE;
+                            }
+                        }
                     }
                     break;
                 }
-            }
-            if(SPI.RXCount==0xFF)
-            {
-                /* error-- went too long*/
-                SPI.status.RXOverrunError=TRUE;
-            }
-            else
-            {
-                SPI.RXCount++;
             }
         }
         else
         {
             /* should never get here! */
+            //while(TRUE);
         }
+        //SPI_RX_INTERRUPT_FLAG_CLEAR;
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
-        
-        RPI_SPI_BUF=txVal++;
         SPI_TX_INTERRUPT_FLAG_CLEAR;
+        RPI_SPI_BUF=SPI.RXCount;
     }
-    if(SPI_RX_INTERRUPT_ERROR_ENABLE&&SPI_RX_INTERRUPT_ERROR_FLAG)
+    if(SPI_INTERRUPT_ERROR_ENABLE&&SPI_INTERRUPT_ERROR_FLAG)
     {
-        SPI_RX_INTERRUPT_ERROR_FLAG_CLEAR;
-        while(TRUE);
+        SPI_INTERRUPT_ERROR_FLAG_CLEAR;
+        RPI_SPI_RX_OVERFLOW_CLEAR;
+        SPI.status.RXOverflow=TRUE;
     }
 }

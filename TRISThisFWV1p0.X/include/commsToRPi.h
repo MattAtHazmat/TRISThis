@@ -18,13 +18,15 @@
     #define SPI_TX_INTERRUPT_FLAG           IFS0bits.SPI1TXIF
     #define SPI_TX_INTERRUPT_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1TXIF_MASK
 
-    #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC0bits.SPI1EIE
-    #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS0bits.SPI1EIF
-    #define SPI_RX_INTERRUPT_ERROR_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1EIF_MASK
+    #define SPI_INTERRUPT_ERROR_ENABLE      IEC0bits.SPI1EIE
+    #define SPI_INTERRUPT_ERROR_FLAG        IFS0bits.SPI1EIF
+    #define SPI_INTERRUPT_ERROR_FLAG_CLEAR  IFS0CLR=_IFS0_SPI1EIF_MASK
 
     #define RPI_SPI_INTERRUPT               _SPI_1_VECTOR
     #define RPI_SPI_BUF                     SPI1BUF
     #define RPI_SPI_RX_BUF_FULL             SPI1STATbits.SPIRBF
+
+    #define RPI_SPI_RX_OVERFLOW_CLEAR       SPI1STATCLR=_SPI1STAT_SPIROV_MASK
 
 #elif (RPI_SPI_CHANNEL==2)
 
@@ -36,9 +38,9 @@
     #define SPI_TX_INTERRUPT_FLAG           IFS1bits.SPI2TXIF
     #define SPI_TX_INTERRUPT_FLAG_CLEAR     IFS1CLR=_IFS1_SPI2TXIF_MASK
 
-    #define SPI_RX_INTERRUPT_ERROR_ENABLE   IEC1bits.SPI2EIE
-    #define SPI_RX_INTERRUPT_ERROR_FLAG     IFS1bits.SPI2EIF
-    #define SPI_RX_INTERRUPT_ERROR_FLAG_CLEAR     IFS1CLR=_IFS1_SPI2EIF
+    #define SPI_INTERRUPT_ERROR_ENABLE      IEC1bits.SPI2EIE
+    #define SPI_INTERRUPT_ERROR_FLAG        IFS1bits.SPI2EIF
+    #define SPI_INTERRUPT_ERROR_FLAG_CLEAR  IFS1CLR=_IFS1_SPI2EIF
 
     #define RPI_SPI_INTERRUPT               _SPI_2_VECTOR
     #define RPI_SPI_BUF                     SPI2BUF
@@ -55,6 +57,8 @@ typedef union
         unsigned CEStatus:1;
         unsigned inProgress:1;
         unsigned RXOverrunError:1;
+        unsigned RXOverflow:1;
+        unsigned RXOverrun:1;
     };
     UINT32 w;
 } SPI_STATUS;
