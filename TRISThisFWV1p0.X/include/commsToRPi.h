@@ -46,17 +46,34 @@
 #else
     #error "RPI_SPI_CHANNEL not defined"
 #endif
+
+typedef union
+{
+    struct
+    {
+        unsigned RXDataReady:1;
+        unsigned CEStatus:1;
+        unsigned inProgress:1;
+        unsigned RXOverrunError:1;
+    };
+    UINT32 w;
+} SPI_STATUS;
+
 typedef struct
 {
     UINT32_VAL  address;
     UINT8       command;
     UINT8       RXCount;
+    UINT8       TXCount;
+    SPI_STATUS  status;
+    UINT8 RXData[255];
+    UINT8 RXIndex;
 } SPI_TYPE;
 
 /* commands */
 
 #define SPI_READ    (0b00000011)
-#define SPI_WRITE   (0b11111111)//(0b00000010)
+#define SPI_WRITE   (0b00000010)
 
 #define SPI_COMMAND     (0)
 #define SPI_ADDRESS_MSB (1)

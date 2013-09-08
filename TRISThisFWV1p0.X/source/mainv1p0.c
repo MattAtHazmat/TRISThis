@@ -67,6 +67,7 @@ int main(void)
         while(TRUE);
     }
     LED4_OUT=LED_ON;
+    INTEnableInterrupts();
     #ifndef __DEBUG
         WDTCONSET = 0x8000;
     #endif
@@ -150,7 +151,5 @@ void InitializeSystem(void)
     AD1PCFG=0xFFFF;
     P5V_POWER_GOOD_DIRECTION=TRIS_IN;
     LEDInitialize();
-    INTEnableInterrupts();
     TickInitialize();
-
 }

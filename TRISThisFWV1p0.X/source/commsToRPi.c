@@ -12,9 +12,7 @@
 #include <peripheral/spi.h>
 #include <peripheral/int.h>
 
-UINT8 inputData[255];
-UINT8 inputDataIndex;
-BOOL RPiCEStatus;
+UINT8 txVal=0;
 SPI_TYPE SPI;
 
 BOOL ConfigSPIComms(void)
@@ -54,15 +52,9 @@ BOOL ConfigSPIComms(void)
     SPI.address.Val=0;
     SPI.command=0;
     SpiChnOpen(RPI_SPI_CHANNEL,
-            SPI_OPEN_SLVEN|SPI_OPEN_CKP_HIGH|SPI_OPEN_MODE8|
-            /*SPI_OPEN_FRMEN|SPI_OPEN_FRM_CNT1|*/SPI_OPEN_SSEN,
+            SPI_OPEN_SLVEN|/*SPI_OPEN_CKP_HIGH|*/SPI_OPEN_MODE8|SPI_OPEN_SSEN,
             0);
-    /* enable the interrupts */
-    //IFS0=0;
-    //IFS1=0;
-    //IFS2=0;
-    /* so interrupt doesn't immediately happen once the */
-    RPI_SPI_BUF=0x55;
+    RPI_SPI_BUF=0xFF;
     INTSetVectorPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL), INT_PRIORITY_LEVEL_3);
     INTSetVectorSubPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL),
             INT_SUB_PRIORITY_LEVEL_1);
@@ -88,7 +80,7 @@ BOOL ConfigSPIComms(void)
     CNCONbits.ON=TRUE;
     CNENbits.w=0;
     CNENbits.CNEN7=TRUE;
-    RPiCEStatus=FALSE;
+    SPI.status.w=0;
     INTClearFlag(INT_CN);
     INTSetVectorPriority(INT_CHANGE_NOTICE_VECTOR, INT_PRIORITY_LEVEL_2);
     INTSetVectorSubPriority(INT_CHANGE_NOTICE_VECTOR, INT_SUB_PRIORITY_LEVEL_1);
@@ -96,16 +88,20 @@ BOOL ConfigSPIComms(void)
     return TRUE;
 }
 
-void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_INT_PRIORITY) RPiSPICNInterrutpt(void)
+void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
 {
     IFS1bits.CNIF=FALSE;
-    if((RPiCEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
+    if((SPI.status.CEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
     {
-        RPiCEStatus=TRUE;
+        RPI_SPI_BUF=0xFF;
+        SPI.status.CEStatus=TRUE;
+        SPI.RXCount=0;
+        SPI.address.Val=0;
+        txVal=0;
     }
-    else if((RPiCEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
+    else if((SPI.status.CEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
     {
-        RPiCEStatus=FALSE;
+        SPI.status.CEStatus=FALSE;
     }
 
 }
@@ -116,7 +112,7 @@ inline BOOL RPiSelectStatus(void)
     unsigned int intEnabled;
     intEnabled=INTGetEnable(INT_CN);
     INTEnable(INT_CN,INT_DISABLED);
-    returnValue=RPiCEStatus;
+    returnValue=SPI.status.CEStatus;
     if(intEnabled)
     {
         INTEnable(INT_CN,INT_ENABLED);
@@ -126,46 +122,44 @@ inline BOOL RPiSelectStatus(void)
 
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
-    static UINT8 txVal=0;
-    UINT8 temp;
-    if(RPiSelectStatus())
+    if(SPI.status.CEStatus)//RPiSelectStatus())
     {
         SPI.RXCount=0;
     }
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
-    {   
+    {
+        SPI_RX_INTERRUPT_FLAG_CLEAR;
         if(RPI_SPI_RX_BUF_FULL)
         {
             /* data in the buffer, read it */
-            temp=RPI_SPI_BUF;
             switch(SPI.RXCount)
             {
                 case SPI_COMMAND:
                 {
-                    SPI.command=temp;
+                    SPI.command=RPI_SPI_BUF;
                     break;
                 }
                 case SPI_ADDRESS_MSB:
                 {
                     SPI.address.Val=0;
-                    SPI.address.byte.UB=temp;
+                    SPI.address.byte.UB=RPI_SPI_BUF;
                     break;
                 }
                 case SPI_ADDRESS_2SB:
                 {
-                    SPI.address.byte.HB=temp;
+                    SPI.address.byte.HB=RPI_SPI_BUF;
                     break;
                 }
                 case SPI_ADDRESS_LSB:
                 {
-                    SPI.address.byte.LB=temp;
+                    SPI.address.byte.LB=RPI_SPI_BUF;
                     break;
                 }
                 default:
                 {
                     if(SPI.command==SPI_WRITE)
                     {
-                        inputData[inputDataIndex++]=temp;
+                        SPI.RXData[SPI.RXCount++]=RPI_SPI_BUF;
                     }
                     break;
                 }
@@ -173,20 +167,23 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
             if(SPI.RXCount==0xFF)
             {
                 /* error-- went too long*/
-                Nop();
+                SPI.status.RXOverrunError=TRUE;
             }
-            //Interrupt on a change notice pin on the SS?
             else
             {
                 SPI.RXCount++;
             }
         }
-        SPI_RX_INTERRUPT_FLAG_CLEAR;
+        else
+        {
+            /* should never get here! */
+        }
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
+        
         RPI_SPI_BUF=txVal++;
-        SPI_TX_INTERRUPT_FLAG_CLEAR;;
+        SPI_TX_INTERRUPT_FLAG_CLEAR;
     }
     if(SPI_RX_INTERRUPT_ERROR_ENABLE&&SPI_RX_INTERRUPT_ERROR_FLAG)
     {
