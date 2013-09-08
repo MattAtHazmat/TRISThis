@@ -128,6 +128,10 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
     static UINT8 txVal=0;
     UINT8 temp;
+    if(RPiSelectStatus())
+    {
+        SPI.RXCount=0;
+    }
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {   
         if(RPI_SPI_RX_BUF_FULL)
@@ -177,16 +181,16 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 SPI.RXCount++;
             }
         }
-        SPI_RX_INTERRUPT_FLAG=FALSE;
+        SPI_RX_INTERRUPT_FLAG_CLEAR;
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
         RPI_SPI_BUF=txVal++;
-        SPI_TX_INTERRUPT_FLAG=FALSE;
+        SPI_TX_INTERRUPT_FLAG_CLEAR;;
     }
     if(SPI_RX_INTERRUPT_ERROR_ENABLE&&SPI_RX_INTERRUPT_ERROR_FLAG)
     {
-        SPI_RX_INTERRUPT_ERROR_FLAG=FALSE;
+        SPI_RX_INTERRUPT_ERROR_FLAG_CLEAR;
         while(TRUE);
     }
 }
