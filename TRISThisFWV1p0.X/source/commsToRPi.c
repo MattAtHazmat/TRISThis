@@ -62,6 +62,8 @@ BOOL ConfigSPIComms(void)
     CNCONbits.ON=TRUE;
     CNENbits.w=0;
     CNENbits.CNEN7=TRUE;
+    RPI_SPI_RX_OVERFLOW_CLEAR;
+    SPI1CONbits.STXISEL=0b01;
     SPI.status.w=0;
     INTClearFlag(INT_CN);
     INTSetVectorPriority(INT_CHANGE_NOTICE_VECTOR, INT_PRIORITY_LEVEL_2);
@@ -114,7 +116,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
     SPIIntCounter++;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
-        
+        while(SPI1STATbits.RXBUFELM!=0)
+        {
         SPI_RX_INTERRUPT_FLAG_CLEAR;
         if(RPI_SPI_RX_BUF_FULL)
         {
@@ -170,7 +173,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                     break;
                 }
             }
-        }        
+        }
+        }
         //SPI_RX_INTERRUPT_FLAG_CLEAR;
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
