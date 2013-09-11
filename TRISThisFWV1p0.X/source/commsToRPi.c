@@ -34,8 +34,9 @@ BOOL ConfigSPIComms(void)
     SPI.address.Val=0;
     SPI.command=0;
     SpiChnOpen(RPI_SPI_CHANNEL,
-            SPI_OPEN_SLVEN|/*SPI_OPEN_CKP_HIGH|*/SPI_OPEN_MODE8|SPI_OPEN_SSEN,
+            SPI_OPEN_SLVEN|SPI_OPEN_CKE_REV/*|SPI_OPEN_CKP_HIGH*/|SPI_OPEN_MODE8|SPI_OPEN_SSEN,
             0);
+    //TODO: Not acting consistently? RPI needs to send -b 8 -H parameters to spidev
     RPI_SPI_BUF=0xFF;
     INTSetVectorPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL), INT_PRIORITY_LEVEL_3);
     INTSetVectorSubPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL),
@@ -116,8 +117,6 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
     SPIIntCounter++;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
-        while(SPI1STATbits.RXBUFELM!=0)
-        {
         SPI_RX_INTERRUPT_FLAG_CLEAR;
         if(RPI_SPI_RX_BUF_FULL)
         {
@@ -155,7 +154,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 {
                     if(!SPI.status.RXOverrunError)
                     {
-                        if(SPI.command==0x00)//SPI_WRITE)
+                        if(SPI.command==SPI_WRITE)
                         {
                             SPI.RXData[SPI.RXCount++]=SPITemp;
                             if(SPI.RXCount==0)
@@ -174,13 +173,13 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 }
             }
         }
-        }
         //SPI_RX_INTERRUPT_FLAG_CLEAR;
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
         SPI_TX_INTERRUPT_FLAG_CLEAR;
         RPI_SPI_BUF=SPI.RXCount;
+        //TODO- why are first 4 bytes sent out all 0?
     }
     if(SPI_INTERRUPT_ERROR_ENABLE&&SPI_INTERRUPT_ERROR_FLAG)
     {
