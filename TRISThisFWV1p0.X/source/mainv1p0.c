@@ -7,6 +7,8 @@
 /******************************************************************************/
 
 #include <common.h>
+#include <system.h>
+#include <osc.h>
 #include <tick.h>
 #include <LED.h>
 #include <PAC1710.h>
@@ -135,6 +137,7 @@ int main(void)
         }
     }
 }
+
 //
 //void __ISR(_DefaultInterrupt,IPL7AUTO) _DefaultInterrupt(void)
 //{
@@ -144,8 +147,10 @@ int main(void)
 void InitializeSystem(void)
 {
     /**************************************************************************/
-    /* Configure, enable the cache for the best performance */
+    /* Configure, enable the cache for the best performance                   */
+    OSCConfig(OSC_POSC_PLL,PLL_OUTPUT_MULT,PLL_OUTPUT_DIVIDER,0);
     SYSTEMConfig(GetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
+    mOSCSetPBDIV(PBCLK_DIV);
     /* Enable multiple interrupt vectors */
     INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
     AD1PCFG=0xFFFF;

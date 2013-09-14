@@ -11,8 +11,10 @@
     #include <GenericTypeDefs.h>
     #include <plib.h>
     #include <limits.h>
+    
     #include <hardwareConfiguration.h>
     #include <firmwareConfiguration.h>
+    #include <clockomatic.h>
 
     #define TRIS_OUT    0
     #define TRIS_IN     1

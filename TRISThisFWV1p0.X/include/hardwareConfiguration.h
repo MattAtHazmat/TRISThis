@@ -8,7 +8,7 @@
 #ifndef _HARDWARE_CONFIGURATION_H_
 #define	_HARDWARE_CONFIGURATION_H_
 
-#define FCY (80000000ul)
+#define CRYSTAL_FREQUENCY (8000000ul)
 
 /******************************************************************************/
 /* I2C                                                                        */

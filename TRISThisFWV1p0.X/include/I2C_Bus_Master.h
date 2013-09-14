@@ -142,25 +142,25 @@ typedef struct
 
     /* calculate the best prescaler for the timeout                           */
 
-    #if (((I2C_TIMEOUT_MS*FCY)/(1000*0xffff))<1)
+    #if (((I2C_TIMEOUT_MS*GetPeripheralClock())/(1000*0xffff))<1)
         #define I2C_TIMEOUT_PRESCALER_VALUE 1
-    #elif (((I2C_TIMEOUT_MS*FCY)/(4000*0xffff))<1)
+    #elif (((I2C_TIMEOUT_MS*GetPeripheralClock())/(4000*0xffff))<1)
         #define I2C_TIMEOUT_PRESCALER_VALUE 4
-    #elif (((I2C_TIMEOUT_MS*FCY)/(8000*0xffff))<1)
+    #elif (((I2C_TIMEOUT_MS*GetPeripheralClock())/(8000*0xffff))<1)
         #define I2C_TIMEOUT_PRESCALER_VALUE 8
-    #elif (((I2C_TIMEOUT_MS*FCY)/(16000*0xffff))<1)
+    #elif (((I2C_TIMEOUT_MS*GetPeripheralClock())/(16000*0xffff))<1)
         #define I2C_TIMEOUT_PRESCALER_VALUE 16
-    #elif (((I2C_TIMEOUT_MS*FCY)/(32000*0xffff))<1)
+    #elif (((I2C_TIMEOUT_MS*GetPeripheralClock())/(32000*0xffff))<1)
         #define I2C_TIMEOUT_PRESCALER_VALUE 32
-    #elif (((I2C_TIMEOUT_MS*FCY)/(64000*0xffff))<1)
+    #elif (((I2C_TIMEOUT_MS*GetPeripheralClock())/(64000*0xffff))<1)
         #define I2C_TIMEOUT_PRESCALER_VALUE 64
-    #elif (((I2C_TIMEOUT_MS*FCY)/(256000*0xffff))<1)
+    #elif (((I2C_TIMEOUT_MS*GetPeripheralClock())/(256000*0xffff))<1)
         #define I2C_TIMEOUT_PRESCALER_VALUE 256
     #else
         #error "No valid value for I2C Timeout rescaler"
     #endif
 
-    #define I2C_TIMEOUT_INTERVAL ((I2C_TIMEOUT_MS*FCY)/(1000*I2C_TIMEOUT_PRESCALER_VALUE))
+    #define I2C_TIMEOUT_INTERVAL ((I2C_TIMEOUT_MS*GetPeripheralClock())/(1000*I2C_TIMEOUT_PRESCALER_VALUE))
 
     #if (I2C_TIMEOUT_INTERVAL>0xFFFF)
         #error "Can't fit I2C timeout in timer"

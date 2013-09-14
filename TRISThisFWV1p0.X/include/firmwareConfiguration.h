@@ -8,15 +8,14 @@
 #ifndef _FIRMWARE_CONFIGURATION_H_
 #define	_FIRMWARE_CONFIGURATION_H_
 
-#define GetSystemClock()        (FCY)      /* Hz */
-#define GetInstructionClock()   (GetSystemClock())
-#define GetPeripheralClock()    (GetInstructionClock())
+
+//#define GetInstructionClock()   (GetSystemClock())
 
 #define DELAY_USE_CORE_TIMER
 
 /* LED Activity definitions */
 
-#define LED_CASCADE_DELAY   100
+#define LED_CASCADE_DELAY   100*TICKS_PER_MS
 
 /* I2C definitions */
 #define I2CBUS_WORD_LENGTH      (10)

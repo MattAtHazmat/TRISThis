@@ -12,18 +12,29 @@
 #pragma config FSRSSEL = PRIORITY_7     // SRS Select (SRS Priority 7)
 #pragma config FMIIEN = ON              // Ethernet RMII/MII Enable (MII Enabled)
 #pragma config FETHIO = ON              // Ethernet I/O Pin Select (Default Ethernet I/O)
-//#pragma config FCANIO = ON              // CAN I/O Pin Select (Default CAN I/O)
+#pragma config FCANIO = OFF              // CAN I/O Pin Select (Default CAN I/O)
 #pragma config FUSBIDIO = OFF           // USB USID Selection (Controlled by Port Function)
 #pragma config FVBUSONIO = OFF          // USB VBUS ON Selection (Controlled by Port Function)
 
 // DEVCFG2
-#pragma config FPLLIDIV = DIV_2         // PLL Input Divider (1x Divider)
-#if(FCY==80000000)
-    #pragma config FPLLMUL = MUL_20     // PLL Multiplier (20x Multiplier)
-#elif(FCY==96000000)
-    #pragma config FPLLMUL = MUL_24     // PLL Multiplier (24x Multiplier)
+#if PLL_INPUT_DIVIDER==12
+    #pragma config FPLLIDIV = DIV_12
+#elif PLL_INPUT_DIVIDER==10
+    #pragma config FPLLIDIV = DIV_10
+#elif PLL_INPUT_DIVIDER==6
+    #pragma config FPLLIDIV = DIV_6
+#elif PLL_INPUT_DIVIDER==5
+    #pragma config FPLLIDIV = DIV_5
+#elif PLL_INPUT_DIVIDER==4
+    #pragma config FPLLIDIV = DIV_4
+#elif PLL_INPUT_DIVIDER==3
+    #pragma config FPLLIDIV = DIV_3
+#elif PLL_INPUT_DIVIDER==2
+    #pragma config FPLLIDIV = DIV_2
+#elif PLL_INPUT_DIVIDER==1
+    #pragma config FPLLIDIV = DIV_1
 #else
-#error "FCY choice is messed up"
+    #error "PLL_INPUT_DIVIDER not correctly defined"
 #endif
 
 #pragma config UPLLIDIV = DIV_12        // USB PLL Input Divider (12x Divider)
