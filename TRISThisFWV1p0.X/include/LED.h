@@ -25,8 +25,11 @@ enum LED_STATE_TYPE
 
 void LEDInitialize(void);
 void DoLEDs(void);
+UINT8 ReadLEDs(void);
+void SetLEDs(UINT8);
+
 #else
-#warning "Redundant include of LED.h"
+    #warning "Redundant include of LED.h"
 
 #endif	/* LED_H */
 

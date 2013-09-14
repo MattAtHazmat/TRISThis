@@ -100,6 +100,70 @@
 #define LED_ON  0
 #define LED_OFF 1
 
+#define IO_IN00         PORTDbits.RD1
+#define IO_OUT00        LATDbits.LATD1
+#define IO_DIRECTION00  TRISDbits.TRISD1
+
+#define IO_IN01         PORTDbits.RD2
+#define IO_OUT01        LATDbits.LATD2
+#define IO_DIRECTION01  TRISDbits.TRISD2
+
+#define IO_IN02         PORTDbits.RD3
+#define IO_OUT02        LATDbits.LATD3
+#define IO_DIRECTION02  TRISDbits.TRISD3
+
+#define IO_IN03         PORTDbits.RD4
+#define IO_OUT03        LATDbits.LATD4
+#define IO_DIRECTION03  TRISDbits.TRISD4
+
+#define IO_IN04         PORTDbits.RD5
+#define IO_OUT04        LATDbits.LATD5
+#define IO_DIRECTION04  TRISDbits.TRISD5
+
+#define IO_IN05         PORTDbits.RD6
+#define IO_OUT05        LATDbits.LATD6
+#define IO_DIRECTION05  TRISDbits.TRISD6
+
+#define IO_IN06         PORTDbits.RD7
+#define IO_OUT06        LATDbits.LATD7
+#define IO_DIRECTION06  TRISDbits.TRISD7
+
+#define IO_IN07         PORTDbits.RD8
+#define IO_OUT07        LATDbits.LATD8
+#define IO_DIRECTION07  TRISDbits.TRISD8
+
+#define IO_IN08         PORTEbits.RE0
+#define IO_OUT08        LATEbits.LATE0
+#define IO_DIRECTION08  TRISEbits.TRISRE0
+
+#define IO_IN09         PORTEbits.RE1
+#define IO_OUT09        LATEbits.LATE1
+#define IO_DIRECTION09  TRISEbits.TRISRE1
+
+#define IO_IN10         PORTEbits.RE2
+#define IO_OUT10        LATEbits.LATE2
+#define IO_DIRECTION10  TRISEbits.TRISRE2
+
+#define IO_IN11         PORTEbits.RE3
+#define IO_OUT11        LATEbits.LATE3
+#define IO_DIRECTION11  TRISEbits.TRISRE3
+
+#define IO_IN12         PORTEbits.RE4
+#define IO_OUT12        LATEbits.LATE4
+#define IO_DIRECTION12  TRISEbits.TRISRE4
+
+#define IO_IN13         PORTEbits.RE5
+#define IO_OUT13        LATEbits.LATE5
+#define IO_DIRECTION13  TRISEbits.TRISRE5
+
+#define IO_IN14         PORTEbits.RE6
+#define IO_OUT14        LATEbits.LATE6
+#define IO_DIRECTION14  TRISEbits.TRISRE6
+
+#define IO_IN15         PORTEbits.RE7
+#define IO_OUT15        LATEbits.LATE7
+#define IO_DIRECTION15  TRISEbits.TRISRE7
+
 /******************************************************************************/
 /* Pin definitions fromt the net names from the schematic. Yes, I know that   */
 /* it isn't in order- the order was taken from the schematic where the refdes */

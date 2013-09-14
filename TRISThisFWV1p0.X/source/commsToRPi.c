@@ -15,6 +15,7 @@
 SPI_TYPE SPI;
 UINT32 SPIIntCounter=0;
 UINT32 SPIIntRXCounter=0;
+extern TRISTHIS_DATA_TYPE TRISThisData;
 
 BOOL ConfigSPIComms(void)
 {
@@ -78,7 +79,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
     IFS1CLR=_IFS1_CNIF_MASK;
     if((SPI.status.CEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
     {
-        RPI_SPI_BUF=0x55;
+        
         if(SPI.status.RXDataReady)
         {
             /* we missed some data */
@@ -87,6 +88,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
         }
         SPI.RXState=STATE_SPI_RX_COMMAND;
         SPI.status.CEStatus=TRUE;
+        SPI.status.bufferReadDone=FALSE;
         SPI.RXCount=0;
     }
     else if((SPI.status.CEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
@@ -154,15 +156,41 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 {
                     if(!SPI.status.RXOverrunError)
                     {
-                        if(SPI.command==SPI_WRITE)
+                        switch(SPI.command)
                         {
-                            SPI.RXData[SPI.RXCount++]=SPITemp;
-                            if(SPI.RXCount==0)
+                            case SPI_WRITE:
                             {
-                                /* error-- went too long*/
-                                SPI.status.RXOverrunError=TRUE;
+                                SPI.RXData[SPI.RXCount++]=SPITemp;
+                                if(SPI.RXCount==SPI_RX_BUFFER_SIZE)
+                                {
+                                    /* error-- went too long*/
+                                    SPI.status.RXOverrunError=TRUE;
+                                }
+                                break;
+                            }
+                            case SPI_READ:
+                            {
+                                if(!SPI.status.bufferReadDone)
+                                {
+                                    /* take a snapshot of the data to send back */
+                                    for(SPI.TXIndex=0;SPI.TXIndex<SPI_TX_BUFFER_SIZE;SPI.TXIndex++)
+                                    {
+                                        SPI.TXBuffer[SPI.TXIndex] = TRISThisData[SPI.TXIndex];
+                                    }
+                                    SPI.TXIndex=0;
+                                    SPI.status.bufferReadDone=TRUE;
+                                    SPI.status.bufferReadOverrun=FALSE;
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                SPI.status.unknownCommandRX=TRUE;
+                                /* don't know what to do */
+                                break;
                             }
                         }
+                        
                     }
                     break;
                 }
@@ -178,8 +206,29 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
         SPI_TX_INTERRUPT_FLAG_CLEAR;
-        RPI_SPI_BUF=SPI.RXCount;
-        //TODO- why are first 4 bytes sent out all 0?
+        SPITemp=OVERRUN_BYTE;
+        /* send data out only if a snapshot of the data is done */
+        if(SPI.status.bufferReadDone)
+        {
+            if(!SPI.status.bufferReadOverrun)
+            {
+                if(SPI.TXIndex==SPI_TX_BUFFER_SIZE)
+                {
+                    SPI.status.bufferReadOverrun=TRUE;
+                }
+                else
+                {
+                    SPITemp=SPI.TXBuffer[SPI.TXIndex++];
+                }
+            }
+            /* else an overrun- already prepared for that */
+        }
+        else
+        {
+            SPITemp=NOT_YET_BYTE;
+        }
+        /* always put something in the buffer */
+        RPI_SPI_BUF=SPITemp;
     }
     if(SPI_INTERRUPT_ERROR_ENABLE&&SPI_INTERRUPT_ERROR_FLAG)
     {

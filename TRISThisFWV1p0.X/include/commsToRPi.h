@@ -49,6 +49,8 @@
     #error "RPI_SPI_CHANNEL not defined"
 #endif
 
+#define OVERRUN_BYTE    0xFF
+#define NOT_YET_BYTE    0x00
 typedef union
 {
     struct
@@ -60,6 +62,9 @@ typedef union
         unsigned RXOverflow:1;
         unsigned RXOverrun:1;
         unsigned RXMysteryState:1;
+        unsigned unknownCommandRX:1;
+        unsigned bufferReadDone:1;
+        unsigned bufferReadOverrun:1;
     };
     UINT32 w;
 } SPI_STATUS;
@@ -81,8 +86,10 @@ typedef struct
     UINT8       RXCount;
     UINT8       TXCount;
     SPI_STATUS  status;
-    UINT8 RXData[255];
+    UINT8 RXData[SPI_RX_BUFFER_SIZE];
     UINT8 RXIndex;
+    UINT8 TXBuffer[SPI_TX_BUFFER_SIZE];
+    UINT8 TXIndex;
     enum SPI_RX_STATE RXState;
 } SPI_TYPE;
 

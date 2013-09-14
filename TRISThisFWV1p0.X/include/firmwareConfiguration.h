@@ -35,6 +35,8 @@
 #define RPI_SPI_CHANNEL         (1)
 #define RPI_COMMS_INT_PRIORITY  IPL3SOFT
 #define RPI_COMMS_CE_PRIORITY   IPL4SOFT
+#define SPI_RX_BUFFER_SIZE      0xFF
+#define SPI_TX_BUFFER_SIZE      0x0F
 
 /* tick */
 #define TICK_INT_PRIORITY               T4_INT_PRIOR_6

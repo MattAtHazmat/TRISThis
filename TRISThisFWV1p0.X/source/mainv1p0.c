@@ -14,6 +14,7 @@
 #include <PAC1710.h>
 #include <MCP4461.h>
 #include <I2C_Bus_Master.h>
+#include <TRISThis.h>
 #include <configuration.h>
 #include <mainv1p0.h>
 
@@ -23,6 +24,7 @@ extern UINT16_VAL voltageHolding;
 /* file scope for DMCI */
 INT16 monitorCurrentReadings[100];
 UINT16 monitorVoltageReadings[100];
+
 /******************************************************************************/
 
 int main(void)

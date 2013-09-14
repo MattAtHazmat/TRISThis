@@ -1,8 +1,10 @@
 /****************************************************/
 #include <common.h>
 #include <tick.h>
+#include <TRISThis.h>
 #include <LED.h>
 enum LED_STATE_TYPE LEDState;
+extern TRISTHIS_DATA_TYPE TRISThisData;
 
 void LEDInitialize(void)
 {
@@ -23,6 +25,35 @@ void LEDInitialize(void)
     LED6_DIRECTION=TRIS_OUT;
     LED7_DIRECTION=TRIS_OUT;
     LED8_DIRECTION=TRIS_OUT;
+    TRISThisData.LEDs.w=0x00;
+}
+
+UINT8 ReadLEDs(void)
+{
+    UINT8_VAL LEDTemp;
+    LEDTemp.bits.b0=!LED1_OUT;
+    LEDTemp.bits.b1=!LED2_OUT;
+    LEDTemp.bits.b2=!LED3_OUT;
+    LEDTemp.bits.b3=!LED4_OUT;
+    LEDTemp.bits.b4=!LED5_OUT;
+    LEDTemp.bits.b5=!LED6_OUT;
+    LEDTemp.bits.b6=!LED7_OUT;
+    LEDTemp.bits.b7=!LED8_OUT;
+    return LEDTemp.Val;
+}
+
+void SetLEDs(UINT8 toSet)
+{
+    UINT8_VAL tempLEDs;
+    tempLEDs.Val=toSet;
+    LED1_OUT=!tempLEDs.bits.b0;
+    LED2_OUT=!tempLEDs.bits.b1;
+    LED3_OUT=!tempLEDs.bits.b2;
+    LED4_OUT=!tempLEDs.bits.b3;
+    LED5_OUT=!tempLEDs.bits.b4;
+    LED6_OUT=!tempLEDs.bits.b5;
+    LED7_OUT=!tempLEDs.bits.b6;
+    LED8_OUT=!tempLEDs.bits.b7;
 }
 
 void DoLEDs(void)
@@ -31,7 +62,7 @@ void DoLEDs(void)
     TICK_TYPE now;
     now=TickGet();
     if(now<timeoutTime)// <editor-fold defaultstate="collapsed" desc="comment">
-{
+    {
         return;
     }// </editor-fold>
     else// <editor-fold defaultstate="collapsed" desc="comment">
@@ -39,20 +70,7 @@ void DoLEDs(void)
         timeoutTime = now + LED_CASCADE_DELAY;
     }// </editor-fold>
     switch(LEDState)// <editor-fold defaultstate="collapsed" desc="comment">
-    {
-        case LED_STATE_ALL_OFF:// <editor-fold defaultstate="collapsed" desc="comment">
-        {
-            LED1_OUT = LED_OFF;
-            LED2_OUT = LED_OFF;
-            LED3_OUT = LED_OFF;
-            LED4_OUT = LED_OFF;
-            LED5_OUT = LED_OFF;
-            LED6_OUT = LED_OFF;
-            LED7_OUT = LED_OFF;
-            LED8_OUT = LED_OFF;
-            LEDState = LED_STATE_LED1_TOGGLE;
-            break;
-        }// </editor-fold>
+    {        
         case LED_STATE_LED1_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
         {
             LED1_OUT ^= 1;
@@ -101,6 +119,20 @@ void DoLEDs(void)
             LEDState = LED_STATE_LED1_TOGGLE;
             break;
         }// </editor-fold>
+        case LED_STATE_ALL_OFF:
+        default:// <editor-fold defaultstate="collapsed" desc="comment">
+        {
+            LED1_OUT = LED_OFF;
+            LED2_OUT = LED_OFF;
+            LED3_OUT = LED_OFF;
+            LED4_OUT = LED_OFF;
+            LED5_OUT = LED_OFF;
+            LED6_OUT = LED_OFF;
+            LED7_OUT = LED_OFF;
+            LED8_OUT = LED_OFF;
+            LEDState = LED_STATE_LED1_TOGGLE;
+            break;
+        }// </editor-fold>
     }// </editor-fold>
-
+    TRISThisData.LEDs.w=ReadLEDs();
 }
