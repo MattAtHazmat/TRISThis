@@ -8,6 +8,7 @@
 /******************************************************************************/
 
 #include <common.h>
+#include <TRISThis.h>
 #include <commsToRPi.h>
 #include <peripheral/spi.h>
 #include <peripheral/int.h>
@@ -79,7 +80,6 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
     IFS1CLR=_IFS1_CNIF_MASK;
     if((SPI.status.CEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
     {
-        
         if(SPI.status.RXDataReady)
         {
             /* we missed some data */
@@ -175,7 +175,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                                     /* take a snapshot of the data to send back */
                                     for(SPI.TXIndex=0;SPI.TXIndex<SPI_TX_BUFFER_SIZE;SPI.TXIndex++)
                                     {
-                                        SPI.TXBuffer[SPI.TXIndex] = TRISThisData[SPI.TXIndex];
+                                        SPI.TXBuffer[SPI.TXIndex] = TRISThisData.data[SPI.TXIndex];
                                     }
                                     SPI.TXIndex=0;
                                     SPI.status.bufferReadDone=TRUE;

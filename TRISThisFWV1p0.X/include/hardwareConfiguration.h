@@ -134,35 +134,35 @@
 
 #define IO_IN08         PORTEbits.RE0
 #define IO_OUT08        LATEbits.LATE0
-#define IO_DIRECTION08  TRISEbits.TRISRE0
+#define IO_DIRECTION08  TRISEbits.TRISE0
 
 #define IO_IN09         PORTEbits.RE1
 #define IO_OUT09        LATEbits.LATE1
-#define IO_DIRECTION09  TRISEbits.TRISRE1
+#define IO_DIRECTION09  TRISEbits.TRISE1
 
 #define IO_IN10         PORTEbits.RE2
 #define IO_OUT10        LATEbits.LATE2
-#define IO_DIRECTION10  TRISEbits.TRISRE2
+#define IO_DIRECTION10  TRISEbits.TRISE2
 
 #define IO_IN11         PORTEbits.RE3
 #define IO_OUT11        LATEbits.LATE3
-#define IO_DIRECTION11  TRISEbits.TRISRE3
+#define IO_DIRECTION11  TRISEbits.TRISE3
 
 #define IO_IN12         PORTEbits.RE4
 #define IO_OUT12        LATEbits.LATE4
-#define IO_DIRECTION12  TRISEbits.TRISRE4
+#define IO_DIRECTION12  TRISEbits.TRISE4
 
 #define IO_IN13         PORTEbits.RE5
 #define IO_OUT13        LATEbits.LATE5
-#define IO_DIRECTION13  TRISEbits.TRISRE5
+#define IO_DIRECTION13  TRISEbits.TRISE5
 
 #define IO_IN14         PORTEbits.RE6
 #define IO_OUT14        LATEbits.LATE6
-#define IO_DIRECTION14  TRISEbits.TRISRE6
+#define IO_DIRECTION14  TRISEbits.TRISE6
 
 #define IO_IN15         PORTEbits.RE7
 #define IO_OUT15        LATEbits.LATE7
-#define IO_DIRECTION15  TRISEbits.TRISRE7
+#define IO_DIRECTION15  TRISEbits.TRISE7
 
 /******************************************************************************/
 /* Pin definitions fromt the net names from the schematic. Yes, I know that   */

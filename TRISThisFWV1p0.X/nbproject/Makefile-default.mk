@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=source/mainv1p0.c source/general_exception_handler.c source/I2C_Bus_Master.c source/tick.c source/delay.c source/LED.c source/PAC1710.c source/MCP4461.c source/commsToRPi.c
+SOURCEFILES_QUOTED_IF_SPACED=source/mainv1p0.c source/general_exception_handler.c source/I2C_Bus_Master.c source/tick.c source/delay.c source/LED.c source/PAC1710.c source/MCP4461.c source/commsToRPi.c source/TRISThis.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/source/mainv1p0.o ${OBJECTDIR}/source/general_exception_handler.o ${OBJECTDIR}/source/I2C_Bus_Master.o ${OBJECTDIR}/source/tick.o ${OBJECTDIR}/source/delay.o ${OBJECTDIR}/source/LED.o ${OBJECTDIR}/source/PAC1710.o ${OBJECTDIR}/source/MCP4461.o ${OBJECTDIR}/source/commsToRPi.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/source/mainv1p0.o.d ${OBJECTDIR}/source/general_exception_handler.o.d ${OBJECTDIR}/source/I2C_Bus_Master.o.d ${OBJECTDIR}/source/tick.o.d ${OBJECTDIR}/source/delay.o.d ${OBJECTDIR}/source/LED.o.d ${OBJECTDIR}/source/PAC1710.o.d ${OBJECTDIR}/source/MCP4461.o.d ${OBJECTDIR}/source/commsToRPi.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/source/mainv1p0.o ${OBJECTDIR}/source/general_exception_handler.o ${OBJECTDIR}/source/I2C_Bus_Master.o ${OBJECTDIR}/source/tick.o ${OBJECTDIR}/source/delay.o ${OBJECTDIR}/source/LED.o ${OBJECTDIR}/source/PAC1710.o ${OBJECTDIR}/source/MCP4461.o ${OBJECTDIR}/source/commsToRPi.o ${OBJECTDIR}/source/TRISThis.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/source/mainv1p0.o.d ${OBJECTDIR}/source/general_exception_handler.o.d ${OBJECTDIR}/source/I2C_Bus_Master.o.d ${OBJECTDIR}/source/tick.o.d ${OBJECTDIR}/source/delay.o.d ${OBJECTDIR}/source/LED.o.d ${OBJECTDIR}/source/PAC1710.o.d ${OBJECTDIR}/source/MCP4461.o.d ${OBJECTDIR}/source/commsToRPi.o.d ${OBJECTDIR}/source/TRISThis.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/source/mainv1p0.o ${OBJECTDIR}/source/general_exception_handler.o ${OBJECTDIR}/source/I2C_Bus_Master.o ${OBJECTDIR}/source/tick.o ${OBJECTDIR}/source/delay.o ${OBJECTDIR}/source/LED.o ${OBJECTDIR}/source/PAC1710.o ${OBJECTDIR}/source/MCP4461.o ${OBJECTDIR}/source/commsToRPi.o
+OBJECTFILES=${OBJECTDIR}/source/mainv1p0.o ${OBJECTDIR}/source/general_exception_handler.o ${OBJECTDIR}/source/I2C_Bus_Master.o ${OBJECTDIR}/source/tick.o ${OBJECTDIR}/source/delay.o ${OBJECTDIR}/source/LED.o ${OBJECTDIR}/source/PAC1710.o ${OBJECTDIR}/source/MCP4461.o ${OBJECTDIR}/source/commsToRPi.o ${OBJECTDIR}/source/TRISThis.o
 
 # Source Files
-SOURCEFILES=source/mainv1p0.c source/general_exception_handler.c source/I2C_Bus_Master.c source/tick.c source/delay.c source/LED.c source/PAC1710.c source/MCP4461.c source/commsToRPi.c
+SOURCEFILES=source/mainv1p0.c source/general_exception_handler.c source/I2C_Bus_Master.c source/tick.c source/delay.c source/LED.c source/PAC1710.c source/MCP4461.c source/commsToRPi.c source/TRISThis.c
 
 
 CFLAGS=
@@ -145,6 +145,12 @@ ${OBJECTDIR}/source/commsToRPi.o: source/commsToRPi.c  nbproject/Makefile-${CND_
 	@${RM} ${OBJECTDIR}/source/commsToRPi.o 
 	@${FIXDEPS} "${OBJECTDIR}/source/commsToRPi.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -I"include" -I"/opt/microchip/xc32/v1.21/pic32mx/include/peripheral" -MMD -MF "${OBJECTDIR}/source/commsToRPi.o.d" -o ${OBJECTDIR}/source/commsToRPi.o source/commsToRPi.c   
 	
+${OBJECTDIR}/source/TRISThis.o: source/TRISThis.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/source 
+	@${RM} ${OBJECTDIR}/source/TRISThis.o.d 
+	@${RM} ${OBJECTDIR}/source/TRISThis.o 
+	@${FIXDEPS} "${OBJECTDIR}/source/TRISThis.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -I"include" -I"/opt/microchip/xc32/v1.21/pic32mx/include/peripheral" -MMD -MF "${OBJECTDIR}/source/TRISThis.o.d" -o ${OBJECTDIR}/source/TRISThis.o source/TRISThis.c   
+	
 else
 ${OBJECTDIR}/source/mainv1p0.o: source/mainv1p0.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/source 
@@ -199,6 +205,12 @@ ${OBJECTDIR}/source/commsToRPi.o: source/commsToRPi.c  nbproject/Makefile-${CND_
 	@${RM} ${OBJECTDIR}/source/commsToRPi.o.d 
 	@${RM} ${OBJECTDIR}/source/commsToRPi.o 
 	@${FIXDEPS} "${OBJECTDIR}/source/commsToRPi.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -I"include" -I"/opt/microchip/xc32/v1.21/pic32mx/include/peripheral" -MMD -MF "${OBJECTDIR}/source/commsToRPi.o.d" -o ${OBJECTDIR}/source/commsToRPi.o source/commsToRPi.c   
+	
+${OBJECTDIR}/source/TRISThis.o: source/TRISThis.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/source 
+	@${RM} ${OBJECTDIR}/source/TRISThis.o.d 
+	@${RM} ${OBJECTDIR}/source/TRISThis.o 
+	@${FIXDEPS} "${OBJECTDIR}/source/TRISThis.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -I"include" -I"/opt/microchip/xc32/v1.21/pic32mx/include/peripheral" -MMD -MF "${OBJECTDIR}/source/TRISThis.o.d" -o ${OBJECTDIR}/source/TRISThis.o source/TRISThis.c   
 	
 endif
 

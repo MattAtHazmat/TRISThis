@@ -14,6 +14,8 @@
 
 
 #include <common.h>
+#include <commsToRPi.h>
+#include <int.h>
 #include <TRISThis.h>
 
 TRISTHIS_DATA_TYPE TRISThisData;
@@ -73,4 +75,45 @@ void TRISThisReadDigitalDirection(void)
 {
     TRISThisData.digital[0].direction.Val=(0xff&(TRISD>>1));
     TRISThisData.digital[1].direction.Val=(0xff&(TRISE));
+}
+
+BOOL TRISThisSetDigitalLatches(UINT8 channel, UINT8 toSet)
+{
+    BOOL returnValue=FALSE;
+    if(channel<TRISTHIS_NUMBER_DIGITAL_PORTS)
+    {
+        TRISThisData.digital[channel].latch.Val=toSet;
+        switch(channel)
+        {
+            case 0:
+            {
+                
+                returnValue=TRUE;
+                break;
+            }
+            case 1:
+            {
+                returnValue=TRUE;
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+        
+    }
+    return returnValue;
+}
+
+void DoTRISThis(void)
+{
+    static unsigned int statusTemp;
+    if(SPI.status.RXDataReady)
+    {
+        statusTemp = INTDisableInterrupts();
+
+        SPI.status.RXDataReady=FALSE;
+        INTRestoreInterrupts(statusTemp);
+    }
 }

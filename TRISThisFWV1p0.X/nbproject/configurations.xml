@@ -33,6 +33,7 @@
       <itemPath>include/MCP4461.h</itemPath>
       <itemPath>include/commsToRPi.h</itemPath>
       <itemPath>include/clockomatic.h</itemPath>
+      <itemPath>include/TRISThis.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -50,6 +51,7 @@
       <itemPath>source/PAC1710.c</itemPath>
       <itemPath>source/MCP4461.c</itemPath>
       <itemPath>source/commsToRPi.c</itemPath>
+      <itemPath>source/TRISThis.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
