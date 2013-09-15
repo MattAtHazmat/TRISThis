@@ -8,9 +8,9 @@
 #ifndef _TRISTHIS_H_
 #define	_TRISTHIS_H_
 
-#define TRISTHIS_DATA_SIZE (16)
-#define TRISTHIS_NUMBER_DIGITAL_PORTS 2
-#define TRISTHIS_NUMBER_ANALOG_PORTS 4
+#define TRISTHIS_DATA_SIZE              (16)
+#define TRISTHIS_NUMBER_DIGITAL_PORTS   (2)
+#define TRISTHIS_NUMBER_ANALOG_PORTS    (4)
 
 /* TODO: can these be automatically generated? */
 #define INDEX_STATUS_LB             (0)

@@ -8,6 +8,8 @@
 #ifndef _COMMSTORPI_H_
 #define	_COMMSTORPI_H_
 
+/******************************************************************************/
+
 #if (RPI_SPI_CHANNEL==1)
 
     #define SPI_RX_INTERRUPT_ENABLE         IEC0bits.SPI1RXIE
@@ -51,6 +53,9 @@
 
 #define OVERRUN_BYTE    0xFF
 #define NOT_YET_BYTE    0x00
+
+/******************************************************************************/
+/* local types                                                                */
 typedef union
 {
     struct
@@ -93,16 +98,12 @@ typedef struct
     enum SPI_RX_STATE RXState;
 } SPI_TYPE;
 
-/* commands */
+/******************************************************************************/
+/* commands                                                                   */
+/******************************************************************************/
 
 #define SPI_READ    (0b00000011)
 #define SPI_WRITE   (0b00000010)
-
-//#define SPI_COMMAND     (0)
-//#define SPI_ADDRESS_MSB (1)
-//#define SPI_ADDRESS_2SB (2)
-//#define SPI_ADDRESS_LSB (3)
-
 
 /******************************************************************************/
 /* Prototypes                                                                 */
@@ -113,10 +114,8 @@ inline BOOL RPiSelectStatus(void);
 BOOL SPIDataReady(void);
 BOOL SPIDataGet(UINT8, UINT8*);
 
-
 #else
 
     #warning "Redundant include of commsToRPi.h"
 
 #endif	/* _COMMSTORPI_H_ */
-
