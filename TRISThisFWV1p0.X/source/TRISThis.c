@@ -162,6 +162,7 @@ void DoTRISThis(void)
     {
         /* called a lot- save churn on the stack? */
         static UINT32_VAL tempData;
+        /* check the data we read */
         SPIDataGet(INDEX_STATUS_MB,&tempData.byte.MB);
         SPIDataGet(INDEX_STATUS_UB,&tempData.byte.UB);
         SPIDataGet(INDEX_STATUS_HB,&tempData.byte.HB);

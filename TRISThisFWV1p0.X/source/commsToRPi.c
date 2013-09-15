@@ -14,9 +14,9 @@
 #include <peripheral/int.h>
 
 SPI_TYPE SPI;
-UINT32 SPIIntCounter=0;
-UINT32 SPIIntRXCounter=0;
 extern TRISTHIS_DATA_TYPE TRISThisData;
+
+/******************************************************************************/
 
 BOOL SPIDataGet(UINT8 address, UINT8 *data)
 {
@@ -31,6 +31,8 @@ BOOL SPIDataGet(UINT8 address, UINT8 *data)
     }
 }
 
+/******************************************************************************/
+
 BOOL SPIDataReady(void)
 {
     BOOL returnValue;
@@ -41,6 +43,8 @@ BOOL SPIDataReady(void)
     INTRestoreInterrupts(statusTemp);
     return returnValue;
 }
+
+/******************************************************************************/
 
 BOOL ConfigSPIComms(void)
 {
@@ -99,6 +103,8 @@ BOOL ConfigSPIComms(void)
     return TRUE;
 }
 
+/******************************************************************************/
+
 void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
 {
     IFS1CLR=_IFS1_CNIF_MASK;
@@ -123,6 +129,8 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
     }
 }
 
+/******************************************************************************/
+
 inline BOOL RPiSelectStatus(void)
 {
     BOOL returnValue;
@@ -137,16 +145,16 @@ inline BOOL RPiSelectStatus(void)
     return returnValue;
 }
 
+/******************************************************************************/
+
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
 {
     static UINT8 SPITemp;
-    SPIIntCounter++;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
         SPI_RX_INTERRUPT_FLAG_CLEAR;
         if(RPI_SPI_RX_BUF_FULL)
         {
-            SPIIntRXCounter++;
             /* data in the buffer, read it */
             SPITemp=RPI_SPI_BUF;
             switch(SPI.RXState)
@@ -261,3 +269,5 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
         SPI.status.RXOverflow=TRUE;
     }
 }
+
+/******************************************************************************/
