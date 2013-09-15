@@ -24,7 +24,7 @@ enum LED_STATE_TYPE
 
 /* prototypes */
 
-void LEDInitialize(void);
+BOOL LEDInitialize(void);
 void DoLEDs(void);
 UINT8 ReadLEDs(void);
 void SetLEDs(UINT8);

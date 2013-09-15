@@ -86,7 +86,7 @@ BOOL ConfigSPIComms(void)
     /* configure change notice, as I can't figure out any other way to        */
     /* trigger the beginning of the slave select with just the SPI peripheral */
     /* buuut the change notice pins are not on the SS pins, so a white wire is*/
-    /* needed /
+    /* needed                                                                 */
     /* tie chip enable CE0 to pin20/RE5 CE1 */
     SPI_SELECT_CN_DIRECTION=TRIS_IN;
     CNCONbits.w=0;
@@ -221,8 +221,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                                 /* don't know what to do */
                                 break;
                             }
-                        }
-                        
+                        } 
                     }
                     break;
                 }

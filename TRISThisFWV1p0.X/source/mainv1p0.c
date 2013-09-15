@@ -59,7 +59,6 @@ int main(void)
     {
         Nop();
     }
-    /* */
     #ifdef USE_DIGIPOT
     DigipotSubsystemInitialize();
     #endif
@@ -67,7 +66,7 @@ int main(void)
     {
         while(TRUE);
     }
-    TRISThisDigitalConfigure();
+    TRISThisConfigure();
     INTEnableInterrupts();
     mEnableWatchdog();
 

@@ -1,4 +1,4 @@
-/****************************************************/
+/******************************************************************************/
 #include <common.h>
 #include <tick.h>
 #include <TRISThis.h>
@@ -6,7 +6,9 @@
 enum LED_STATE_TYPE LEDState;
 extern TRISTHIS_DATA_TYPE TRISThisData;
 
-void LEDInitialize(void)
+/******************************************************************************/
+
+BOOL LEDInitialize(void)
 {
     LED1_OUT=LED_OFF;
     LED2_OUT=LED_OFF;
@@ -26,8 +28,11 @@ void LEDInitialize(void)
     LED8_DIRECTION=TRIS_OUT;
     LEDState=LED_STATE_MANUAL;
     TRISThisData.status.autoLEDmode=TRUE;
-    TRISThisData.LEDs.w=0x00;
+    TRISThisData.LEDs.w.Val=0;
+    return TRUE;
 }
+
+/******************************************************************************/
 
 UINT8 ReadLEDs(void)
 {
@@ -43,6 +48,8 @@ UINT8 ReadLEDs(void)
     return LEDTemp.Val;
 }
 
+/******************************************************************************/
+
 void SetLEDs(UINT8 toSet)
 {
     UINT8_VAL tempLEDs;
@@ -56,6 +63,8 @@ void SetLEDs(UINT8 toSet)
     LED7_OUT=!tempLEDs.bits.b6;
     LED8_OUT=!tempLEDs.bits.b7;
 }
+
+/******************************************************************************/
 
 void DoLEDs(void)
 {
@@ -138,8 +147,10 @@ void DoLEDs(void)
             }// </editor-fold>
         }// </editor-fold>
     }
-    TRISThisData.LEDs.w=ReadLEDs();
+    TRISThisData.LEDs.w.byte.LB=ReadLEDs();
 }
+
+/******************************************************************************/
 
 BOOL LEDAutoMode(BOOL toSet)
 {
@@ -155,3 +166,5 @@ BOOL LEDAutoMode(BOOL toSet)
     }
     return returnValue;
 }
+
+/******************************************************************************/

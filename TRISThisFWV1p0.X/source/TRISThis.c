@@ -23,7 +23,25 @@ TRISTHIS_DATA_TYPE TRISThisData;
 
 /******************************************************************************/
 
-void TRISThisDigitalConfigure(void)
+BOOL TRISThisConfigure(void)
+{
+    int index;
+    index=sizeof(TRISThisData);
+    for(index=0;index<sizeof(TRISThisData);index++)
+    {
+        TRISThisData.data[index]=0;
+    }
+    TRISThisData.status.configured=FALSE;
+    if(TRISThisDigitalConfigure())
+    {
+        TRISThisData.status.configured=TRUE;
+    }
+    return TRISThisData.status.configured;
+}
+
+/******************************************************************************/
+
+BOOL TRISThisDigitalConfigure(void)
 {
     IO_OUT00=FALSE;
     IO_OUT01=FALSE;
@@ -61,6 +79,7 @@ void TRISThisDigitalConfigure(void)
     TRISThisReadDigitalInputs();
     TRISThisReadDigitalLatches();
     TRISThisReadDigitalDirection();
+    return TRUE;
 }
 
 /******************************************************************************/
@@ -160,9 +179,9 @@ void DoTRISThis(void)
 {
     if(SPIDataReady())
     {
-        /* called a lot- save churn on the stack? */
+        /* called a lot- save churn on the stack?                             */
         static UINT32_VAL tempData;
-        /* check the data we read */
+        /* check the data we read                                             */
         SPIDataGet(INDEX_STATUS_MB,&tempData.byte.MB);
         SPIDataGet(INDEX_STATUS_UB,&tempData.byte.UB);
         SPIDataGet(INDEX_STATUS_HB,&tempData.byte.HB);
@@ -171,6 +190,12 @@ void DoTRISThis(void)
         if(tempData.Val!=TRISThisReadStatus())
         {
             TRISThisSetStatus(tempData.Val);
+            LEDAutoMode(TRISThisData.status.autoLEDmode);
+        }
+        SPIDataGet(INDEX_LED,&tempData.byte.LB);
+        if(tempData.byte.LB!=ReadLEDs())
+        {
+            SetLEDs(tempData.byte.LB);
         }
         SPIDataGet(INDEX_DIGITAL_DIRECTION_0,&tempData.byte.LB);
         if(tempData.byte.LB!=(0xff&(TRISD>>1)))
@@ -199,15 +224,17 @@ void DoTRISThis(void)
 
 UINT32 TRISThisReadStatus(void)
 {
-    return TRISThisData.status.w;
+    return TRISThisData.status.w.Val;
 }
 
 /******************************************************************************/
 
 UINT32 TRISThisSetStatus(UINT32 toSet)
 {
-    TRISThisData.status.w=toSet;
-    return TRISThisData.status.w;
+    TRISThisData.status.w.Val=(toSet&!STATUS_READ_ONLY_MASK)|
+            (STATUS_READ_ONLY_MASK & TRISThisData.status.w.Val);
+    LEDAutoMode(TRISThisData.status.autoLEDmode);
+    return TRISThisData.status.w.Val;
 }
 
 /******************************************************************************/
