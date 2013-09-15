@@ -23,9 +23,11 @@
     #define SUCCESS     1
 
     #ifdef __DEBUG
-        #define clrwdt()
+        #define mClearWatchdog()
+        #define mEnableWatchdog()
     #else
-        #define clrwdt()   WDTCONSET=_WDTCON_WDTCLR_MASK
+        #define mClearWatchdog()    WDTCONSET = _WDTCON_WDTCLR_MASK
+        #define mEnableWatchdog()   WDTCONSET = _WDTCON_ON_MASK
     #endif
 #else
     #warning "Redundant include of common.h"

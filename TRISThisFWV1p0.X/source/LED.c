@@ -25,6 +25,7 @@ void LEDInitialize(void)
     LED7_DIRECTION=TRIS_OUT;
     LED8_DIRECTION=TRIS_OUT;
     LEDState=LED_STATE_MANUAL;
+    Nop();
     TRISThisData.status.autoLEDmode=TRUE;
     TRISThisData.LEDs.w=0x00;
 }

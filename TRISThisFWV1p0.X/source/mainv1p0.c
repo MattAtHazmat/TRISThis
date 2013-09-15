@@ -55,13 +55,10 @@ int main(void)
         LED7_OUT = LED_ON;
         LED8_OUT = LED_OFF;
     }// </editor-fold>
-
-    LED2_OUT=LED_ON;
     if(!PAC1710SubsystemInitialize(PAC1710_ADDRESS))
     {
         Nop();
     }
-    LED3_OUT=LED_ON;
     /* */
     #ifdef USE_DIGIPOT
     DigipotSubsystemInitialize();
@@ -70,15 +67,13 @@ int main(void)
     {
         while(TRUE);
     }
-    LED4_OUT=LED_ON;
+    TRISThisDigitalConfigure();
     INTEnableInterrupts();
-    #ifndef __DEBUG
-        WDTCONSET = 0x8000;
-    #endif
-        //SPI1CONbits.ON=0;
+    mEnableWatchdog();
+
     while(TRUE)
     {
-        clrwdt();
+        mClearWatchdog();
         DoTRISThis();
         DoPowerMonState();
         DoLEDs();
@@ -141,11 +136,10 @@ int main(void)
     }
 }
 
-//
-//void __ISR(_DefaultInterrupt,IPL7AUTO) _DefaultInterrupt(void)
-//{
-//    while(TRUE);
-//}
+void __attribute__ ((interrupt(IPL0SOFT))) _DefaultInterrupt(void)
+{
+    while(TRUE);
+}
 
 void InitializeSystem(void)
 {

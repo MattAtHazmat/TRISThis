@@ -21,7 +21,6 @@ UINT16_VAL monitorCurrentHolding;
 UINT16_VAL monitorVoltageHolding;
 
 /******************************************************************************/
-/* BOOL PAC1710SubsystemInitialize(UINT8 address)                             */
 
 BOOL PAC1710SubsystemInitialize(UINT8 address)
 {
