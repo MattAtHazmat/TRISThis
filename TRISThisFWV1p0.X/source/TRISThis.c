@@ -75,7 +75,6 @@ BOOL TRISThisDigitalConfigure(void)
     IO_DIRECTION13=TRIS_IN;
     IO_DIRECTION14=TRIS_IN;
     IO_DIRECTION15=TRIS_IN;
-    TRISThisSetLEDAutoMode(TRUE);
     TRISThisReadDigitalInputs();
     TRISThisReadDigitalLatches();
     TRISThisReadDigitalDirection();
@@ -231,7 +230,7 @@ UINT32 TRISThisReadStatus(void)
 
 UINT32 TRISThisSetStatus(UINT32 toSet)
 {
-    TRISThisData.status.w.Val=(toSet&!STATUS_READ_ONLY_MASK)|
+    TRISThisData.status.w.Val=(toSet & ~STATUS_READ_ONLY_MASK)|
             (STATUS_READ_ONLY_MASK & TRISThisData.status.w.Val);
     LEDAutoMode(TRISThisData.status.autoLEDmode);
     return TRISThisData.status.w.Val;
