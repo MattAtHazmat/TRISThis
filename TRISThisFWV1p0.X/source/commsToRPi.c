@@ -18,6 +18,30 @@ UINT32 SPIIntCounter=0;
 UINT32 SPIIntRXCounter=0;
 extern TRISTHIS_DATA_TYPE TRISThisData;
 
+BOOL SPIDataGet(UINT8 address, UINT8 *data)
+{
+    if(address>=sizeof(SPI.RXData))
+    {
+        return FALSE;
+    }
+    else
+    {
+        *data=SPI.RXData[address];
+        return TRUE;
+    }
+}
+
+BOOL SPIDataReady(void)
+{
+    BOOL returnValue;
+    unsigned int statusTemp;
+    statusTemp = INTDisableInterrupts();
+    returnValue=SPI.status.RXDataReady;
+    SPI.status.RXDataReady=FALSE;
+    INTRestoreInterrupts(statusTemp);
+    return returnValue;
+}
+
 BOOL ConfigSPIComms(void)
 {
     SpiChnClose(RPI_SPI_CHANNEL);

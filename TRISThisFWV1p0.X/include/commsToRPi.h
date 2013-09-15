@@ -110,6 +110,8 @@ typedef struct
 
 BOOL ConfigSPIComms(void);
 inline BOOL RPiSelectStatus(void);
+BOOL SPIDataReady(void);
+BOOL SPIDataGet(UINT8, UINT8*);
 
 
 #else

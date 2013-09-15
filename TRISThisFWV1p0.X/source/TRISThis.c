@@ -87,12 +87,15 @@ BOOL TRISThisSetDigitalLatches(UINT8 channel, UINT8 toSet)
         {
             case 0:
             {
-                
+                UINT32_VAL tempToSet;
+                tempToSet.byte.LB=toSet;
+                LATD=tempToSet.Val<<1;
                 returnValue=TRUE;
                 break;
             }
             case 1:
             {
+                LATE=toSet;
                 returnValue=TRUE;
                 break;
             }
@@ -106,14 +109,62 @@ BOOL TRISThisSetDigitalLatches(UINT8 channel, UINT8 toSet)
     return returnValue;
 }
 
+BOOL TRISThisSetDigitalDirection(UINT8 channel, UINT8 toSet)
+{
+    BOOL returnValue=FALSE;
+    if(channel<TRISTHIS_NUMBER_DIGITAL_PORTS)
+    {
+        TRISThisData.digital[channel].direction.Val=toSet;
+        switch(channel)
+        {
+            case 0:
+            {
+                UINT32_VAL tempToSet;
+                tempToSet.byte.LB=toSet;
+                TRISD=tempToSet.Val<<1;
+                returnValue=TRUE;
+                break;
+            }
+            case 1:
+            {
+                TRISE=toSet;
+                returnValue=TRUE;
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+    }
+    return returnValue;
+}
+
 void DoTRISThis(void)
 {
-    static unsigned int statusTemp;
-    if(SPI.status.RXDataReady)
+    if(SPIDataReady())
     {
-        statusTemp = INTDisableInterrupts();
-
-        SPI.status.RXDataReady=FALSE;
-        INTRestoreInterrupts(statusTemp);
+        /* called a lot- save churn on the stack? */
+        static UINT8 tempData=0;
+        SPIDataGet(INDEX_DIGITAL_DIRECTION_0,&tempData);
+        if(tempData!=(0xff&(TRISD>>1)))
+        {
+            TRISThisSetDigitalDirection(0,tempData);
+        }
+        SPIDataGet(INDEX_DIGITAL_DIRECTION_1,&tempData);
+        if(tempData!=(0xff&(TRISE)))
+        {
+            TRISThisSetDigitalDirection(0,tempData);
+        }
+        SPIDataGet(INDEX_DIGITAL_LATCH_0,&tempData);
+        if(tempData!=(0xff&(LATD>>1)))
+        {
+            TRISThisSetDigitalLatches(0,tempData);
+        }
+        SPIDataGet(INDEX_DIGITAL_LATCH_1,&tempData);
+        if(tempData!=(0xff&(LATE)))
+        {
+            TRISThisSetDigitalLatches(1,tempData);
+        }        
     }
 }

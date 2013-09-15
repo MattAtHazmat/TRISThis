@@ -12,6 +12,12 @@
 #define TRISTHIS_NUMBER_DIGITAL_PORTS 2
 #define TRISTHIS_NUMBER_ANALOG_PORTS 4
 
+/* TODO: can these be automatically generated? */
+#define INDEX_DIGITAL_DIRECTION_0   (1)
+#define INDEX_DIGITAL_DIRECTION_1   (2)
+#define INDEX_DIGITAL_LATCH_0       (3)
+#define INDEX_DIGITAL_LATCH_1       (4)
+
 typedef struct
 {
     UINT8_VAL latch;
