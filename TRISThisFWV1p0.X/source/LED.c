@@ -8,7 +8,6 @@ extern TRISTHIS_DATA_TYPE TRISThisData;
 
 void LEDInitialize(void)
 {
-    LEDState=LED_STATE_ALL_OFF;
     LED1_OUT=LED_OFF;
     LED2_OUT=LED_OFF;
     LED3_OUT=LED_OFF;
@@ -25,6 +24,8 @@ void LEDInitialize(void)
     LED6_DIRECTION=TRIS_OUT;
     LED7_DIRECTION=TRIS_OUT;
     LED8_DIRECTION=TRIS_OUT;
+    LEDState=LED_STATE_MANUAL;
+    TRISThisData.status.autoLEDmode=TRUE;
     TRISThisData.LEDs.w=0x00;
 }
 
@@ -60,79 +61,97 @@ void DoLEDs(void)
 {
     static TICK_TYPE timeoutTime=0;
     TICK_TYPE now;
-    now=TickGet();
-    if(now<timeoutTime)// <editor-fold defaultstate="collapsed" desc="comment">
+    if(LEDState!=LED_STATE_MANUAL)
     {
-        return;
-    }// </editor-fold>
-    else// <editor-fold defaultstate="collapsed" desc="comment">
-    {
-        timeoutTime = now + LED_CASCADE_DELAY;
-    }// </editor-fold>
-    switch(LEDState)// <editor-fold defaultstate="collapsed" desc="comment">
-    {        
-        case LED_STATE_LED1_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+        now=TickGet();
+        if(now<timeoutTime)// <editor-fold defaultstate="collapsed" desc="comment">
         {
-            LED1_OUT ^= 1;
-            LEDState = LED_STATE_LED2_TOGGLE;
-            break;
+            return;
         }// </editor-fold>
-        case LED_STATE_LED2_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+        else// <editor-fold defaultstate="collapsed" desc="comment">
         {
-            LED2_OUT ^= 1;
-            LEDState = LED_STATE_LED3_TOGGLE;
-            break;
+            timeoutTime = now + LED_CASCADE_DELAY;
         }// </editor-fold>
-        case LED_STATE_LED3_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+        switch(LEDState)// <editor-fold defaultstate="collapsed" desc="comment">
         {
-            LED3_OUT ^= 1;
-            LEDState = LED_STATE_LED4_TOGGLE;
-            break;
+            case LED_STATE_LED1_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED1_OUT ^= 1;
+                LEDState = LED_STATE_LED2_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_LED2_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED2_OUT ^= 1;
+                LEDState = LED_STATE_LED3_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_LED3_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED3_OUT ^= 1;
+                LEDState = LED_STATE_LED4_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_LED4_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED4_OUT ^= 1;
+                LEDState = LED_STATE_LED5_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_LED5_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED5_OUT ^= 1;
+                LEDState = LED_STATE_LED6_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_LED6_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED6_OUT ^= 1;
+                LEDState = LED_STATE_LED7_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_LED7_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED7_OUT ^= 1;
+                LEDState = LED_STATE_LED8_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_LED8_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED8_OUT ^= 1;
+                LEDState = LED_STATE_LED1_TOGGLE;
+                break;
+            }// </editor-fold>
+            case LED_STATE_ALL_OFF:
+            default:// <editor-fold defaultstate="collapsed" desc="comment">
+            {
+                LED1_OUT = LED_OFF;
+                LED2_OUT = LED_OFF;
+                LED3_OUT = LED_OFF;
+                LED4_OUT = LED_OFF;
+                LED5_OUT = LED_OFF;
+                LED6_OUT = LED_OFF;
+                LED7_OUT = LED_OFF;
+                LED8_OUT = LED_OFF;
+                LEDState = LED_STATE_LED1_TOGGLE;
+                break;
+            }// </editor-fold>
         }// </editor-fold>
-        case LED_STATE_LED4_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
-        {
-            LED4_OUT ^= 1;
-            LEDState = LED_STATE_LED5_TOGGLE;
-            break;
-        }// </editor-fold>
-        case LED_STATE_LED5_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
-        {
-            LED5_OUT ^= 1;
-            LEDState = LED_STATE_LED6_TOGGLE;
-            break;
-        }// </editor-fold>
-        case LED_STATE_LED6_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
-        {
-            LED6_OUT ^= 1;
-            LEDState = LED_STATE_LED7_TOGGLE;
-            break;
-        }// </editor-fold>
-        case LED_STATE_LED7_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
-        {
-            LED7_OUT ^= 1;
-            LEDState = LED_STATE_LED8_TOGGLE;
-            break;
-        }// </editor-fold>
-        case LED_STATE_LED8_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
-        {
-            LED8_OUT ^= 1;
-            LEDState = LED_STATE_LED1_TOGGLE;
-            break;
-        }// </editor-fold>
-        case LED_STATE_ALL_OFF:
-        default:// <editor-fold defaultstate="collapsed" desc="comment">
-        {
-            LED1_OUT = LED_OFF;
-            LED2_OUT = LED_OFF;
-            LED3_OUT = LED_OFF;
-            LED4_OUT = LED_OFF;
-            LED5_OUT = LED_OFF;
-            LED6_OUT = LED_OFF;
-            LED7_OUT = LED_OFF;
-            LED8_OUT = LED_OFF;
-            LEDState = LED_STATE_LED1_TOGGLE;
-            break;
-        }// </editor-fold>
-    }// </editor-fold>
+    }
     TRISThisData.LEDs.w=ReadLEDs();
+}
+
+BOOL LEDAutoMode(BOOL toSet)
+{
+    BOOL returnValue=FALSE;
+    if(toSet)
+    {
+        returnValue=TRUE;
+        LEDState=LED_STATE_ALL_OFF;
+    }
+    else
+    {
+        LEDState=LED_STATE_MANUAL;
+    }
+    return returnValue;
 }

@@ -79,6 +79,7 @@ int main(void)
     while(TRUE)
     {
         clrwdt();
+        DoTRISThis();
         DoPowerMonState();
         DoLEDs();
         #ifdef USE_DIGIPOT

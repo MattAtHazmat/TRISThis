@@ -14,6 +14,7 @@
 
 
 #include <common.h>
+#include <LED.h>
 #include <commsToRPi.h>
 #include <int.h>
 #include <TRISThis.h>
@@ -54,6 +55,7 @@ void TRISThisDigitalConfigure(void)
     IO_DIRECTION13=TRIS_IN;
     IO_DIRECTION14=TRIS_IN;
     IO_DIRECTION15=TRIS_IN;
+    TRISThisSetLEDAutoMode(TRUE);
     TRISThisReadDigitalInputs();
     TRISThisReadDigitalLatches();
     TRISThisReadDigitalDirection();
@@ -145,26 +147,55 @@ void DoTRISThis(void)
     if(SPIDataReady())
     {
         /* called a lot- save churn on the stack? */
-        static UINT8 tempData=0;
-        SPIDataGet(INDEX_DIGITAL_DIRECTION_0,&tempData);
-        if(tempData!=(0xff&(TRISD>>1)))
+        static UINT32_VAL tempData;
+        SPIDataGet(INDEX_STATUS_MB,&tempData.byte.MB);
+        SPIDataGet(INDEX_STATUS_UB,&tempData.byte.UB);
+        SPIDataGet(INDEX_STATUS_HB,&tempData.byte.HB);
+        SPIDataGet(INDEX_STATUS_LB,&tempData.byte.LB);
+
+        if(tempData.Val!=TRISThisReadStatus())
         {
-            TRISThisSetDigitalDirection(0,tempData);
+            TRISThisSetStatus(tempData.Val);
         }
-        SPIDataGet(INDEX_DIGITAL_DIRECTION_1,&tempData);
-        if(tempData!=(0xff&(TRISE)))
+        SPIDataGet(INDEX_DIGITAL_DIRECTION_0,&tempData.byte.LB);
+        if(tempData.byte.LB!=(0xff&(TRISD>>1)))
         {
-            TRISThisSetDigitalDirection(0,tempData);
+            TRISThisSetDigitalDirection(0,tempData.byte.LB);
         }
-        SPIDataGet(INDEX_DIGITAL_LATCH_0,&tempData);
-        if(tempData!=(0xff&(LATD>>1)))
+        SPIDataGet(INDEX_DIGITAL_DIRECTION_1,&tempData.byte.LB);
+        if(tempData.byte.LB!=(0xff&(TRISE)))
         {
-            TRISThisSetDigitalLatches(0,tempData);
+            TRISThisSetDigitalDirection(0,tempData.byte.LB);
         }
-        SPIDataGet(INDEX_DIGITAL_LATCH_1,&tempData);
-        if(tempData!=(0xff&(LATE)))
+        SPIDataGet(INDEX_DIGITAL_LATCH_0,&tempData.byte.LB);
+        if(tempData.byte.LB!=(0xff&(LATD>>1)))
         {
-            TRISThisSetDigitalLatches(1,tempData);
+            TRISThisSetDigitalLatches(0,tempData.byte.LB);
+        }
+        SPIDataGet(INDEX_DIGITAL_LATCH_1,&tempData.byte.LB);
+        if(tempData.byte.LB!=(0xff&(LATE)))
+        {
+            TRISThisSetDigitalLatches(1,tempData.byte.LB);
         }        
     }
+}
+
+UINT32 TRISThisReadStatus(void)
+{
+    return TRISThisData.status.w;
+}
+
+UINT32 TRISThisSetStatus(UINT32 toSet)
+{
+    TRISThisData.status.w=toSet;
+    return TRISThisData.status.w;
+}
+
+BOOL TRISThisReadLEDMode(void)
+{
+    return TRISThisData.status.autoLEDmode;
+}
+void TRISThisSetLEDAutoMode(BOOL autoLED)
+{
+    TRISThisData.status.autoLEDmode=LEDAutoMode(autoLED);
 }
