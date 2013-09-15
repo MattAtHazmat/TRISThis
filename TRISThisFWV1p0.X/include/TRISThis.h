@@ -13,10 +13,14 @@
 #define TRISTHIS_NUMBER_ANALOG_PORTS 4
 
 /* TODO: can these be automatically generated? */
-#define INDEX_DIGITAL_DIRECTION_0   (1)
-#define INDEX_DIGITAL_DIRECTION_1   (2)
-#define INDEX_DIGITAL_LATCH_0       (3)
-#define INDEX_DIGITAL_LATCH_1       (4)
+#define INDEX_STATUS_LB             (0)
+#define INDEX_STATUS_HB             (1)
+#define INDEX_STATUS_UB             (2)
+#define INDEX_STATUS_MB             (3)
+#define INDEX_DIGITAL_DIRECTION_0   (4)
+#define INDEX_DIGITAL_DIRECTION_1   (5)
+#define INDEX_DIGITAL_LATCH_0       (6)
+#define INDEX_DIGITAL_LATCH_1       (7)
 
 typedef struct
 {

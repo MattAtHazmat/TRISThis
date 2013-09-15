@@ -21,6 +21,8 @@
 
 TRISTHIS_DATA_TYPE TRISThisData;
 
+/******************************************************************************/
+
 void TRISThisDigitalConfigure(void)
 {
     IO_OUT00=FALSE;
@@ -61,11 +63,15 @@ void TRISThisDigitalConfigure(void)
     TRISThisReadDigitalDirection();
 }
 
+/******************************************************************************/
+
 void TRISThisReadDigitalInputs(void)
 {
     TRISThisData.digital[0].port.Val=(0xff&(PORTD>>1));
     TRISThisData.digital[1].port.Val=(0xff&(PORTE));
 }
+
+/******************************************************************************/
 
 void TRISThisReadDigitalLatches(void)
 {
@@ -73,11 +79,15 @@ void TRISThisReadDigitalLatches(void)
     TRISThisData.digital[1].latch.Val=(0xff&(LATE));
 }
 
+/******************************************************************************/
+
 void TRISThisReadDigitalDirection(void)
 {
     TRISThisData.digital[0].direction.Val=(0xff&(TRISD>>1));
     TRISThisData.digital[1].direction.Val=(0xff&(TRISE));
 }
+
+/******************************************************************************/
 
 BOOL TRISThisSetDigitalLatches(UINT8 channel, UINT8 toSet)
 {
@@ -111,6 +121,8 @@ BOOL TRISThisSetDigitalLatches(UINT8 channel, UINT8 toSet)
     return returnValue;
 }
 
+/******************************************************************************/
+
 BOOL TRISThisSetDigitalDirection(UINT8 channel, UINT8 toSet)
 {
     BOOL returnValue=FALSE;
@@ -141,6 +153,8 @@ BOOL TRISThisSetDigitalDirection(UINT8 channel, UINT8 toSet)
     }
     return returnValue;
 }
+
+/******************************************************************************/
 
 void DoTRISThis(void)
 {
@@ -180,10 +194,14 @@ void DoTRISThis(void)
     }
 }
 
+/******************************************************************************/
+
 UINT32 TRISThisReadStatus(void)
 {
     return TRISThisData.status.w;
 }
+
+/******************************************************************************/
 
 UINT32 TRISThisSetStatus(UINT32 toSet)
 {
@@ -191,11 +209,18 @@ UINT32 TRISThisSetStatus(UINT32 toSet)
     return TRISThisData.status.w;
 }
 
+/******************************************************************************/
+
 BOOL TRISThisReadLEDMode(void)
 {
     return TRISThisData.status.autoLEDmode;
 }
+
+/******************************************************************************/
+
 void TRISThisSetLEDAutoMode(BOOL autoLED)
 {
     TRISThisData.status.autoLEDmode=LEDAutoMode(autoLED);
 }
+
+/******************************************************************************/
