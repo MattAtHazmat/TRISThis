@@ -118,12 +118,11 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
         }
         SPI.RXState=STATE_SPI_RX_COMMAND;
         SPI.status.CEStatus=TRUE;
-        SPI.status.bufferReadDone=FALSE;
         SPI.RXCount=0;
     }
     else if((SPI.status.CEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
     {
-        SPI.RXState=STATE_RX_SPI_COMPLETE;
+        SPI.RXState=STATE_SPI_RX_COMPLETE;
         SPI.status.RXDataReady=TRUE;
         SPI.status.CEStatus=FALSE;
     }
@@ -162,6 +161,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 case STATE_SPI_RX_COMMAND:
                 {
                     SPI.command=SPITemp;
+                    SPI.TXBuffer=NOT_YET_BYTE;
                     SPI.RXState=STATE_SPI_RX_ADDRESS_MSB;
                     break;
                 }
@@ -197,32 +197,33 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                                 {
                                     /* error-- went too long*/
                                     SPI.status.RXOverrunError=TRUE;
+                                    SPI.RXState=STATE_SPI_RX_SPI_WRITE_COMPLETE;
                                 }
                                 break;
                             }
                             case SPI_READ:
                             {
-                                if(!SPI.status.bufferReadDone)
-                                {
-                                    /* take a snapshot of the data to send back */
-                                    for(SPI.TXIndex=0;SPI.TXIndex<SPI_TX_BUFFER_SIZE;SPI.TXIndex++)
-                                    {
-                                        SPI.TXBuffer[SPI.TXIndex] = TRISThisData.data[SPI.TXIndex];
-                                    }
-                                    SPI.TXIndex=0;
-                                    SPI.status.bufferReadDone=TRUE;
-                                    SPI.status.bufferReadOverrun=FALSE;
-                                }
+                                SPI.TXIndex = SPI.address.byte.LB % sizeof (TRISThisData);
+                                SPI.TXBuffer=TRISThisData.data[SPI.TXIndex];
+                                SPI.RXState=STATE_SPI_RX_READING;
                                 break;
                             }
                             default:
                             {
                                 SPI.status.unknownCommandRX=TRUE;
+                                SPI.RXState=STATE_SPI_RX_MYSTERY;
                                 /* don't know what to do */
                                 break;
                             }
                         } 
                     }
+                    break;
+                }
+                case STATE_SPI_RX_COMPLETE:
+                case STATE_SPI_RX_SPI_WRITE_COMPLETE:
+                case STATE_SPI_RX_READING:
+                case STATE_SPI_RX_MYSTERY:
+                {
                     break;
                 }
                 default:
@@ -237,29 +238,11 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
         SPI_TX_INTERRUPT_FLAG_CLEAR;
-        SPITemp=OVERRUN_BYTE;
-        /* send data out only if a snapshot of the data is done */
-        if(SPI.status.bufferReadDone)
-        {
-            if(!SPI.status.bufferReadOverrun)
-            {
-                if(SPI.TXIndex==SPI_TX_BUFFER_SIZE)
-                {
-                    SPI.status.bufferReadOverrun=TRUE;
-                }
-                else
-                {
-                    SPITemp=SPI.TXBuffer[SPI.TXIndex++];
-                }
-            }
-            /* else an overrun- already prepared for that */
-        }
-        else
-        {
-            SPITemp=NOT_YET_BYTE;
-        }
-        /* always put something in the buffer */
-        RPI_SPI_BUF=SPITemp;
+        RPI_SPI_BUF=SPI.TXBuffer;
+        SPI.TXIndex++;
+        SPI.TXIndex = SPI.TXIndex % sizeof (TRISThisData);
+        /* get the next byte ready */
+        SPI.TXBuffer=TRISThisData.data[SPI.TXIndex];
     }
     if(SPI_INTERRUPT_ERROR_ENABLE&&SPI_INTERRUPT_ERROR_FLAG)
     {

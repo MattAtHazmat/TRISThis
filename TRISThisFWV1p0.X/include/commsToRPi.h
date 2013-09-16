@@ -68,8 +68,6 @@ typedef union
         unsigned RXOverrun:1;
         unsigned RXMysteryState:1;
         unsigned unknownCommandRX:1;
-        unsigned bufferReadDone:1;
-        unsigned bufferReadOverrun:1;
     };
     UINT32 w;
 } SPI_STATUS;
@@ -81,7 +79,10 @@ enum SPI_RX_STATE
     STATE_SPI_RX_ADDRESS_2SB,
     STATE_SPI_RX_ADDRESS_LSB,
     STATE_SPI_RX_DATA,
-    STATE_RX_SPI_COMPLETE
+    STATE_SPI_RX_READING,
+    STATE_SPI_RX_MYSTERY,
+    STATE_SPI_RX_COMPLETE,
+    STATE_SPI_RX_SPI_WRITE_COMPLETE
 };
 
 typedef struct
@@ -93,7 +94,7 @@ typedef struct
     SPI_STATUS  status;
     UINT8 RXData[SPI_RX_BUFFER_SIZE];
     UINT8 RXIndex;
-    UINT8 TXBuffer[SPI_TX_BUFFER_SIZE];
+    UINT8 TXBuffer;
     UINT8 TXIndex;
     enum SPI_RX_STATE RXState;
 } SPI_TYPE;
