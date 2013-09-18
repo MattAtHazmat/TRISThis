@@ -26,9 +26,9 @@ BOOL LEDInitialize(void)
     LED6_DIRECTION=TRIS_OUT;
     LED7_DIRECTION=TRIS_OUT;
     LED8_DIRECTION=TRIS_OUT;
-    LEDState=LED_STATE_MANUAL;
-    //LEDState=LED_STATE_ALL_OFF;
-    TRISThisData.status.autoLEDmode=FALSE;//=TRUE;
+    //LEDState=LED_STATE_MANUAL;
+    LEDState=LED_STATE_ALL_OFF;
+    TRISThisData.status.autoLEDmode=TRUE;
     TRISThisData.LEDs.w.Val=0;
     return TRUE;
 }
