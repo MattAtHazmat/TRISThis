@@ -74,6 +74,7 @@ typedef union
     {
         unsigned configured:1;
         unsigned autoLEDmode:1;
+        unsigned V5p0Good:1;
     };
     UINT32_VAL w;
 } TRISTHIS_STATUS_TYPE;

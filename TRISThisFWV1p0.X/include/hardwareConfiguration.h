@@ -14,48 +14,48 @@
 /* I2C                                                                        */
 /******************************************************************************/
 
-#define I2C1_SCL_IN         PORTAbits.RA14
-#define I2C1_SCL_OUT        LATAbits.LATA14
-#define I2C1_SCL_DIRECTION  TRISAbits.TRISA14
+#define I2C1_SCL_IN             PORTAbits.RA14
+#define I2C1_SCL_OUT            LATAbits.LATA14
+#define I2C1_SCL_DIRECTION      TRISAbits.TRISA14
 
-#define I2C1_SDA_IN         PORTAbits.RA15
-#define I2C1_SDA_OUT        LATAbits.LATA15
-#define I2C1_SDA_DIRECTION  TRISAbits.TRISA15
+#define I2C1_SDA_IN             PORTAbits.RA15
+#define I2C1_SDA_OUT            LATAbits.LATA15
+#define I2C1_SDA_DIRECTION      TRISAbits.TRISA15
 
-#define I2C2_SCL_IN         PORTAbits.RA2
-#define I2C2_SCL_OUT        LATAbits.LATA2
-#define I2C2_SCL_DIRECTION  TRISAbits.TRISA2
+#define I2C2_SCL_IN             PORTAbits.RA2
+#define I2C2_SCL_OUT            LATAbits.LATA2
+#define I2C2_SCL_DIRECTION      TRISAbits.TRISA2
 
-#define I2C2_SDA_IN         PORTAbits.RA3
-#define I2C2_SDA_OUT        LATAbits.LATA3
-#define I2C2_SDA_DIRECTION  TRISAbits.TRISA3
+#define I2C2_SDA_IN             PORTAbits.RA3
+#define I2C2_SDA_OUT            LATAbits.LATA3
+#define I2C2_SDA_DIRECTION      TRISAbits.TRISA3
 
 /******************************************************************************/
 /* SPI pins                                                                   */
 /******************************************************************************/
 
-#define SPI_DATA_IN             PORTCbits.RC4
-#define SPI_DATA_IN_DIRECTION   TRISCbits.TRISC4
+#define SPI_DATA_IN                 PORTCbits.RC4
+#define SPI_DATA_IN_DIRECTION       TRISCbits.TRISC4
 
-#define SPI_DATA_OUT            LATDbits.LATD0
-#define SPI_DATA_OUT_DIRECTION  TRISDbits.TRISD0
+#define SPI_DATA_OUT                LATDbits.LATD0
+#define SPI_DATA_OUT_DIRECTION      TRISDbits.TRISD0
 
-#define SPI_CLOCK_IN            PORTDbits.RD10
-#define SPI_CLOCK_IN_DIRECTION  TRISDbits.TRISD10
+#define SPI_CLOCK_IN                PORTDbits.RD10
+#define SPI_CLOCK_IN_DIRECTION      TRISDbits.TRISD10
 
-#define SPI_SELECT_IN           PORTDbits.RD9
-#define SPI_SELECT_IN_OUT       LATDbits.LATD9
-#define SPI_SELECT_IN_DIRECTION TRISDbits.TRISD9
+#define SPI_SELECT_IN               PORTDbits.RD9
+#define SPI_SELECT_IN_OUT           LATDbits.LATD9
+#define SPI_SELECT_IN_DIRECTION     TRISDbits.TRISD9
 
-#define SPI_SELECT_CN_IN        PORTBbits.RB5
-#define SPI_SELECT_CN_DIRECTION TRISBbits.TRISB5
+#define SPI_SELECT_CN_IN            PORTBbits.RB5
+#define SPI_SELECT_CN_DIRECTION     TRISBbits.TRISB5
 
 /******************************************************************************/
 /* */
 /******************************************************************************/
 
-#define P5V_POWER_GOOD   PORTEbits.RE9
-#define P5V_POWER_GOOD_DIRECTION   TRISEbits.TRISE9
+#define P5V_POWER_GOOD              PORTEbits.RE9
+#define P5V_POWER_GOOD_DIRECTION    TRISEbits.TRISE9
 
 /******************************************************************************/
 /* LEDs                                                                       */
@@ -94,11 +94,91 @@
 #define LED8_IN         PORTDbits.RD13
 #define LED8_DIRECTION  TRISDbits.TRISD13
 
+#define SET_LED_DIRECTION TRISDCLR=(_TRISD_TRISD13_MASK|_TRISD_TRISD14_MASK|_TRISD_TRISD15_MASK);\
+                          TRISFCLR=(_TRISF_TRISF2_MASK|_TRISF_TRISF3_MASK|_TRISF_TRISF4_MASK|_TRISF_TRISF5_MASK|_TRISF_TRISF8_MASK);
+
+#define LED_ON  0
+
+#if LED_ON==0
+    #define LED_OFF 1
+
+    #define LED1_ON     LATDCLR = _LATD_LATD14_MASK
+    #define LED1_OFF    LATDSET = _LATD_LATD14_MASK
+
+    #define LED2_ON     LATDCLR = _LATD_LATD15_MASK
+    #define LED2_OFF    LATDSET = _LATD_LATD15_MASK
+
+    #define LED3_ON     LATFCLR = _LATF_LATF4_MASK
+    #define LED3_OFF    LATFSET = _LATF_LATF4_MASK
+
+    #define LED4_ON     LATFCLR = _LATF_LATF5_MASK
+    #define LED4_OFF    LATFSET = _LATF_LATF5_MASK
+
+    #define LED5_ON     LATFCLR = _LATF_LATF3_MASK
+    #define LED5_OFF    LATFSET = _LATF_LATF3_MASK
+
+    #define LED6_ON     LATFCLR = _LATF_LATF2_MASK
+    #define LED6_OFF    LATFSET = _LATF_LATF2_MASK
+
+    #define LED7_ON     LATFCLR = _LATF_LATF8_MASK
+    #define LED7_OFF    LATFSET = _LATF_LATF8_MASK
+
+    #define LED8_ON     LATDCLR = _LATD_LATD13_MASK
+    #define LED8_OFF    LATDSET = _LATD_LATD13_MASK
+
+    #define LED_ALL_ON      LATDCLR = (_LATD_LATD14_MASK|_LATD_LATD15_MASK|_LATD_LATD13_MASK);\
+                            LATFCLR = (_LATF_LATF8_MASK|_LATF_LATF2_MASK|_LATF_LATF3_MASK|_LATF_LATF5_MASK|_LATF_LATF4_MASK)
+
+    #define LED_ALL_OFF      LATDSET = (_LATD_LATD14_MASK|_LATD_LATD15_MASK|_LATD_LATD13_MASK);\
+                            LATFSET = (_LATF_LATF8_MASK|_LATF_LATF2_MASK|_LATF_LATF3_MASK|_LATF_LATF5_MASK|_LATF_LATF4_MASK)
+
+#else
+    #define LED_OFF 0
+    #define LED1_ON     LATDSET = _LATD_LATD14_MASK
+    #define LED1_OFF    LATDCLR = _LATD_LATD14_MASK
+
+    #define LED2_ON     LATDSET = _LATD_LATD15_MASK
+    #define LED2_OFF    LATDINV = _LATD_LATD15_MASK
+
+    #define LED3_ON     LATFSET = _LATD_LATF4_MASK
+    #define LED3_OFF    LATFCLR = _LATD_LATF4_MASK
+
+    #define LED4_ON     LATFSET = _LATD_LATF5_MASK
+    #define LED4_OFF    LATFCLR = _LATD_LATF5_MASK
+
+    #define LED5_ON     LATFSET = _LATD_LATF3_MASK
+    #define LED5_OFF    LATFCLR = _LATD_LATF3_MASK
+
+    #define LED6_ON     LATFSET = _LATD_LATF2_MASK
+    #define LED6_OFF    LATFCLR = _LATD_LATF2_MASK
+
+    #define LED7_ON     LATFSET = _LATD_LATF8_MASK
+    #define LED7_OFF    LATFCLR = _LATD_LATF8_MASK
+
+    #define LED8_ON     LATDSET = _LATD_LATD13_MASK
+    #define LED8_OFF    LATDCLR = _LATD_LATD13_MASK
+
+     #define LED_ALL_ON     LATDSET = (_LATD_LATD14_MASK|_LATD_LATD15_MASK|_LATD_LATD13_MASK);\
+                            LATFSET = (_LATF_LATF8_MASK|_LATF_LATF2_MASK|_LATF_LATF3_MASK|_LATF_LATF5_MASK|_LATF_LATF4_MASK)
+
+    #define LED_ALL_OFF     LATDCLR = (_LATD_LATD14_MASK|_LATD_LATD15_MASK|_LATD_LATD13_MASK);\
+                            LATFCLR = (_LATF_LATF8_MASK|_LATF_LATF2_MASK|_LATF_LATF3_MASK|_LATF_LATF5_MASK|_LATF_LATF4_MASK)
+
+
+#endif
+
+#define LED1_TOGGLE     LATDINV = _LATD_LATD14_MASK
+#define LED2_TOGGLE     LATDINV = _LATD_LATD15_MASK
+#define LED3_TOGGLE     LATFINV = _LATF_LATF4_MASK
+#define LED4_TOGGLE     LATFINV = _LATF_LATF5_MASK
+#define LED5_TOGGLE     LATFINV = _LATF_LATF3_MASK
+#define LED6_TOGGLE     LATFINV = _LATF_LATF2_MASK
+#define LED7_TOGGLE     LATFINV = _LATF_LATF8_MASK
+#define LED8_TOGGLE     LATDINV = _LATD_LATD13_MASK
+
 #define ALERT_N_OUT         LATEbits.LATE8
 #define ALERT_N_IN          PORTEbits.RE8
 #define ALERT_N_DIRECTION   TRISEbits.TRISE8
-#define LED_ON  0
-#define LED_OFF 1
 
 #define IO_IN00         PORTDbits.RD1
 #define IO_OUT00        LATDbits.LATD1

@@ -178,6 +178,7 @@ void DoTRISThis(void)
 {
     if(SPIDataReady())
     {
+        INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
         /* called a lot- save churn on the stack?                             */
         static UINT32_VAL tempData;
         /* check the data we read                                             */
@@ -215,7 +216,8 @@ void DoTRISThis(void)
         if(tempData.byte.LB!=(0xff&(LATE)))
         {
             TRISThisSetDigitalLatches(1,tempData.byte.LB);
-        }        
+        }
+        INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     }
 }
 
@@ -223,6 +225,7 @@ void DoTRISThis(void)
 
 UINT32 TRISThisReadStatus(void)
 {
+    TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
     return TRISThisData.status.w.Val;
 }
 

@@ -8,9 +8,6 @@
 #ifndef _FIRMWARE_CONFIGURATION_H_
 #define	_FIRMWARE_CONFIGURATION_H_
 
-
-//#define GetInstructionClock()   (GetSystemClock())
-
 #define DELAY_USE_CORE_TIMER
 
 /* LED Activity definitions */
@@ -36,22 +33,22 @@
 #define RPI_COMMS_INT_PRIORITY  IPL3SOFT
 #define RPI_COMMS_CE_PRIORITY   IPL4SOFT
 #define SPI_RX_BUFFER_SIZE      0xFF
-//#define SPI_TX_BUFFER_SIZE      0x0F
+//#define SPI_TX_BUFFER_SIZE    0x0F
 
 /* tick */
-#define TICK_INT_PRIORITY               T4_INT_PRIOR_6
-#define TICK_INT_PRIORITY_ISR           IPL6SOFT
+#define TICK_INT_PRIORITY       T4_INT_PRIOR_6
+#define TICK_INT_PRIORITY_ISR   IPL6SOFT
 
 /* PAC1710 */
-//#define MONITOR_1_ADDRESS   (0b10011000) /* 0x98 */
-#define PAC1710_ADDRESS  (0b00110000) /* 0x30 */
+//#define MONITOR_1_ADDRESS     (0b10011000) /* 0x98 */
+#define PAC1710_ADDRESS         (0b00110000) /* 0x30 */
 
-#define ALERT_INT_PRIORITY          INT_PRIORITY_LEVEL_4
-#define ALERT_INT_PRIORITY_ISR      ipl4
+#define ALERT_INT_PRIORITY      INT_PRIORITY_LEVEL_4
+#define ALERT_INT_PRIORITY_ISR  ipl4
 
 /* digipot */
 
-#define DIGIPOT_ADDRESS                 (0b01011110) /* 0x58 */
+#define DIGIPOT_ADDRESS         (0b01011110) /* 0x58 */
 
 #else
     #warning "Redundant include of firmwareConfiguration.h"

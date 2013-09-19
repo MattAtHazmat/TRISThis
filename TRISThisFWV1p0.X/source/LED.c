@@ -10,22 +10,16 @@ extern TRISTHIS_DATA_TYPE TRISThisData;
 
 BOOL LEDInitialize(void)
 {
-    LED1_OUT=LED_OFF;
-    LED2_OUT=LED_OFF;
-    LED3_OUT=LED_OFF;
-    LED4_OUT=LED_OFF;
-    LED5_OUT=LED_OFF;
-    LED6_OUT=LED_OFF;
-    LED7_OUT=LED_OFF;
-    LED8_OUT=LED_OFF;
-    LED1_DIRECTION=TRIS_OUT;
-    LED2_DIRECTION=TRIS_OUT;
-    LED3_DIRECTION=TRIS_OUT;
-    LED4_DIRECTION=TRIS_OUT;
-    LED5_DIRECTION=TRIS_OUT;
-    LED6_DIRECTION=TRIS_OUT;
-    LED7_DIRECTION=TRIS_OUT;
-    LED8_DIRECTION=TRIS_OUT;
+    LED_ALL_OFF;
+    SET_LED_DIRECTION;
+    //LED1_DIRECTION=TRIS_OUT;
+    //LED2_DIRECTION=TRIS_OUT;
+    //LED3_DIRECTION=TRIS_OUT;
+    //LED4_DIRECTION=TRIS_OUT;
+    //LED5_DIRECTION=TRIS_OUT;
+    //LED6_DIRECTION=TRIS_OUT;
+    //LED7_DIRECTION=TRIS_OUT;
+    //LED8_DIRECTION=TRIS_OUT;
     //LEDState=LED_STATE_MANUAL;
     LEDState=LED_STATE_ALL_OFF;
     TRISThisData.status.autoLEDmode=TRUE;
@@ -86,63 +80,56 @@ void DoLEDs(void)
         {
             case LED_STATE_LED1_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED1_OUT ^= 1;
+                LED1_TOGGLE;
                 LEDState = LED_STATE_LED2_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_LED2_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED2_OUT ^= 1;
+                LED2_TOGGLE;
                 LEDState = LED_STATE_LED3_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_LED3_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED3_OUT ^= 1;
+                LED3_TOGGLE;
                 LEDState = LED_STATE_LED4_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_LED4_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED4_OUT ^= 1;
+                LED4_TOGGLE;
                 LEDState = LED_STATE_LED5_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_LED5_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED5_OUT ^= 1;
+                LED5_TOGGLE;
                 LEDState = LED_STATE_LED6_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_LED6_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED6_OUT ^= 1;
+                LED6_TOGGLE;
                 LEDState = LED_STATE_LED7_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_LED7_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED7_OUT ^= 1;
+                LED7_TOGGLE;
                 LEDState = LED_STATE_LED8_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_LED8_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED8_OUT ^= 1;
+                LED8_TOGGLE;
                 LEDState = LED_STATE_LED1_TOGGLE;
                 break;
             }// </editor-fold>
             case LED_STATE_ALL_OFF:
             default:// <editor-fold defaultstate="collapsed" desc="comment">
             {
-                LED1_OUT = LED_OFF;
-                LED2_OUT = LED_OFF;
-                LED3_OUT = LED_OFF;
-                LED4_OUT = LED_OFF;
-                LED5_OUT = LED_OFF;
-                LED6_OUT = LED_OFF;
-                LED7_OUT = LED_OFF;
-                LED8_OUT = LED_OFF;
+                LED_ALL_OFF;
                 LEDState = LED_STATE_LED1_TOGGLE;
                 break;
             }// </editor-fold>

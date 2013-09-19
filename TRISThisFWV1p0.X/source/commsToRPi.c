@@ -204,8 +204,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                             case SPI_READ:
                             {
                                 SPI.TXIndex = SPI.address.byte.LB % sizeof (TRISThisData);
-                                SPI.TXBuffer=TRISThisData.data[SPI.TXIndex];
-                                SPI.RXState=STATE_SPI_RX_READING;
+                                SPI.TXBuffer= TRISThisData.data[SPI.TXIndex];
+                                SPI.RXState = STATE_SPI_RX_READING;
                                 break;
                             }
                             default:
