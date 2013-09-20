@@ -11,8 +11,6 @@
 #ifndef _I2C_BUS_MASTER_H_
 #define _I2C_BUS_MASTER_H_
 
-
-
 /******************************************************************************/
 /* I2C_receive: read with no write before it                                  */
 /* I2C_read:    write a command word first (which can be more than one byte)  */
@@ -115,16 +113,31 @@ typedef struct
 /* Macros to give a consistent look/feel for I2C commands.  Also, if you need */
 /* to change I2C ports, a lot of what you'll need to change is here           */
 
-#define mMasterI2CStartStart()          I2C2CONbits.SEN=TRUE
-#define mMasterI2CStartRepeatStart()    I2C2CONbits.RSEN=TRUE
-#define mMasterI2CStartACKNACK()        I2C2CONbits.ACKEN=TRUE
-#define mMasterI2CStopStart()           I2C2CONbits.PEN=TRUE
-#define mMasterI2CReceiveEnable()       I2C2CONbits.RCEN=TRUE
+//#define mMasterI2CStartStart()          I2C2CONbits.SEN=TRUE
+//#define mMasterI2CStartRepeatStart()    I2C2CONbits.RSEN=TRUE
+//#define mMasterI2CStartACKNACK()        I2C2CONbits.ACKEN=TRUE
+//#define mMasterI2CStopStart()           I2C2CONbits.PEN=TRUE
+//#define mMasterI2CReceiveEnable()       I2C2CONbits.RCEN=TRUE
 //#define mMasterI2CClearInterruptFlag()  IFS1bits.I2C2MIF=FALSE
 #define mMasterI2CClearRBF()            temp=I2C2RCV /* dummy read to clear RBF as specified in FRM */
 //#define mMasterI2CDisableInterrupt()    DisableIntMI2C2
 //#define mMasterI2CEnableInterrupt()     EnableIntMI2C2
 
+/* dummy read to clear RBF as specified in FRM */
+#if I2C_PORT==1
+    #define mMasterI2CClearRBF()            temp=I2C1RCV
+#elif I2C_PORT==2
+    #define mMasterI2CClearRBF()            temp=I2C2RCV
+#elif I2C_PORT==3
+    #define mMasterI2CClearRBF()            temp=I2C3RCV
+#elif I2C_PORT==4
+    #define mMasterI2CClearRBF()            temp=I2C4RCV
+#elif I2C_PORT==5
+    #define mMasterI2CClearRBF()            temp=I2C5RCV
+#else
+    #warning "I2C_PORT not correctly defined"
+
+#endif
 #ifdef I2C_USE_TIMEOUT
 
     /* keep all the timeout stuff in this define- if I2C_USE_TIMEOUT is not   */

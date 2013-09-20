@@ -15,11 +15,11 @@
 #define LED_CASCADE_DELAY   100*TICKS_PER_MS
 
 /* I2C definitions */
-#define I2C_PORT                I2C2
+#define I2C_PORT                2   //I2C2
 #define I2CBUS_WORD_LENGTH      (10)
 #define I2CBUS_DATA_LENGTH      (10)
 #define Fsck                    (100000u)
-#define MI2C_INTERRUPT          INT_I2C2M
+//#define MI2C_INTERRUPT          INT_I2C2M
 #define MI2C_INT_PRIORITY       INT_PRIORITY_LEVEL_6//I2C_INT_PRI_6
 #define MI2C_INT_SUB_PRIORITY   INT_SUB_PRIORITY_LEVEL_1
 #define MI2C_INT_PRIORITY_ISR   IPL6SOFT //ipl6
