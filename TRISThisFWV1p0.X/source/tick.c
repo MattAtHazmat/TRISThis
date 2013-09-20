@@ -61,5 +61,9 @@ void TickInitialize(void)
     TMR4=0;
     tick=0;
     mTickClearInterruptFlag();
-    ConfigIntTimer4(T4_INT_ON | TICK_INT_PRIORITY | T4_INT_SUB_PRIOR_1);
+    INTClearFlag(INT_SOURCE_TIMER(TICK_TIMER));
+    INTSetVectorPriority(INT_VECTOR_TIMER(TICK_TIMER),TICK_INT_PRIORITY);
+    INTSetVectorSubPriority(INT_VECTOR_I2C(TICK_TIMER),TICK_INT_SUB_PRIORITY);
+    INTEnable(INT_SOURCE_TIMER(TICK_TIMER),INT_ENABLED);
+    //ConfigIntTimer4(T4_INT_ON | TICK_INT_PRIORITY | T4_INT_SUB_PRIOR_1);
 }

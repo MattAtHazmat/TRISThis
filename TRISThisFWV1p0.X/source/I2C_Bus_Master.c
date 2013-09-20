@@ -38,7 +38,7 @@ void __ISR(/*INT_TIMER_VECTOR(I2C_TIMEOUT_TIMER)*/_TIMER_5_VECTOR,TIMEOUT_INT_PR
     MasterI2CPort.status.flags.I2C_error=TRUE;
     MasterI2CPort.status.flags.I2C_action_complete=TRUE;
     MasterI2CPort.status.flags.I2C_busy=FALSE;
-    mMasterI2CTimeoutDisableInterrupt();
+    //TODO: mMasterI2CTimeoutDisableInterrupt();
     mMasterI2CTimeoutStopTimer();
     INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
     //TODO: remove mMasterI2CDisableInterrupt();
