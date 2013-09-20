@@ -381,17 +381,20 @@ BOOL MasterI2CStartup(void)
     //SetPriorityIntT5(T5_INT_OFF|TIMEOUT_INT_PRIORITY|T5_INT_SUB_PRIOR_1);
     #endif
     MasterI2CPort.state=MI2CINT_START;
-    I2C2CON=0; /* clear to a known state */
+    //I2C2CON=0; /* clear to a known state */
     //DelayMs(10);
-    I2C2BRG=BRG_VAL;
-    I2C2STAT=0;
-    I2C2CONbits.SIDL=TRUE;   /* stop when in idle mode */
-    I2C2CONbits.SCLREL=TRUE; /* SCL release (doesn't really matter as master) */
-    I2C2CONbits.STRICT=FALSE;/* do not strictly interpret I2C addresses*/
-    I2C2CONbits.A10M=FALSE;  /* use 7 bit addressing */
-    I2C2CONbits.DISSLW=TRUE; /* disable slew rate control */
-    I2C2CONbits.SMEN=FALSE;  /* do not use SMBUS levels */
-    I2C2CONbits.ON=TRUE;     /* turn I2C module on */
+    //I2C2BRG=BRG_VAL;
+    //I2C2STAT=0;
+    //I2C2CONbits.SIDL=TRUE;   /* stop when in idle mode */
+    //I2C2CONbits.SCLREL=TRUE; /* SCL release (doesn't really matter as master) */
+    //I2C2CONbits.STRICT=FALSE;/* do not strictly interpret I2C addresses*/
+    //I2C2CONbits.A10M=FALSE;  /* use 7 bit addressing */
+    //I2C2CONbits.DISSLW=TRUE; /* disable slew rate control */
+    //I2C2CONbits.SMEN=FALSE;  /* do not use SMBUS levels */
+    I2CConfigure(I2C_PORT,(I2C_STOP_IN_IDLE));
+    I2CSetFrequency(I2C_PORT, GetPeripheralClock(), Fsck);
+    I2CEnable(I2C1, TRUE);
+    //I2C2CONbits.ON=TRUE;     /* turn I2C module on */
     INTClearFlag(INT_SOURCE_I2C_MASTER(I2C_PORT));
     INTSetVectorPriority(INT_VECTOR_I2C(I2C_PORT),MI2C_INT_PRIORITY);
     INTSetVectorSubPriority(INT_VECTOR_I2C(I2C_PORT),MI2C_INT_SUB_PRIORITY);
@@ -424,11 +427,11 @@ BOOL MasterI2CIOCheck(void)
 inline BOOL MasterI2CIsBusy(void)
 {
     BOOL returnValue;
-    if(INTGetEnable(MI2C_INTERRUPT))
+    if(INTGetEnable(INT_SOURCE_I2C_MASTER(I2C_PORT)))
     {
-        INTEnable(MI2C_INTERRUPT,INT_DISABLED);
+        INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
         returnValue=MasterI2CPort.status.flags.I2C_busy;
-        INTEnable(MI2C_INTERRUPT,INT_ENABLED);
+        INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_ENABLED);
     }
     else
     {
@@ -444,16 +447,16 @@ inline BOOL MasterI2CIsBusy(void)
 inline BOOL MasterI2CIsQueuedCommandDone(void)
 {
     BOOL returnValue;
-    if(INTGetEnable(MI2C_INTERRUPT))    // <editor-fold defaultstate="collapsed" desc="comment">
+    if(INTGetEnable(INT_SOURCE_I2C_MASTER(I2C_PORT)))
 {
         INTEnable(MI2C_INTERRUPT,INT_DISABLED);
         returnValue=MasterI2CPort.status.flags.I2C_action_complete;
         INTEnable(MI2C_INTERRUPT,INT_ENABLED);
-    }// </editor-fold>
-    else    // <editor-fold defaultstate="collapsed" desc="comment">
+    }
+    else
     {
         returnValue = MasterI2CPort.status.flags.I2C_action_complete;
-    }// </editor-fold>
+    }
     return returnValue;
 }
 
@@ -473,9 +476,11 @@ BOOL MasterI2CReadByte(UINT8 address, UINT8 toReadRegister, UINT8 *dataRead)
     if(MasterI2CQueueCommand(&RI2CCommand))// <editor-fold defaultstate="collapsed" desc="comment">
     {
         while (MasterI2CIsBusy());
-        if (MasterI2CUpdateQueuedCommand(&RI2CCommand)) {
+        if (MasterI2CUpdateQueuedCommand(&RI2CCommand))
+        {
             /* was there an error? */
-            if (!RI2CCommand.status.flags.I2C_error) {
+            if (!RI2CCommand.status.flags.I2C_error)
+            {
                 *dataRead = RI2CCommand.Data[0];
                 return TRUE;
             }
@@ -591,18 +596,6 @@ BOOL  MasterI2CWriteVerifyWordNoRetry(UINT8 address, UINT8 toWriteRegister, UINT
     }
     return FALSE;
 }
-
-//BOOL MasterI2CReadGPIO(UINT16* read)
-//{
-//    UINT16_VAL readData;
-//    readData.Val=0;
-//    if(MasterI2CReadWord(GPIO_I2C_ADDRESS,GPIO_REGISTER_GPIOA,&readData.Val))
-//    {
-//        *read=readData.Val;
-//        return TRUE;
-//    }
-//    return FALSE;
-//}
 
 enum MASTER_I2C_OWNER_TYPE currentOwner=NONE;
 

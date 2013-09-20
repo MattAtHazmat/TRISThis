@@ -34,7 +34,7 @@
 
 /* I2CBRG = (PBCLK / (2 *FSCK)) - 2                                           */
 
-#define BRG_VAL     ((GetPeripheralClock()/(2*Fsck))-2)
+//#define BRG_VAL     ((GetPeripheralClock()/(2*Fsck))-2)
 
 /******************************************************************************/
 /* types that are associated with the I2C transactions                        */
