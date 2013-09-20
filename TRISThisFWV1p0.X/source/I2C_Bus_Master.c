@@ -211,8 +211,10 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
             //TODO remove mMasterI2CDisableInterrupt();
 #ifdef I2C_USE_TIMEOUT
             mMasterI2CTimeoutStopTimer();
-            mMasterI2CTimeoutDisableInterrupt();
-            mMasterI2CTimeoutClearInterruptFlag();
+            INTEnable(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER),INT_DISABLED);
+            //mMasterI2CTimeoutDisableInterrupt();
+            INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
+            //mMasterI2CTimeoutClearInterruptFlag();
 #endif
             /* prepare the state machine for next round                       */
             MasterI2CPort.state = MI2CINT_START;
@@ -247,12 +249,11 @@ BOOL MasterI2CQueueCommand(I2CBUS_COMMAND_TYPE *command)
     // <editor-fold defaultstate="collapsed" desc="comment">
     {
         /* just in case */
-        mMasterI2CDisableInterrupt();
+        INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
         #ifdef I2C_USE_TIMEOUT
-        mMasterI2CTimeoutStopTimer();
-        mMasterI2CTimeoutDisableInterrupt();
+            mMasterI2CTimeoutStopTimer();
+            INTEnable(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER),INT_DISABLED);
         #endif
-        //DelayMs(10);
         /* clear out the status */
         MasterI2CPort.status.all = 0;
         /* copy the relevant portions to the port's status register */
@@ -268,17 +269,23 @@ BOOL MasterI2CQueueCommand(I2CBUS_COMMAND_TYPE *command)
         MasterI2CPort.Data = command->Data; /* data in the structure that was   */
         /* sent here                        */
         MasterI2CPort.data_index = 0;
-#ifdef I2C_USE_TIMEOUT
-        mMasterI2CTimeoutClearTimer();
-        //mMasterI2CTimeoutStartTimer();
-        mMasterI2CTimeoutClearInterruptFlag();
-        mMasterI2CTimeoutEnableInterrupt();
-#endif
-        mMasterI2CClearInterruptFlag();
-        mMasterI2CEnableInterrupt();
+        #ifdef I2C_USE_TIMEOUT
+            mMasterI2CTimeoutClearTimer();
+            //mMasterI2CTimeoutStartTimer();
+            INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
+            //mMasterI2CTimeoutClearInterruptFlag();
+            //mMasterI2CTimeoutEnableInterrupt();
+            INTEnable(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER),INT_ENABLED);
+        #endif
+
+        INTClearFlag(INT_SOURCE_I2C_MASTER(I2C_PORT));
+        INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_ENABLED);
+        //mMasterI2CClearInterruptFlag();
+        //mMasterI2CEnableInterrupt();
         I2C2STATbits.S = 1;
         I2C2STATbits.P = 0;
-        mMasterI2CStartStart(); /* start the I2C transaction */
+        I2CStart(I2C_PORT);
+        //mMasterI2CStartStart(); /* start the I2C transaction */
         return SUCCESS;
     }// </editor-fold>
 
@@ -367,7 +374,11 @@ BOOL MasterI2CStartup(void)
         I2C_TIMEOUT_PRESCALER|
         T5_SOURCE_INT,
         I2C_TIMEOUT_INTERVAL);
-    SetPriorityIntT5(T5_INT_OFF|TIMEOUT_INT_PRIORITY|T5_INT_SUB_PRIOR_1);
+    INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
+    INTSetVectorPriority(INT_VECTOR_TIMER(I2C_TIMEOUT_TIMER),I2C_TIMEOUT_TIMER_INT_PRIORITY);
+    INTSetVectorSubPriority(INT_VECTOR_I2C(I2C_TIMEOUT_TIMER),I2C_TIMEOUT_TIMER_INT_SUB_PRIORITY);
+    INTEnable(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER),INT_DISABLED);
+    //SetPriorityIntT5(T5_INT_OFF|TIMEOUT_INT_PRIORITY|T5_INT_SUB_PRIOR_1);
     #endif
     MasterI2CPort.state=MI2CINT_START;
     I2C2CON=0; /* clear to a known state */
