@@ -7,7 +7,7 @@
 
 #ifndef _COMMON_H_
     #define _COMMON_H_
-#define _PLIB_DISABLE_LEGACY
+    #define _PLIB_DISABLE_LEGACY
     #include <p32xxxx.h>
     #include <GenericTypeDefs.h>
     #include <plib.h>

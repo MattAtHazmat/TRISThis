@@ -11,9 +11,8 @@
 /******************************************************************************/
 
 #include <common.h>
-//#include <peripheral/i2c.h>
-//#include <peripheral/legacy/i2c_legacy.h>
-//#include <peripheral/timer.h>
+#include <i2c.h>
+#include <int.h>
 #include <delay.h>
 #include <I2C_Bus_Master.h>
 
@@ -31,16 +30,18 @@ I2C_MASTER_PORT_TYPE MasterI2CPort;
 /* Timeout interrupt                                                          */
 /******************************************************************************/
 
-void __ISR(_TIMER_5_VECTOR,TIMEOUT_INT_PRIORITY_ISR) I2CTimeoutInterrupt(void)
+void __ISR(/*INT_TIMER_VECTOR(I2C_TIMEOUT_TIMER)*/_TIMER_5_VECTOR,TIMEOUT_INT_PRIORITY_ISR) I2CTimeoutInterrupt(void)
 {
-    mMasterI2CTimeoutClearInterruptFlag();
+    //mMasterI2CTimeoutClearInterruptFlag();
+    INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
     MasterI2CPort.status.flags.I2C_timeout=TRUE;
     MasterI2CPort.status.flags.I2C_error=TRUE;
     MasterI2CPort.status.flags.I2C_action_complete=TRUE;
     MasterI2CPort.status.flags.I2C_busy=FALSE;
     mMasterI2CTimeoutDisableInterrupt();
     mMasterI2CTimeoutStopTimer();
-    mMasterI2CDisableInterrupt();
+    INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
+    //TODO: remove mMasterI2CDisableInterrupt();
 }
 #endif
 
@@ -51,15 +52,16 @@ void __ISR(_TIMER_5_VECTOR,TIMEOUT_INT_PRIORITY_ISR) I2CTimeoutInterrupt(void)
 void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
 {
     static UINT8 temp; /* used by dummy read to clear RBF flag */
-
-    mMasterI2CClearInterruptFlag();
+    INTClearFlag(INT_SOURCE_I2C_MASTER(I2C_PORT));
+    //mMasterI2CClearInterruptFlag();
     /* save a copy of I2C2STAT */
     MasterI2CPort.STATShadow=I2C2STATbits;
 
     #ifdef I2C_USE_TIMEOUT
         mMasterI2CTimeoutClearTimer();
         /* if we get an I2C interrupt, there wasn't a timeout*/
-        mMasterI2CTimeoutClearInterruptFlag();
+        INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
+        //todo: remove mMasterI2CTimeoutClearInterruptFlag();
     #endif /* #ifdef I2C_USE_TIMEOUT */
 
     if((MasterI2CPort.STATShadow.I2COV==TRUE) || (MasterI2CPort.STATShadow.IWCOL==TRUE))// <editor-fold defaultstate="collapsed" desc="comment">
@@ -205,7 +207,8 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
         {
             MasterI2CPort.status.flags.I2C_action_complete = TRUE;
             MasterI2CPort.status.flags.I2C_busy = FALSE;
-            mMasterI2CDisableInterrupt();
+            INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
+            //TODO remove mMasterI2CDisableInterrupt();
 #ifdef I2C_USE_TIMEOUT
             mMasterI2CTimeoutStopTimer();
             mMasterI2CTimeoutDisableInterrupt();
@@ -350,7 +353,7 @@ void I2CInitCommand(I2CBUS_COMMAND_TYPE *command)
 BOOL MasterI2CStartup(void)
 {
     I2C2CONbits.ON=FALSE;
-    mMasterI2CDisableInterrupt();
+    INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
     if(!MasterI2CIOCheck())
     {
         return FALSE;
@@ -378,8 +381,10 @@ BOOL MasterI2CStartup(void)
     I2C2CONbits.DISSLW=TRUE; /* disable slew rate control */
     I2C2CONbits.SMEN=FALSE;  /* do not use SMBUS levels */
     I2C2CONbits.ON=TRUE;     /* turn I2C module on */
-    mMasterI2CClearInterruptFlag();
-    SetPriorityIntI2C2(I2C_INT_OFF|MI2C_INT_PRIORITY|I2C_INT_SUB_PRI_1);
+    INTClearFlag(INT_SOURCE_I2C_MASTER(I2C_PORT));
+    INTSetVectorPriority(INT_VECTOR_I2C(I2C_PORT),MI2C_INT_PRIORITY);
+    INTSetVectorSubPriority(INT_VECTOR_I2C(I2C_PORT),MI2C_INT_SUB_PRIORITY);
+    //SetPriorityIntI2C2(I2C_INT_OFF|MI2C_INT_PRIORITY|I2C_INT_SUB_PRI_1);
     return TRUE;
 }
 
