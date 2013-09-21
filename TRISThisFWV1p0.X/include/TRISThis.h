@@ -31,15 +31,11 @@
 #define INDEX_DIGITAL_DIRECTION_1   (14)
 #define INDEX_DIGITAL_X_1           (15)
 
-typedef union
+typedef struct
 {
-    struct
-    {
-        UINT8_VAL latch;
-        UINT8_VAL port;
-        UINT8_VAL direction;
-    };
-    UINT32_VAL w;
+    UINT32_VAL latch;
+    UINT32_VAL port;
+    UINT32_VAL direction;
 } TRISTHIS_DIGITAL_PORT_TYPE;
 
 typedef union
@@ -75,6 +71,8 @@ typedef union
         unsigned configured:1;
         unsigned autoLEDmode:1;
         unsigned V5p0Good:1;
+        unsigned freshSupplyVoltage:1;
+        unsigned freshSupplyCurrent:1;
     };
     UINT32_VAL w;
 } TRISTHIS_STATUS_TYPE;
@@ -86,8 +84,10 @@ typedef union
     {
         TRISTHIS_STATUS_TYPE status;
         TRISTHIS_LED_TYPE LEDs;
-        TRISTHIS_DIGITAL_PORT_TYPE digital[TRISTHIS_NUMBER_DIGITAL_PORTS];
+        TRISTHIS_DIGITAL_PORT_TYPE digital;
         TRISTHIS_ANALOG_PORT_TYPE analog[TRISTHIS_NUMBER_ANALOG_PORTS];
+        UINT32_VAL supplyCurrent;
+        UINT32_VAL supplyVoltage;
     };
 } TRISTHIS_DATA_TYPE;
 
@@ -96,9 +96,11 @@ typedef union
 /******************************************************************************/
 
 BOOL TRISThisDigitalConfigure(void);
-void TRISThisReadDigitalInputs(void);
-void TRISThisReadDigitalLatches(void);
-void TRISThisReadDigitalDirection(void);
+UINT32 TRISThisReadDigitalInputs(void);
+UINT32 TRISThisReadDigitalLatches(void);
+UINT32 TRISThisReadDigitalDirection(void);
+UINT32 TRISThisReadLEDs(void);
+BOOL TRISThisSetLEDs(UINT32);
 BOOL TRISThisReadLEDMode(void);
 void TRISThisSetLEDAutoMode(BOOL);
 UINT32 TRISThisReadStatus(void);

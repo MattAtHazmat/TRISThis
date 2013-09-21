@@ -17,6 +17,7 @@
 #include <LED.h>
 #include <commsToRPi.h>
 #include <int.h>
+#include <PAC1710.h>
 #include <TRISThis.h>
 
 TRISTHIS_DATA_TYPE TRISThisData;
@@ -75,100 +76,62 @@ BOOL TRISThisDigitalConfigure(void)
     IO_DIRECTION13=TRIS_IN;
     IO_DIRECTION14=TRIS_IN;
     IO_DIRECTION15=TRIS_IN;
-    TRISThisReadDigitalInputs();
-    TRISThisReadDigitalLatches();
-    TRISThisReadDigitalDirection();
+    TRISThisData.digital.port=TRISThisReadDigitalInputs();
+    TRISThisData.digital.latch=TRISThisReadDigitalLatches();
+    TRISThisData.digital.direction=TRISThisReadDigitalDirection();
     return TRUE;
 }
 
 /******************************************************************************/
 
-void TRISThisReadDigitalInputs(void)
+UINT32 TRISThisReadDigitalInputs(void)
 {
-    TRISThisData.digital[0].port.Val=(0xff&(PORTD>>1));
-    TRISThisData.digital[1].port.Val=(0xff&(PORTE));
+    UINT32_VAL readTemp;
+    readTemp.Val=0;
+    readTemp.byte.LB=(0xff&(PORTD>>1));
+    readTemp.byte.HB=(0xff&(PORTE));
+    return readTemp.Val;
 }
 
 /******************************************************************************/
 
-void TRISThisReadDigitalLatches(void)
+UINT32 TRISThisReadDigitalLatches(void)
 {
-    TRISThisData.digital[0].latch.Val=(0xff&(LATD>>1));
-    TRISThisData.digital[1].latch.Val=(0xff&(LATE));
+    UINT32_VAL readTemp;
+    readTemp.Val=0;
+    readTemp.byte.LB=(0xff&(LATD>>1));
+    readTemp.byte.HB=(0xff&(LATE));
+    return readTemp.Val;
 }
 
 /******************************************************************************/
 
-void TRISThisReadDigitalDirection(void)
+UINT32 TRISThisReadDigitalDirection(void)
 {
-    TRISThisData.digital[0].direction.Val=(0xff&(TRISD>>1));
-    TRISThisData.digital[1].direction.Val=(0xff&(TRISE));
+    UINT32_VAL readTemp;
+    readTemp.Val=0;
+    readTemp.byte.LB=(0xff&(TRISD>>1));
+    readTemp.byte.HB=(0xff&(TRISE));
+    return readTemp.Val;
 }
 
 /******************************************************************************/
 
-BOOL TRISThisSetDigitalLatches(UINT8 channel, UINT8 toSet)
+BOOL TRISThisSetDigitalLatches(UINT32_VAL toSet)
 {
     BOOL returnValue=FALSE;
-    if(channel<TRISTHIS_NUMBER_DIGITAL_PORTS)
-    {
-        TRISThisData.digital[channel].latch.Val=toSet;
-        switch(channel)
-        {
-            case 0:
-            {
-                UINT32_VAL tempToSet;
-                tempToSet.byte.LB=toSet;
-                LATD=tempToSet.Val<<1;
-                returnValue=TRUE;
-                break;
-            }
-            case 1:
-            {
-                LATE=toSet;
-                returnValue=TRUE;
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        }
-        
-    }
+    LATD=toSet.byte.LB<<1;
+    LATE=toSet.byte.HB;
     return returnValue;
 }
 
 /******************************************************************************/
 
-BOOL TRISThisSetDigitalDirection(UINT8 channel, UINT8 toSet)
+BOOL TRISThisSetDigitalDirection(UINT32_VAL toSet)
 {
     BOOL returnValue=FALSE;
-    if(channel<TRISTHIS_NUMBER_DIGITAL_PORTS)
-    {
-        TRISThisData.digital[channel].direction.Val=toSet;
-        switch(channel)
-        {
-            case 0:
-            {
-                UINT32_VAL tempToSet;
-                tempToSet.byte.LB=toSet;
-                TRISD=tempToSet.Val<<1;
-                returnValue=TRUE;
-                break;
-            }
-            case 1:
-            {
-                TRISE=toSet;
-                returnValue=TRUE;
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        }
-    }
+    TRISD=toSet.byte.LB<<1;
+    TRISE=toSet.byte.HB;
     return returnValue;
 }
 
@@ -176,8 +139,11 @@ BOOL TRISThisSetDigitalDirection(UINT8 channel, UINT8 toSet)
 
 void DoTRISThis(void)
 {
+    static UINT32_VAL tempHolding;
     if(SPIDataReady())
     {
+        /* if there is data available from the SPI, figure out what it is, and*/
+        /* put it */
         INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
         /* called a lot- save churn on the stack?                             */
         static UINT32_VAL tempData;
@@ -186,7 +152,7 @@ void DoTRISThis(void)
         SPIDataGet(INDEX_STATUS_UB,&tempData.byte.UB);
         SPIDataGet(INDEX_STATUS_HB,&tempData.byte.HB);
         SPIDataGet(INDEX_STATUS_LB,&tempData.byte.LB);
-
+        /* tempdata is the status */
         if(tempData.Val!=TRISThisReadStatus())
         {
             TRISThisSetStatus(tempData.Val);
@@ -219,6 +185,22 @@ void DoTRISThis(void)
         }
         INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     }
+    /* update the data that the SPI might read */
+    if(PAC1710GetData(PAC1710_DATA_CURRENT,&tempHolding.w[0]))
+    {
+        TRISThisData.current.w[0]=tempHolding.w[0];
+        TRISThisData.status.freshCurrent=TRUE;
+    }
+    if(PAC1710GetData(PAC1710_DATA_VOLTAGE,&tempHolding.w[0]))
+    {
+        TRISThisData.voltage.w[0]=tempHolding.w[0];
+        TRISThisData.status.freshVoltage=TRUE;
+    }
+    TRISThisData.status.autoLEDmode=GetLEDAutoMode();
+    TRISThisReadDigitalInputs();
+    TRISThisReadDigitalLatches();
+    TRISThisReadDigitalDirection();
+
 }
 
 /******************************************************************************/

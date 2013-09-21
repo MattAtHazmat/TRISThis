@@ -22,7 +22,7 @@ UINT16_VAL monitorVoltageHolding;
 
 /******************************************************************************/
 
-BOOL PAC1710SubsystemInitialize(UINT8 address)
+BOOL PAC1710SubsystemInitialize(UINT32 address)
 {
     if(MasterI2CAvailable()&&MasterI2CClaimPort(POWER_MONITOR))
     {
@@ -57,7 +57,7 @@ BOOL PAC1710SubsystemInitialize(UINT8 address)
 
 /******************************************************************************/
 
-BOOL PAC1710Present(UINT8 address)
+BOOL PAC1710Present(UINT32 address)
 {
     UINT8 productID=0;
     UINT8 SMSCID=0;
@@ -94,7 +94,7 @@ BOOL PAC1710Present(UINT8 address)
 
 /******************************************************************************/
 
-BOOL PAC1710Configure(UINT8 address)
+BOOL PAC1710Configure(UINT32 address)
 {
     UINT8 dataRead;
     PAC1710_CONFIGURATION_REG_TYPE config;
@@ -356,7 +356,7 @@ BOOL DoPowerMonState(void)
 
 /******************************************************************************/
 
-BOOL GetCurrentData(UINT8 address, INT16 *current)
+BOOL GetCurrentData(UINT32 address, INT16 *current)
 {
     BOOL returnValue=FALSE;
     switch(address)
@@ -381,7 +381,7 @@ BOOL GetCurrentData(UINT8 address, INT16 *current)
 
 /******************************************************************************/
 
-BOOL GetVoltageData(UINT8 address, INT16 *voltage)
+BOOL GetVoltageData(UINT32 address, INT16 *voltage)
 {
     BOOL returnValue=FALSE;
     switch(address)
@@ -404,4 +404,38 @@ BOOL GetVoltageData(UINT8 address, INT16 *voltage)
     return returnValue;
 }
 
+/******************************************************************************/
+
+
+BOOL PAC1710GetData(enum PAC1710_DATA_TYPE what, INT16 *data)
+{
+    BOOL returnValue=FALSE;
+    INT16 holding;
+    switch(what)
+    {
+        case PAC1710_DATA_CURRENT:
+        {
+            if(GetCurrentData(PAC1710_ADDRESS,&holding))
+            {
+                *data=holding>>4;
+                returnValue=TRUE;
+            }
+            break;
+        }
+        case PAC1710_DATA_VOLTAGE:
+        {
+            if(GetVoltageData(PAC1710_ADDRESS,&holding))
+            {
+                *data=holding>>5;
+                returnValue=TRUE;
+            }
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    return returnValue;
+}
 /******************************************************************************/

@@ -153,6 +153,11 @@ typedef union
 //    CS_SAMP_8=0b11
 //};
 
+enum PAC1710_DATA_TYPE
+{
+    PAC1710_DATA_CURRENT=0,
+    PAC1710_DATA_VOLTAGE
+};
 
 enum POWER_MONITOR_STATE_TYPE
 {
@@ -171,15 +176,16 @@ enum POWER_MONITOR_STATE_TYPE
 /* Prototypes                                                                 */
 /******************************************************************************/
 
-BOOL PAC1710Present(UINT8);
-BOOL PAC1710Configure(UINT8);
+BOOL PAC1710Present(UINT32);
+BOOL PAC1710Configure(UINT32);
 BOOL IsAlertAsserted(void);
 void ClearAlertAsserted(void);
 BOOL DoPowerMonState(void);
 void PAC1710AlertConfigure(void);
-BOOL PAC1710SubsystemInitialize(UINT8);
-BOOL GetCurrentData(UINT8, INT16*);
-BOOL GetVoltageData(UINT8, INT16*);
+BOOL PAC1710SubsystemInitialize(UINT32);
+BOOL GetCurrentData(UINT32, INT16*);
+BOOL GetVoltageData(UINT32, INT16*);
+BOOL PAC1710GetData(enum PAC1710_DATA_TYPE, INT16 *);
 
 #else
     #warning "Redundant include of PAC1710.h"

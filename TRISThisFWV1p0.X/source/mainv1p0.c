@@ -22,8 +22,8 @@
 extern UINT16_VAL currentHolding;
 extern UINT16_VAL voltageHolding;
 /* file scope for DMCI */
-INT16 monitorCurrentReadings[100];
-UINT16 monitorVoltageReadings[100];
+INT16 monitorCurrentReadings[CURRENT_HISTORY_SIZE];
+UINT16 monitorVoltageReadings[VOLTAGE_HISTORY_SIZE];
 
 /******************************************************************************/
 
@@ -34,8 +34,8 @@ int main(void)
     TICK_TYPE timeoutTime;
     I2CBUS_COMMAND_TYPE command;
     UINT16_VAL vSource;
-    INT16 readingHoldingSigned;
-    UINT16 readingHoldingUnsigned;
+    //INT16 readingHoldingSigned;
+    //UINT16 readingHoldingUnsigned;
     /* local to main() and initialized*/
     int currentIndex=0;
     int voltageIndex=0;
@@ -117,30 +117,32 @@ int main(void)
             }
         }
         #endif /* USE_DIGIPOT */
-        if(GetCurrentData(PAC1710_ADDRESS,&readingHoldingSigned))
-        {
-            monitorCurrentReadings[currentIndex++]=readingHoldingSigned>>4;
-            if(currentIndex>=100)
-            {
-                currentIndex=0;
-            }
-        }
-        else
-        {
-            Nop();
-        }
-        if(GetVoltageData(PAC1710_ADDRESS,&readingHoldingUnsigned))
-        {
-            monitorVoltageReadings[voltageIndex++]=readingHoldingUnsigned>>5;
-            if(voltageIndex>=100)
-            {
-                voltageIndex=0;
-            }
-        }
-        else
-        {
-            Nop();
-        }
+//        if(PAC1710GetData(PAC1710_DATA_CURRENT,&monitorCurrentReadings[currentIndex]))
+//        {
+//            currentIndex++;
+//            currentIndex%=CURRENT_HISTORY_SIZE;
+//        }
+//        if(PAC1710GetData(PAC1710_DATA_VOLTAGE,&monitorVoltageReadings[voltageIndex]))
+//        {
+//            voltageIndex++;
+//            voltageIndex%=VOLTAGE_HISTORY_SIZE;
+//        }
+//        if(GetCurrentData(PAC1710_ADDRESS,&readingHoldingSigned))
+//        {
+//            monitorCurrentReadings[currentIndex++]=readingHoldingSigned>>4;
+//            if(currentIndex>=100)
+//            {
+//                currentIndex=0;
+//            }
+//        }
+//        if(GetVoltageData(PAC1710_ADDRESS,&readingHoldingUnsigned))
+//        {
+//            monitorVoltageReadings[voltageIndex++]=readingHoldingUnsigned>>5;
+//            if(voltageIndex>=100)
+//            {
+//                voltageIndex=0;
+//            }
+//        }
     }
 }
 

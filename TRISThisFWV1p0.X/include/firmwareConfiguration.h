@@ -10,6 +10,8 @@
 
 #define DELAY_USE_CORE_TIMER
 
+#define CURRENT_HISTORY_SIZE    100
+#define VOLTAGE_HISTORY_SIZE    100
 /* LED Activity definitions */
 
 #define LED_CASCADE_DELAY   100*TICKS_PER_MS

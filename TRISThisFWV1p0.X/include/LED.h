@@ -28,6 +28,7 @@ BOOL LEDInitialize(void);
 void DoLEDs(void);
 UINT8 ReadLEDs(void);
 void SetLEDs(UINT8);
+BOOL GetLEDAutoMode(void);
 
 #else
     #warning "Redundant include of LED.h"
