@@ -34,9 +34,16 @@ BOOL PAC1710SubsystemInitialize(UINT8 address)
                 PAC1710SubsystemFlags.monitorConfigured=TRUE;
                 /* Yay! */
             }
+            else
+            {
+                MasterI2CReleasePort();
+                return FALSE;
+            }
         }
         else
         {
+            MasterI2CReleasePort();
+            return FALSE;
             //while(TRUE);
         }
         PAC1710AlertConfigure();
@@ -81,7 +88,7 @@ BOOL PAC1710Present(UINT8 address)
     {
         returnValue=TRUE;
     }
-    MasterI2CReleasePort();
+    //MasterI2CReleasePort();
     return returnValue;
 }
 
@@ -206,120 +213,143 @@ BOOL DoPowerMonState(void)
     PAC1710SubsystemFlags.alertAsserted=IsAlertAsserted();
     switch (state)
     {
-        case PM_STATE_IDLE:// <editor-fold defaultstate="collapsed" desc="comment">
+        case PM_STATE_IDLE:
         {
-            if (PAC1710SubsystemFlags.alertAsserted) {
-                if (PAC1710SubsystemFlags.monitorConfigured) {
+            if (PAC1710SubsystemFlags.alertAsserted)
+            {
+                if (PAC1710SubsystemFlags.monitorConfigured)
+                {
                     state = PM_STATE_CHECK_MONITOR;
-                } else {
+                } 
+                else
+                {
                     state = PM_STATE_ALERT_WRAP_UP;
                 }
             }
             break;
-        }// </editor-fold>
-        case PM_STATE_CHECK_MONITOR:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case PM_STATE_CHECK_MONITOR:
         {
-            if (!MasterI2CIsBusy()) {
+            if (!MasterI2CIsBusy())
+            {
                 command.status.flags.I2C_read = TRUE;
                 command.target_address = PAC1710_ADDRESS;
                 command.Word[0] = PAC1710_REG_HIGH_LIMIT_STATUS;
                 command.WordSize = 1;
                 command.DataSize = 1;
-                if (MasterI2CQueueCommand(&command)) {
+                if (MasterI2CQueueCommand(&command))
+                {
                     state = PM_STATE_CHECK_MONITOR_WAIT;
                 }
             }
             break;
-        }// </editor-fold>
-        case PM_STATE_CHECK_MONITOR_WAIT:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case PM_STATE_CHECK_MONITOR_WAIT:
         {
-            if (MasterI2CUpdateQueuedCommand(&command)) {
+            if (MasterI2CUpdateQueuedCommand(&command))
+            {
                 PAC1710_HIGH_LIMIT_STATUS_REG_TYPE reg;
                 reg.b = command.Data[0];
-                if (reg.CONV_DONE) {
+                if (reg.CONV_DONE)
+                {
                     state = PM_STATE_READ_MONITOR_VOLTAGE;
-                } else {
+                }
+                else
+                {
                     state = PM_STATE_ALERT_WRAP_UP;
                 }
-            } else if (command.status.flags.I2C_error) {
+            } 
+            else if (command.status.flags.I2C_error)
+            {
                 /* check the other current monitor */
                 state = PM_STATE_ALERT_WRAP_UP;
             }
             break;
-        }// </editor-fold>
-        case PM_STATE_READ_MONITOR_VOLTAGE:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case PM_STATE_READ_MONITOR_VOLTAGE:
         {
-            if (!MasterI2CIsBusy()) {
+            if (!MasterI2CIsBusy())
+            {
                 command.status.flags.I2C_read = TRUE;
                 command.target_address = PAC1710_ADDRESS;
                 command.Word[0] = PAC1710_REG_VSOURCE_VOLTAGE_HIGH;
                 command.WordSize = 1;
                 command.DataSize = 2;
-                if (MasterI2CQueueCommand(&command)) {
+                if (MasterI2CQueueCommand(&command))
+                {
                     state = PM_STATE_READ_MONITOR_VOLTAGE_WAIT;
                 }
             }
             break;
-        }// </editor-fold>
-        case PM_STATE_READ_MONITOR_VOLTAGE_WAIT:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case PM_STATE_READ_MONITOR_VOLTAGE_WAIT:
         {
-            if (MasterI2CUpdateQueuedCommand(&command)) {
+            if (MasterI2CUpdateQueuedCommand(&command))
+            {
                 monitorVoltageHolding.byte.HB = command.Data[0];
                 monitorVoltageHolding.byte.LB = command.Data[1];
                 PAC1710SubsystemFlags.monitorVoltageAvailable = TRUE;
                 state = PM_STATE_READ_MONITOR_CURRENT;
-            } else if (command.status.flags.I2C_error) {
+            } 
+            else if (command.status.flags.I2C_error)
+            {
                 /* check the other current monitor */
                 state = PM_STATE_ALERT_WRAP_UP;
             }
             break;
-        }// </editor-fold>
-        case PM_STATE_READ_MONITOR_CURRENT:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case PM_STATE_READ_MONITOR_CURRENT:
         {
-            if (!MasterI2CIsBusy()) {
+            if (!MasterI2CIsBusy())
+            {
                 command.status.flags.I2C_read = TRUE;
                 command.target_address = PAC1710_ADDRESS;
                 command.Word[0] = PAC1710_REG_SENSE_VOLTAGE_HIGH;
                 command.WordSize = 1;
                 command.DataSize = 2;
-                if (MasterI2CQueueCommand(&command)) {
+                if (MasterI2CQueueCommand(&command))
+                {
                     state = PM_STATE_READ_MONITOR_CURRENT_WAIT;
                 }
             }
             break;
-        }// </editor-fold>
-        case PM_STATE_READ_MONITOR_CURRENT_WAIT:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case PM_STATE_READ_MONITOR_CURRENT_WAIT:
         {
-            if (MasterI2CUpdateQueuedCommand(&command)) {
+            if (MasterI2CUpdateQueuedCommand(&command))
+            {
                 monitorCurrentHolding.byte.HB = command.Data[0];
                 monitorCurrentHolding.byte.LB = command.Data[1];
                 PAC1710SubsystemFlags.monitorCurrentAvailable = TRUE;
                 state = PM_STATE_ALERT_WRAP_UP;
-            } else if (command.status.flags.I2C_error) {
+            } 
+            else if (command.status.flags.I2C_error)
+            {
                 /* check the other current monitor */
                 state = PM_STATE_ALERT_WRAP_UP;
             }
             break;
-        }// </editor-fold>
+        }
         case PM_STATE_MONITOR_WRAP_UP:
-        case PM_STATE_ALERT_WRAP_UP:// <editor-fold defaultstate="collapsed" desc="comment">
+        case PM_STATE_ALERT_WRAP_UP:
         {
             MasterI2CReleasePort();
             if (PAC1710SubsystemFlags.monitorVoltageAvailable ||
-                    PAC1710SubsystemFlags.monitorCurrentAvailable) {
+                    PAC1710SubsystemFlags.monitorCurrentAvailable)
+            {
                 PAC1710SubsystemFlags.newDataAvailable = TRUE;
             }
             ClearAlertAsserted();
             PAC1710SubsystemFlags.alertAsserted = FALSE;
             state = PM_STATE_IDLE;
             break;
-        }// </editor-fold>
-        default:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        default:
         {
             MasterI2CReleasePort();
             state = PM_STATE_IDLE;
             break;
-        }// </editor-fold>
+        }
     }
     return TRUE;
 }

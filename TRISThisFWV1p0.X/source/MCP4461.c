@@ -101,9 +101,9 @@ BOOL DoDigipot(void)
     }
     /* only get here if the port is claimed by the digipot subsystem */
 
-   switch(state)// <editor-fold defaultstate="collapsed" desc="comment">
+   switch(state)
     {
-        case DIGIPOT_STATE_IDLE:// <editor-fold defaultstate="collapsed" desc="comment">
+        case DIGIPOT_STATE_IDLE:
         {
             if (digipotStatus.readAll) {
                 digipotStatus.reading = TRUE;
@@ -117,38 +117,38 @@ BOOL DoDigipot(void)
                 MasterI2CReleasePort();
             }
             break;
-        }// </editor-fold>
-        case DIGIPOT_STATE_READ:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case DIGIPOT_STATE_READ:
         {
             if (!MasterI2CIsBusy()) {
                 UINT8 digipotCommand = 0;
                 if (digipotStatus.readAll || digipotStatus.readIndividual) {
                     switch (digipotStatus.channel) {
-                        case 0:// <editor-fold defaultstate="collapsed" desc="comment">
+                        case 0:
                         {
                             digipotCommand = MCP4461_VOLATILE_WIPER_0;
                             break;
-                        }// </editor-fold>
-                        case 1:// <editor-fold defaultstate="collapsed" desc="comment">
+                        }
+                        case 1:
                         {
                             digipotCommand = MCP4461_VOLATILE_WIPER_1;
                             break;
-                        }// </editor-fold>
-                        case 2:// <editor-fold defaultstate="collapsed" desc="comment">
+                        }
+                        case 2:
                         {
                             digipotCommand = MCP4461_VOLATILE_WIPER_2;
                             break;
-                        }// </editor-fold>
-                        case 3:// <editor-fold defaultstate="collapsed" desc="comment">
+                        }
+                        case 3:
                         {
                             digipotCommand = MCP4461_VOLATILE_WIPER_3;
                             break;
-                        }// </editor-fold>
-                        default:// <editor-fold defaultstate="collapsed" desc="comment">
+                        }
+                        default:
                         {
                             digipotStatus.channel = 0;
                             break;
-                        }// </editor-fold>
+                        }
                     }
                     digipotCommand |= MCP4461_COMMAND_READ;
                 } else if (digipotStatus.readStatus) {
@@ -169,8 +169,8 @@ BOOL DoDigipot(void)
                 command.status.all = 0; /* just in case */
             }
             break;
-        }// </editor-fold>
-        case DIGIPOT_STATE_READ_WAIT:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case DIGIPOT_STATE_READ_WAIT:
         {
             if (MasterI2CIsQueuedCommandDone()) {
                 if (MasterI2CUpdateQueuedCommand(&command)) {
@@ -204,8 +204,8 @@ BOOL DoDigipot(void)
                 }
             }
             break;
-        }// </editor-fold>
-        case DIGIPOT_STATE_CLEANUP:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case DIGIPOT_STATE_CLEANUP:
         {
             digipotStatus.readIndividual = FALSE;
             digipotStatus.readAll = FALSE;
@@ -213,13 +213,13 @@ BOOL DoDigipot(void)
             MasterI2CReleasePort();
             state = DIGIPOT_STATE_IDLE;
             break;
-        }// </editor-fold>
-        default:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        default:
         {
             MasterI2CReleasePort();
             state = DIGIPOT_STATE_IDLE;
             break;
-        }// </editor-fold>
-    }// </editor-fold>
+        }
+    }
     return TRUE;
 }

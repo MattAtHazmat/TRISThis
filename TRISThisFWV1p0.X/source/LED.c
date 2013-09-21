@@ -68,72 +68,72 @@ void DoLEDs(void)
     if(LEDState!=LED_STATE_MANUAL)
     {
         now=TickGet();
-        if(now<timeoutTime)// <editor-fold defaultstate="collapsed" desc="comment">
+        if(now<timeoutTime)
         {
             return;
-        }// </editor-fold>
-        else// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        else
         {
             timeoutTime = now + LED_CASCADE_DELAY;
-        }// </editor-fold>
-        switch(LEDState)// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        switch(LEDState)
         {
-            case LED_STATE_LED1_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            case LED_STATE_LED1_TOGGLE:
             {
                 LED1_TOGGLE;
                 LEDState = LED_STATE_LED2_TOGGLE;
                 break;
-            }// </editor-fold>
-            case LED_STATE_LED2_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            }
+            case LED_STATE_LED2_TOGGLE:
             {
                 LED2_TOGGLE;
                 LEDState = LED_STATE_LED3_TOGGLE;
                 break;
-            }// </editor-fold>
-            case LED_STATE_LED3_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            }
+            case LED_STATE_LED3_TOGGLE:
             {
                 LED3_TOGGLE;
                 LEDState = LED_STATE_LED4_TOGGLE;
                 break;
-            }// </editor-fold>
-            case LED_STATE_LED4_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            }
+            case LED_STATE_LED4_TOGGLE:
             {
                 LED4_TOGGLE;
                 LEDState = LED_STATE_LED5_TOGGLE;
                 break;
-            }// </editor-fold>
-            case LED_STATE_LED5_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            }
+            case LED_STATE_LED5_TOGGLE:
             {
                 LED5_TOGGLE;
                 LEDState = LED_STATE_LED6_TOGGLE;
                 break;
-            }// </editor-fold>
-            case LED_STATE_LED6_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            }
+            case LED_STATE_LED6_TOGGLE:
             {
                 LED6_TOGGLE;
                 LEDState = LED_STATE_LED7_TOGGLE;
                 break;
-            }// </editor-fold>
-            case LED_STATE_LED7_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            }
+            case LED_STATE_LED7_TOGGLE:
             {
                 LED7_TOGGLE;
                 LEDState = LED_STATE_LED8_TOGGLE;
                 break;
-            }// </editor-fold>
-            case LED_STATE_LED8_TOGGLE:// <editor-fold defaultstate="collapsed" desc="comment">
+            }
+            case LED_STATE_LED8_TOGGLE:
             {
                 LED8_TOGGLE;
                 LEDState = LED_STATE_LED1_TOGGLE;
                 break;
-            }// </editor-fold>
+            }
             case LED_STATE_ALL_OFF:
-            default:// <editor-fold defaultstate="collapsed" desc="comment">
+            default:
             {
                 LED_ALL_OFF;
                 LEDState = LED_STATE_LED1_TOGGLE;
                 break;
-            }// </editor-fold>
-        }// </editor-fold>
+            }
+        }
     }
     TRISThisData.LEDs.w.byte.LB=ReadLEDs();
 }

@@ -301,7 +301,6 @@ BOOL MasterI2CQueueCommand(I2CBUS_COMMAND_TYPE *command)
         if (I2CBusIsIdle(I2C_PORT))
         {
             I2CStart(I2C_PORT);
-            I2C2CONbits.SEN=TRUE;
             return SUCCESS;
         }
     }
@@ -623,22 +622,22 @@ BOOL MasterI2CClaimPort(enum MASTER_I2C_OWNER_TYPE owner)
     BOOL returnValue=FALSE;
     if(currentOwner==NONE)
     {
-        switch(owner)// <editor-fold defaultstate="collapsed" desc="comment">
+        switch(owner)
         {
             case DIGIPOT:
-            case POWER_MONITOR:// <editor-fold defaultstate="collapsed" desc="comment">
+            case POWER_MONITOR:
             {
                 currentOwner = owner;
                 returnValue = TRUE;
                 break;
-            }// </editor-fold>
+            }
             case NONE:
-            default:// <editor-fold defaultstate="collapsed" desc="comment">
+            default:
             {
                 returnValue = TRUE;
                 break;
-            }// </editor-fold>
-        }// </editor-fold>
+            }
+        }
     }
     return returnValue;
 }
