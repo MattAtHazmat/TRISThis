@@ -44,7 +44,7 @@ int main(void)
     #endif
     /**************************************************************************/
     InitializeSystem();
-    if(!MasterI2CStartup())// <editor-fold defaultstate="collapsed" desc="...">
+    if(!MasterI2CStartup())
     {
         LED1_ON;
         LED2_OFF;
@@ -54,10 +54,19 @@ int main(void)
         LED6_OFF;
         LED7_ON;
         LED8_OFF;
-    }// </editor-fold>
+        while(TRUE);
+    }
     if(!PAC1710SubsystemInitialize(PAC1710_ADDRESS))
     {
-        Nop();
+        LED1_ON;
+        LED2_OFF;
+        LED3_ON;
+        LED4_OFF;
+        LED5_ON;
+        LED6_OFF;
+        LED7_ON;
+        LED8_OFF;
+        while(TRUE);
     }
     #ifdef USE_DIGIPOT
     DigipotSubsystemInitialize();
@@ -67,7 +76,7 @@ int main(void)
         while(TRUE);
     }
     TRISThisConfigure();
-    INTEnableInterrupts();
+    
     mEnableWatchdog();
 
     while(TRUE)
@@ -153,4 +162,5 @@ void InitializeSystem(void)
     P5V_POWER_GOOD_DIRECTION=TRIS_IN;
     LEDInitialize();
     TickInitialize();
+    INTEnableInterrupts();
 }
