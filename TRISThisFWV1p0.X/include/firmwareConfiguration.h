@@ -15,7 +15,7 @@
 #define LED_CASCADE_DELAY   100*TICKS_PER_MS
 
 /* I2C definitions */
-#define I2C_PORT                2   //I2C2
+#define I2C_PORT                (2-1)   //(count from zero) I2C2
 #define I2CBUS_WORD_LENGTH      (10)
 #define I2CBUS_DATA_LENGTH      (10)
 #define Fsck                    (100000u)
@@ -23,9 +23,10 @@
 #define MI2C_INT_PRIORITY       INT_PRIORITY_LEVEL_6//I2C_INT_PRI_6
 #define MI2C_INT_SUB_PRIORITY   INT_SUB_PRIORITY_LEVEL_1
 #define MI2C_INT_PRIORITY_ISR   IPL6SOFT //ipl6
+#define I2C_STATUS              I2C2STAT
 #define I2C_USE_TIMEOUT
 #ifdef I2C_USE_TIMEOUT
-    #define I2C_TIMEOUT_TIMER       5
+    #define I2C_TIMEOUT_TIMER       (5-1)//(count from zero)
     #define I2C_TIMEOUT_MS      (100)
     #define I2C_TIMEOUT_TIMER_INT_PRIORITY      INT_PRIORITY_LEVEL_4
     #define I2C_TIMEOUT_TIMER_INT_SUB_PRIORITY  INT_SUB_PRIORITY_LEVEL_1
@@ -41,7 +42,7 @@
 //#define SPI_TX_BUFFER_SIZE    0x0F
 
 /* tick */
-#define TICK_TIMER              4
+#define TICK_TIMER              (4-1) //(count from zero) 4
 #define TICK_INT_PRIORITY       INT_PRIORITY_LEVEL_6 //T4_INT_PRIOR_6
 #define TICK_INT_SUB_PRIORITY   INT_SUB_PRIORITY_LEVEL_2
 #define TICK_INT_PRIORITY_ISR   IPL6SOFT

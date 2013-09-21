@@ -14,11 +14,11 @@
 
 typedef UINT64 TICK_TYPE;
 
-#define TICK_INTERRUPT_FLAG         (IFS0bits.T4IF)
-#define TICK_INTERRUPT_ENABLE       (IEC0bits.T4IE)
-#define mTickEnableInterrupt()      IEC0SET=_IEC0_T4IE_MASK
-#define mTickDisableInterrupt()     IEC0CLR=_IEC0_T4IE_MASK
-#define mTickClearInterruptFlag()   IFS0CLR=_IFS0_T4IF_MASK
+//#define TICK_INTERRUPT_FLAG         (IFS0bits.T4IF)
+//#define TICK_INTERRUPT_ENABLE       (IEC0bits.T4IE)
+//#define mTickEnableInterrupt()      IEC0SET=_IEC0_T4IE_MASK
+//#define mTickDisableInterrupt()     IEC0CLR=_IEC0_T4IE_MASK
+//#define mTickClearInterruptFlag()   IFS0CLR=_IFS0_T4IF_MASK
 
 #define TICK_UPDATE_RATE            1000 /* Hz */
 #define TICKS_PER_MS                1

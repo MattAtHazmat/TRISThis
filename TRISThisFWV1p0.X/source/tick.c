@@ -26,7 +26,7 @@ TICK_TYPE tick;
 
 void __ISR(_TIMER_4_VECTOR,TICK_INT_PRIORITY_ISR) T4_Interrupt_Handler(void)
 {
-    mTickClearInterruptFlag();
+    INTClearFlag(INT_SOURCE_TIMER(TICK_TIMER));
     tick++;
 }
 
@@ -38,9 +38,9 @@ void __ISR(_TIMER_4_VECTOR,TICK_INT_PRIORITY_ISR) T4_Interrupt_Handler(void)
 TICK_TYPE TickGet(void)
 {
     TICK_TYPE returnValue;
-    mTickDisableInterrupt();
+    INTEnable(INT_SOURCE_TIMER(TICK_TIMER),INT_DISABLED);
     returnValue=tick;
-    mTickEnableInterrupt();
+    INTEnable(INT_SOURCE_TIMER(TICK_TIMER),INT_ENABLED);
     return returnValue;
 }
 
@@ -60,7 +60,7 @@ void TickInitialize(void)
         TICK_UPDATE_INTERVAL);
     TMR4=0;
     tick=0;
-    mTickClearInterruptFlag();
+    //mTickClearInterruptFlag();
     INTClearFlag(INT_SOURCE_TIMER(TICK_TIMER));
     INTSetVectorPriority(INT_VECTOR_TIMER(TICK_TIMER),TICK_INT_PRIORITY);
     INTSetVectorSubPriority(INT_VECTOR_I2C(TICK_TIMER),TICK_INT_SUB_PRIORITY);

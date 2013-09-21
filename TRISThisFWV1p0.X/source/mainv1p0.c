@@ -46,14 +46,14 @@ int main(void)
     InitializeSystem();
     if(!MasterI2CStartup())// <editor-fold defaultstate="collapsed" desc="...">
     {
-        LED1_OUT = LED_ON;
-        LED2_OUT = LED_OFF;
-        LED3_OUT = LED_ON;
-        LED4_OUT = LED_OFF;
-        LED5_OUT = LED_ON;
-        LED6_OUT = LED_OFF;
-        LED7_OUT = LED_ON;
-        LED8_OUT = LED_OFF;
+        LED1_ON;
+        LED2_OFF;
+        LED3_ON;
+        LED4_OFF;
+        LED5_ON;
+        LED6_OFF;
+        LED7_ON;
+        LED8_OFF;
     }// </editor-fold>
     if(!PAC1710SubsystemInitialize(PAC1710_ADDRESS))
     {

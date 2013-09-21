@@ -53,40 +53,41 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
 {
     static UINT8 temp; /* used by dummy read to clear RBF flag */
     INTClearFlag(INT_SOURCE_I2C_MASTER(I2C_PORT));
-    //mMasterI2CClearInterruptFlag();
     /* save a copy of I2C2STAT */
-    MasterI2CPort.STATShadow=I2C2STATbits;
-
+    MasterI2CPort.STATShadow.w=I2C_STATUS;
     #ifdef I2C_USE_TIMEOUT
         mMasterI2CTimeoutClearTimer();
         /* if we get an I2C interrupt, there wasn't a timeout*/
         INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
         //todo: remove mMasterI2CTimeoutClearInterruptFlag();
     #endif /* #ifdef I2C_USE_TIMEOUT */
-
-    if((MasterI2CPort.STATShadow.I2COV==TRUE) || (MasterI2CPort.STATShadow.IWCOL==TRUE))// <editor-fold defaultstate="collapsed" desc="comment">
+    if((MasterI2CPort.STATShadow.I2COV==TRUE) ||
+       (MasterI2CPort.STATShadow.IWCOL==TRUE))
     {
         MasterI2CPort.status.flags.I2C_error = TRUE;
         MasterI2CPort.status.flags.I2C_error_overrun = TRUE;
         /* the STOP state does all the shutdown we need                       */
         MasterI2CPort.state = MI2CINT_STOP;
-    }// </editor-fold>
+    }
     switch(MasterI2CPort.state)
     {
-        case MI2CINT_START:// <editor-fold defaultstate="collapsed" desc="comment">
+        case MI2CINT_START:
         {
             /* send the address ... which one?                                */
-            if (MasterI2CPort.status.flags.I2C_receive) {
+            if (MasterI2CPort.status.flags.I2C_receive)
+            {
                 /* send read address                                          */
                 I2C2TRN = MasterI2CPort.target_address | I2C_READ_BIT;
                 MasterI2CPort.state = MI2CINT_RX_ADDRESS_ACK;
-            } else {
+            } 
+            else
+            {
                 /* send write address                                         */
                 I2C2TRN = MasterI2CPort.target_address | I2C_WRITE_BIT;
                 MasterI2CPort.state = MI2CINT_TX_ADDRESS_ACK;
             }
             break;
-        }// </editor-fold>
+        }
         case MI2CINT_TX_ADDRESS_ACK:
         {
             if (MasterI2CPort.STATShadow.ACKSTAT == I2C_NAK)
@@ -95,7 +96,6 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
                 MasterI2CPort.status.flags.I2C_error = TRUE;
                 MasterI2CPort.status.flags.I2C_no_slave_addr_ack = TRUE;
                 I2CStop(I2C_PORT);
-                //mMasterI2CStopStart(); /* Send a stop cycle                  */
                 MasterI2CPort.state = MI2CINT_STOP;
             } 
             else
@@ -107,7 +107,7 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
                 MasterI2CPort.state = MI2CINT_TX_DATA_ACK;
             }
             break;
-        }// </editor-fold>
+        }
         case MI2CINT_TX_DATA_ACK:
         {
             if (MasterI2CPort.STATShadow.ACKSTAT == I2C_NAK)
@@ -129,14 +129,12 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
                     {
                         mMasterI2CClearRBF();
                         I2CRepeatStart(I2C_PORT);
-                        //mMasterI2CStartRepeatStart();
                         MasterI2CPort.state = MI2CINT_RESTART_END;
                     } 
                     else
                     {
                         /* must be a write, and we're done                    */
                         I2CStop(I2C_PORT);
-                        //mMasterI2CStopStart();
                         MasterI2CPort.state = MI2CINT_STOP;
                     }
                 } 
@@ -156,21 +154,20 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
                         MasterI2CPort.status.flags.I2C_error = TRUE;
                         MasterI2CPort.status.flags.I2C_FUBAR_error = TRUE;
                         I2CStop(I2C_PORT);
-                        //mMasterI2CStopStart();
                         MasterI2CPort.state = MI2CINT_STOP;
                     }
                 }
             }
             break;
         }
-        case MI2CINT_RESTART_END:// <editor-fold defaultstate="collapsed" desc="comment">
+        case MI2CINT_RESTART_END:
         {
             /* send read address                                              */
             I2C2TRN = MasterI2CPort.target_address | I2C_READ_BIT;
             MasterI2CPort.state = MI2CINT_RX_ADDRESS_ACK;
             break;
-        }// </editor-fold>
-        case MI2CINT_RX_ADDRESS_ACK:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case MI2CINT_RX_ADDRESS_ACK:
         {
             if (MasterI2CPort.STATShadow.ACKSTAT == I2C_NAK)
             {
@@ -179,7 +176,6 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
                 MasterI2CPort.status.flags.I2C_no_slave_addr_ack = TRUE;
                 /* Send the Stop condition                                    */
                 I2CStop(I2C_PORT);
-                //mMasterI2CStopStart();
                 MasterI2CPort.state = MI2CINT_STOP;
             } 
             else
@@ -187,12 +183,11 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
                 MasterI2CPort.data_index = 0;
                 mMasterI2CClearRBF();
                 I2CReceiverEnable(I2C_PORT,TRUE);
-                //mMasterI2CReceiveEnable();
                 MasterI2CPort.state = MI2CINT_RX_DATA;
             }
             break;
-        }// </editor-fold>
-        case MI2CINT_RX_DATA:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        case MI2CINT_RX_DATA:
         {
             /* Bounds check data_index for safe access of .Data[]             */
             if (MasterI2CPort.data_index < I2CBUS_DATA_LENGTH)
@@ -201,33 +196,28 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
                 if (MasterI2CPort.data_index == MasterI2CPort.DataSize) 
                 {
                     I2CAcknowledgeByte(I2C_PORT,FALSE);
-                    //I2C2CONbits.ACKDT = I2C_NAK;
                     MasterI2CPort.state = MI2CINT_RX_DATA_NAK;
                 } 
                 else
                 {
                     /* send ACK to signify there will be more                 */
-                    //I2C2CONbits.ACKDT = I2C_ACK;
                     I2CAcknowledgeByte(I2C_PORT,TRUE);
                     MasterI2CPort.state = MI2CINT_RX_DATA_ACK;
                 }
             } 
             else
             {
-                //I2C2CONbits.ACKDT = I2C_NAK;
                 MasterI2CPort.state = MI2CINT_RX_DATA_NAK;
                 MasterI2CPort.status.flags.I2C_error = TRUE;
                 MasterI2CPort.status.flags.I2C_FUBAR_error = TRUE;
                 I2CAcknowledgeByte(I2C_PORT,FALSE);
             }
-            //mMasterI2CStartACKNACK();
             break;
         }
         case MI2CINT_RX_DATA_ACK:
         {
             /* still have more to recieve- start another RX cycle             */
             I2CReceiverEnable(I2C_PORT,TRUE);
-            //mMasterI2CReceiveEnable();
             MasterI2CPort.state = MI2CINT_RX_DATA;
             break;
         }
@@ -235,40 +225,35 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
         {
             /* No more to send, or an error case- send the Stop condition     */
             I2CStop(I2C_PORT);
-            //mMasterI2CStopStart();
             MasterI2CPort.state = MI2CINT_STOP;
             break;
         }
-        case MI2CINT_STOP:// <editor-fold defaultstate="collapsed" desc="comment">
+        case MI2CINT_STOP:
         {
             MasterI2CPort.status.flags.I2C_action_complete = TRUE;
             MasterI2CPort.status.flags.I2C_busy = FALSE;
             INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
-            //TODO remove mMasterI2CDisableInterrupt();
-#ifdef I2C_USE_TIMEOUT
-            mMasterI2CTimeoutStopTimer();
-            INTEnable(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER),INT_DISABLED);
-            //mMasterI2CTimeoutDisableInterrupt();
-            INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
-            //mMasterI2CTimeoutClearInterruptFlag();
-#endif
+            #ifdef I2C_USE_TIMEOUT
+                mMasterI2CTimeoutStopTimer();
+                INTEnable(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER),INT_DISABLED);
+                INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
+            #endif
             /* prepare the state machine for next round                       */
             MasterI2CPort.state = MI2CINT_START;
             break;
-        }// </editor-fold>
-        default:// <editor-fold defaultstate="collapsed" desc="comment">
+        }
+        default:
         {
             mMasterI2CClearRBF();
             /* Start a 'STOP' cycle                                           */
             I2CStop(I2C_PORT);
-            //mMasterI2CStopStart();
             MasterI2CPort.status.flags.I2C_error = TRUE;
             /* set a flag for debugging                                       */
             MasterI2CPort.status.flags.I2C_error_default_state = TRUE;
             MasterI2CPort.state = MI2CINT_STOP;
             break;
-        }// </editor-fold>
-    }// </editor-fold>
+        }
+    }
 }
 
 /******************************************************************************/
@@ -283,7 +268,6 @@ BOOL MasterI2CQueueCommand(I2CBUS_COMMAND_TYPE *command)
         return FAIL;  /* this port is already doing something */
     }// </editor-fold>
     else
-    // <editor-fold defaultstate="collapsed" desc="comment">
     {
         /* just in case */
         INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
@@ -308,7 +292,7 @@ BOOL MasterI2CQueueCommand(I2CBUS_COMMAND_TYPE *command)
         MasterI2CPort.data_index = 0;
         #ifdef I2C_USE_TIMEOUT
             mMasterI2CTimeoutClearTimer();
-            //mMasterI2CTimeoutStartTimer();
+            mMasterI2CTimeoutStartTimer();
             INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
             //mMasterI2CTimeoutClearInterruptFlag();
             //mMasterI2CTimeoutEnableInterrupt();
@@ -319,8 +303,8 @@ BOOL MasterI2CQueueCommand(I2CBUS_COMMAND_TYPE *command)
         INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_ENABLED);
         //mMasterI2CClearInterruptFlag();
         //mMasterI2CEnableInterrupt();
-        I2C2STATbits.S = 1;
-        I2C2STATbits.P = 0;
+        //I2C2STATbits.S = 1;
+        //I2C2STATbits.P = 0;
         I2CStart(I2C_PORT);
         //mMasterI2CStartStart(); /* start the I2C transaction */
         return SUCCESS;
@@ -431,7 +415,7 @@ BOOL MasterI2CStartup(void)
     //I2C2CONbits.SMEN=FALSE;  /* do not use SMBUS levels */
     I2CConfigure(I2C_PORT,(I2C_STOP_IN_IDLE));
     I2CSetFrequency(I2C_PORT, GetPeripheralClock(), Fsck);
-    I2CEnable(I2C1, TRUE);
+    I2CEnable(I2C_PORT, TRUE);
     //I2C2CONbits.ON=TRUE;     /* turn I2C module on */
     INTClearFlag(INT_SOURCE_I2C_MASTER(I2C_PORT));
     INTSetVectorPriority(INT_VECTOR_I2C(I2C_PORT),MI2C_INT_PRIORITY);

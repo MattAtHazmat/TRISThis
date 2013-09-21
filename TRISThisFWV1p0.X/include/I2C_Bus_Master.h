@@ -119,20 +119,20 @@ typedef struct
 //#define mMasterI2CStopStart()           I2C2CONbits.PEN=TRUE
 //#define mMasterI2CReceiveEnable()       I2C2CONbits.RCEN=TRUE
 //#define mMasterI2CClearInterruptFlag()  IFS1bits.I2C2MIF=FALSE
-#define mMasterI2CClearRBF()            temp=I2C2RCV /* dummy read to clear RBF as specified in FRM */
+//#define mMasterI2CClearRBF()            temp=I2C2RCV /* dummy read to clear RBF as specified in FRM */
 //#define mMasterI2CDisableInterrupt()    DisableIntMI2C2
 //#define mMasterI2CEnableInterrupt()     EnableIntMI2C2
 
 /* dummy read to clear RBF as specified in FRM */
-#if I2C_PORT==1
+#if I2C_PORT==0
     #define mMasterI2CClearRBF()            temp=I2C1RCV
-#elif I2C_PORT==2
+#elif I2C_PORT==1
     #define mMasterI2CClearRBF()            temp=I2C2RCV
-#elif I2C_PORT==3
+#elif I2C_PORT==2
     #define mMasterI2CClearRBF()            temp=I2C3RCV
-#elif I2C_PORT==4
+#elif I2C_PORT==3
     #define mMasterI2CClearRBF()            temp=I2C4RCV
-#elif I2C_PORT==5
+#elif I2C_PORT==4
     #define mMasterI2CClearRBF()            temp=I2C5RCV
 #else
     #warning "I2C_PORT not correctly defined"
@@ -146,9 +146,6 @@ typedef struct
     /* with respect to the code *I* write. Dead code will confuse the hell    */
     /* out of you.                                                            */
 
-    //#define mMasterI2CTimeoutClearInterruptFlag()   IFS0bits.T5IF=FALSE
-    //#define mMasterI2CTimeoutDisableInterrupt()     IEC0bits.T5IE=FALSE
-    //#define mMasterI2CTimeoutEnableInterrupt()      IEC0bits.T5IE=TRUE
     #define mMasterI2CTimeoutClearTimer()           T5CONbits.ON=FALSE;TMR5=0;T5CONbits.ON=TRUE
     #define mMasterI2CTimeoutStopTimer()            T5CONbits.ON=FALSE
     #define mMasterI2CTimeoutStartTimer()           T5CONbits.ON=TRUE

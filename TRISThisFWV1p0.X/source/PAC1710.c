@@ -59,7 +59,8 @@ BOOL PAC1710Present(UINT8 address)
     BOOL SMSCIDGoodRead=FALSE;
     BOOL revisionGoodRead=FALSE;
     BOOL returnValue=FALSE;
-    if(MasterI2CAvailable()&&MasterI2CClaimPort(POWER_MONITOR))
+    if(MasterI2CHasPort(POWER_MONITOR))
+    //if(MasterI2CAvailable()&&MasterI2CClaimPort(POWER_MONITOR))
     {
         if(MasterI2CReadByte(address,PAC1710_REG_PRODUCT_ID,&productID))
         {
@@ -93,7 +94,8 @@ BOOL PAC1710Configure(UINT8 address)
     PAC1710_VSENSE_REG_TYPE vsense;
     PAC1710_VSOURCE_SAMPLING_CONFIG_REG_TYPE vsourceConfig;
     BOOL returnValue=FALSE;
-    if(MasterI2CAvailable()&&MasterI2CClaimPort(POWER_MONITOR))
+    if(MasterI2CHasPort(POWER_MONITOR))
+    //if(MasterI2CAvailable()&&MasterI2CClaimPort(POWER_MONITOR))
     {
         vsourceConfig.b=0;
         vsense.b=0;
