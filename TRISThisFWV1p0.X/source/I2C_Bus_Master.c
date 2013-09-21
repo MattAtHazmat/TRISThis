@@ -32,16 +32,13 @@ I2C_MASTER_PORT_TYPE MasterI2CPort;
 
 void __ISR(/*INT_TIMER_VECTOR(I2C_TIMEOUT_TIMER)*/_TIMER_5_VECTOR,TIMEOUT_INT_PRIORITY_ISR) I2CTimeoutInterrupt(void)
 {
-    //mMasterI2CTimeoutClearInterruptFlag();
     INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
     MasterI2CPort.status.flags.I2C_timeout=TRUE;
     MasterI2CPort.status.flags.I2C_error=TRUE;
     MasterI2CPort.status.flags.I2C_action_complete=TRUE;
     MasterI2CPort.status.flags.I2C_busy=FALSE;
-    //TODO: mMasterI2CTimeoutDisableInterrupt();
     mMasterI2CTimeoutStopTimer();
     INTEnable(INT_SOURCE_I2C_MASTER(I2C_PORT),INT_DISABLED);
-    //TODO: remove mMasterI2CDisableInterrupt();
 }
 #endif
 
@@ -59,7 +56,6 @@ void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
         mMasterI2CTimeoutClearTimer();
         /* if we get an I2C interrupt, there wasn't a timeout*/
         INTClearFlag(INT_SOURCE_TIMER(I2C_TIMEOUT_TIMER));
-        //todo: remove mMasterI2CTimeoutClearInterruptFlag();
     #endif /* #ifdef I2C_USE_TIMEOUT */
     if((MasterI2CPort.STATShadow.I2COV==TRUE) ||
        (MasterI2CPort.STATShadow.IWCOL==TRUE))

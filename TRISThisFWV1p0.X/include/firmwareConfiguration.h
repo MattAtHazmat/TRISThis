@@ -12,6 +12,8 @@
 
 #define CURRENT_HISTORY_SIZE    100
 #define VOLTAGE_HISTORY_SIZE    100
+
+#define USE_DIGIPOT
 /* LED Activity definitions */
 
 #define LED_CASCADE_DELAY   100*TICKS_PER_MS
@@ -21,18 +23,16 @@
 #define I2CBUS_WORD_LENGTH      (10)
 #define I2CBUS_DATA_LENGTH      (10)
 #define Fsck                    (100000u)
-//#define MI2C_INTERRUPT          INT_I2C2M
-#define MI2C_INT_PRIORITY       INT_PRIORITY_LEVEL_6//I2C_INT_PRI_6
+#define MI2C_INT_PRIORITY       INT_PRIORITY_LEVEL_6
 #define MI2C_INT_SUB_PRIORITY   INT_SUB_PRIORITY_LEVEL_1
-#define MI2C_INT_PRIORITY_ISR   IPL6SOFT //ipl6
+#define MI2C_INT_PRIORITY_ISR   IPL6SOFT
 #define I2C_STATUS              I2C2STAT
 #define I2C_USE_TIMEOUT
 #ifdef I2C_USE_TIMEOUT
-    #define I2C_TIMEOUT_TIMER       (5-1)//(count from zero)
+    #define I2C_TIMEOUT_TIMER   (5-1)   //(count from zero)
     #define I2C_TIMEOUT_MS      (100)
     #define I2C_TIMEOUT_TIMER_INT_PRIORITY      INT_PRIORITY_LEVEL_4
     #define I2C_TIMEOUT_TIMER_INT_SUB_PRIORITY  INT_SUB_PRIORITY_LEVEL_1
-    //#define TIMEOUT_INT_PRIORITY 4
     #define TIMEOUT_INT_PRIORITY_ISR IPL4SOFT
 #endif
 /* SPI Definitions */

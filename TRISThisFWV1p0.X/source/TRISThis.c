@@ -83,9 +83,9 @@ BOOL TRISThisDigitalConfigure(void)
         TRISThisData.data[index]=0;
     }
     /* read in the current state */
-    TRISThisData.digital.port=TRISThisReadDigitalInputs();
-    TRISThisData.digital.latch=TRISThisReadDigitalLatches();
-    TRISThisData.digital.direction=TRISThisReadDigitalDirection();
+    TRISThisData.digital.port.Val=TRISThisReadDigitalInputs();
+    TRISThisData.digital.latch.Val=TRISThisReadDigitalLatches();
+    TRISThisData.digital.direction.Val=TRISThisReadDigitalDirection();
     return TRUE;
 }
 
@@ -148,9 +148,9 @@ void DoTRISThis(void)
 {
     static UINT32_VAL tempHolding;
 
-    TRISThisData.digital.port=TRISThisReadDigitalInputs();
-    TRISThisData.digital.latch=TRISThisReadDigitalLatches();
-    TRISThisData.digital.direction=TRISThisReadDigitalDirection();
+    TRISThisData.digital.port.Val=TRISThisReadDigitalInputs();
+    TRISThisData.digital.latch.Val=TRISThisReadDigitalLatches();
+    TRISThisData.digital.direction.Val=TRISThisReadDigitalDirection();
     TRISThisData.status.autoLEDmode=GetLEDAutoMode();
     TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
     if(SPIDataReady())
@@ -182,14 +182,14 @@ void DoTRISThis(void)
         SPIByteGet(INDEX_DIGITAL_DIRECTION_HB,&tempData.byte.HB);
         if(tempData.Val!=TRISThisReadDigitalDirection())
         {
-            TRISThisSetDigitalDirection(tempData.Val);
+            TRISThisSetDigitalDirection(tempData);
         }
         tempData.Val=0;
         SPIByteGet(INDEX_DIGITAL_LATCH_LB,&tempData.byte.LB);
         SPIByteGet(INDEX_DIGITAL_LATCH_HB,&tempData.byte.HB);
         if(tempData.Val!=TRISThisReadDigitalLatches())
         {
-            TRISThisSetDigitalLatches(tempData.Val);
+            TRISThisSetDigitalLatches(tempData);
         }
         INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     }

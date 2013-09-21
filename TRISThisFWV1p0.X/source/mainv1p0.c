@@ -37,8 +37,8 @@ int main(void)
     //INT16 readingHoldingSigned;
     //UINT16 readingHoldingUnsigned;
     /* local to main() and initialized*/
-    int currentIndex=0;
-    int voltageIndex=0;
+    //int currentIndex=0;
+    //int voltageIndex=0;
     #ifdef USE_DIGIPOT
         BOOL digipotGet=TRUE;
     #endif

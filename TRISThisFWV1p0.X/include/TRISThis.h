@@ -139,6 +139,8 @@ void TRISThisSetLEDAutoMode(BOOL);
 UINT32 TRISThisReadStatus(void);
 UINT32 TRISThisSetStatus(UINT32);
 BOOL TRISThisConfigure(void);
+BOOL TRISThisSetDigitalLatches(UINT32_VAL);
+BOOL TRISThisSetDigitalDirection(UINT32_VAL);
 
 #else /* #ifndef TRISTHIS_H */
 
