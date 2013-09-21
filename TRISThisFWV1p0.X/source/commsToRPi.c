@@ -18,7 +18,7 @@ extern TRISTHIS_DATA_TYPE TRISThisData;
 
 /******************************************************************************/
 
-BOOL SPIDataGet(UINT8 address, UINT8 *data)
+BOOL SPIByteGet(UINT8 address, UINT8 *data)
 {
     if(address>=sizeof(SPI.RXData))
     {
@@ -31,6 +31,10 @@ BOOL SPIDataGet(UINT8 address, UINT8 *data)
     }
 }
 
+BOOL SPIWordGet(UINT8 address, UINT32 *data)
+{
+
+}
 /******************************************************************************/
 
 BOOL SPIDataReady(void)

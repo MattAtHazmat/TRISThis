@@ -44,6 +44,7 @@ BOOL TRISThisConfigure(void)
 
 BOOL TRISThisDigitalConfigure(void)
 {
+    UINT32 index;
     IO_OUT00=FALSE;
     IO_OUT01=FALSE;
     IO_OUT02=FALSE;
@@ -76,6 +77,12 @@ BOOL TRISThisDigitalConfigure(void)
     IO_DIRECTION13=TRIS_IN;
     IO_DIRECTION14=TRIS_IN;
     IO_DIRECTION15=TRIS_IN;
+    /* clear out the data array */
+    for(index=0;index<TRISTHIS_DATA_SIZE;index++)
+    {
+        TRISThisData.data[index]=0;
+    }
+    /* read in the current state */
     TRISThisData.digital.port=TRISThisReadDigitalInputs();
     TRISThisData.digital.latch=TRISThisReadDigitalLatches();
     TRISThisData.digital.direction=TRISThisReadDigitalDirection();
@@ -140,6 +147,12 @@ BOOL TRISThisSetDigitalDirection(UINT32_VAL toSet)
 void DoTRISThis(void)
 {
     static UINT32_VAL tempHolding;
+
+    TRISThisData.digital.port=TRISThisReadDigitalInputs();
+    TRISThisData.digital.latch=TRISThisReadDigitalLatches();
+    TRISThisData.digital.direction=TRISThisReadDigitalDirection();
+    TRISThisData.status.autoLEDmode=GetLEDAutoMode();
+    TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
     if(SPIDataReady())
     {
         /* if there is data available from the SPI, figure out what it is, and*/
@@ -148,58 +161,51 @@ void DoTRISThis(void)
         /* called a lot- save churn on the stack?                             */
         static UINT32_VAL tempData;
         /* check the data we read                                             */
-        SPIDataGet(INDEX_STATUS_MB,&tempData.byte.MB);
-        SPIDataGet(INDEX_STATUS_UB,&tempData.byte.UB);
-        SPIDataGet(INDEX_STATUS_HB,&tempData.byte.HB);
-        SPIDataGet(INDEX_STATUS_LB,&tempData.byte.LB);
+        SPIByteGet(INDEX_STATUS_MB,&tempData.byte.MB);
+        SPIByteGet(INDEX_STATUS_UB,&tempData.byte.UB);
+        SPIByteGet(INDEX_STATUS_HB,&tempData.byte.HB);
+        SPIByteGet(INDEX_STATUS_LB,&tempData.byte.LB);
         /* tempdata is the status */
-        if(tempData.Val!=TRISThisReadStatus())
+        tempData.Val|=STATUS_READ_ONLY_MASK;
+        if(tempData.Val!=(TRISThisReadStatus()|STATUS_READ_ONLY_MASK))
         {
             TRISThisSetStatus(tempData.Val);
             LEDAutoMode(TRISThisData.status.autoLEDmode);
         }
-        SPIDataGet(INDEX_LED,&tempData.byte.LB);
+        SPIByteGet(INDEX_LED,&tempData.byte.LB);
         if(tempData.byte.LB!=ReadLEDs())
         {
             SetLEDs(tempData.byte.LB);
         }
-        SPIDataGet(INDEX_DIGITAL_DIRECTION_0,&tempData.byte.LB);
-        if(tempData.byte.LB!=(0xff&(TRISD>>1)))
+        tempData.Val=0;
+        SPIByteGet(INDEX_DIGITAL_DIRECTION_LB,&tempData.byte.LB);
+        SPIByteGet(INDEX_DIGITAL_DIRECTION_HB,&tempData.byte.HB);
+        if(tempData.Val!=TRISThisReadDigitalDirection())
         {
-            TRISThisSetDigitalDirection(0,tempData.byte.LB);
+            TRISThisSetDigitalDirection(tempData.Val);
         }
-        SPIDataGet(INDEX_DIGITAL_DIRECTION_1,&tempData.byte.LB);
-        if(tempData.byte.LB!=(0xff&(TRISE)))
+        tempData.Val=0;
+        SPIByteGet(INDEX_DIGITAL_LATCH_LB,&tempData.byte.LB);
+        SPIByteGet(INDEX_DIGITAL_LATCH_HB,&tempData.byte.HB);
+        if(tempData.Val!=TRISThisReadDigitalLatches())
         {
-            TRISThisSetDigitalDirection(0,tempData.byte.LB);
-        }
-        SPIDataGet(INDEX_DIGITAL_LATCH_0,&tempData.byte.LB);
-        if(tempData.byte.LB!=(0xff&(LATD>>1)))
-        {
-            TRISThisSetDigitalLatches(0,tempData.byte.LB);
-        }
-        SPIDataGet(INDEX_DIGITAL_LATCH_1,&tempData.byte.LB);
-        if(tempData.byte.LB!=(0xff&(LATE)))
-        {
-            TRISThisSetDigitalLatches(1,tempData.byte.LB);
+            TRISThisSetDigitalLatches(tempData.Val);
         }
         INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     }
     /* update the data that the SPI might read */
     if(PAC1710GetData(PAC1710_DATA_CURRENT,&tempHolding.w[0]))
     {
-        TRISThisData.current.w[0]=tempHolding.w[0];
-        TRISThisData.status.freshCurrent=TRUE;
+        TRISThisData.supplyCurrent.w[0]=tempHolding.w[0];
+        TRISThisData.status.freshSupplyCurrent=TRUE;
     }
     if(PAC1710GetData(PAC1710_DATA_VOLTAGE,&tempHolding.w[0]))
     {
-        TRISThisData.voltage.w[0]=tempHolding.w[0];
-        TRISThisData.status.freshVoltage=TRUE;
+        TRISThisData.supplyVoltage.w[0]=tempHolding.w[0];
+        TRISThisData.status.freshSupplyVoltage=TRUE;
     }
     TRISThisData.status.autoLEDmode=GetLEDAutoMode();
-    TRISThisReadDigitalInputs();
-    TRISThisReadDigitalLatches();
-    TRISThisReadDigitalDirection();
+    
 
 }
 

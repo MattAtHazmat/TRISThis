@@ -3,6 +3,7 @@
 #include <tick.h>
 #include <TRISThis.h>
 #include <LED.h>
+BOOL autoMode;
 enum LED_STATE_TYPE LEDState;
 extern TRISTHIS_DATA_TYPE TRISThisData;
 
@@ -22,7 +23,8 @@ BOOL LEDInitialize(void)
     //LED8_DIRECTION=TRIS_OUT;
     //LEDState=LED_STATE_MANUAL;
     LEDState=LED_STATE_ALL_OFF;
-    TRISThisData.status.autoLEDmode=TRUE;
+    autoMode=TRUE;
+    TRISThisData.status.autoLEDmode=autoMode;
     TRISThisData.LEDs.w.Val=0;
     return TRUE;
 }
@@ -155,4 +157,8 @@ BOOL LEDAutoMode(BOOL toSet)
     return returnValue;
 }
 
+BOOL GetLEDAutoMode(void)
+{
+    return autoMode;
+}
 /******************************************************************************/

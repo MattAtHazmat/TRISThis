@@ -8,28 +8,59 @@
 #ifndef _TRISTHIS_H_
 #define	_TRISTHIS_H_
 
-#define TRISTHIS_DATA_SIZE              (0x20)
+//#define TRISTHIS_DATA_SIZE              (0x20)
 #define TRISTHIS_NUMBER_DIGITAL_PORTS   (2)
 #define TRISTHIS_NUMBER_ANALOG_PORTS    (4)
-#define STATUS_READ_ONLY_MASK           (0x00000001)
+#define STATUS_READ_ONLY_MASK           (0x00000003)
 
 /* TODO: can these be automatically generated? */
-#define INDEX_STATUS_MB             (0)
-#define INDEX_STATUS_UB             (1)
-#define INDEX_STATUS_HB             (2)
-#define INDEX_STATUS_LB             (3)
-#define INDEX_LED_X                 (4)
-#define INDEX_LED_Y                 (5)
-#define INDEX_LED_Z                 (6)
-#define INDEX_LED                   (7)
-#define INDEX_DIGITAL_LATCH_0       (8)
-#define INDEX_DIGITAL_PORT_0        (9)
-#define INDEX_DIGITAL_DIRECTION_0   (10)
-#define INDEX_DIGITAL_X_0           (11)
-#define INDEX_DIGITAL_LATCH_1       (12)
-#define INDEX_DIGITAL_PORT_1        (13)
-#define INDEX_DIGITAL_DIRECTION_1   (14)
-#define INDEX_DIGITAL_X_1           (15)
+typedef enum {
+    INDEX_STATUS_MB=0,
+    INDEX_STATUS_UB,
+    INDEX_STATUS_HB,
+    INDEX_STATUS_LB,
+    INDEX_LED_Z,
+    INDEX_LED_Y,
+    INDEX_LED_X,
+    INDEX_LED,
+    INDEX_DIGITAL_LATCH_MB,
+    INDEX_DIGITAL_LATCH_UB,
+    INDEX_DIGITAL_LATCH_HB,
+    INDEX_DIGITAL_LATCH_LB,
+    INDEX_DIGITAL_DIRECTION_MB,
+    INDEX_DIGITAL_DIRECTION_UB,
+    INDEX_DIGITAL_DIRECTION_HB,
+    INDEX_DIGITAL_DIRECTION_LB,
+    INDEX_DIGITAL_PORT_MB,
+    INDEX_DIGITAL_PORT_UB,
+    INDEX_DIGITAL_PORT_HB,
+    INDEX_DIGITAL_PORT_LB,
+    INDEX_ANALOG0_GAIN_HB,
+    INDEX_ANALOG0_GAIN_LB,
+    INDEX_ANALOG0_HB,
+    INDEX_ANALOG0_LB,
+    INDEX_ANALOG1_GAIN_HB,
+    INDEX_ANALOG1_GAIN_LB,
+    INDEX_ANALOG1_HB,
+    INDEX_ANALOG1_LB,
+    INDEX_ANALOG2_GAIN_HB,
+    INDEX_ANALOG2_GAIN_LB,
+    INDEX_ANALOG2_HB,
+    INDEX_ANALOG2_LB,
+    INDEX_ANALOG3_GAIN_HB,
+    INDEX_ANALOG3_GAIN_LB,
+    INDEX_ANALOG3_HB,
+    INDEX_ANALOG3_LB,
+    INDEX_BOARD_CURRENT_MB,
+    INDEX_BOARD_CURRENT_UB,
+    INDEX_BOARD_CURRENT_HB,
+    INDEX_BOARD_CURRENT_LB,
+    INDEX_BOARD_VOLTAGE_MB,
+    INDEX_BOARD_VOLTAGE_UB,
+    INDEX_BOARD_VOLTAGE_HB,
+    INDEX_BOARD_VOLTAGE_LB,
+    TRISTHIS_DATA_SIZE
+} TRISTHIS_DATA_INDEX_TYPE;
 
 typedef struct
 {
@@ -68,9 +99,10 @@ typedef union
 {
     struct
     {
-        unsigned configured:1;
+
+        unsigned configured:1; /* read only */
+        unsigned V5p0Good:1;   /* read only */
         unsigned autoLEDmode:1;
-        unsigned V5p0Good:1;
         unsigned freshSupplyVoltage:1;
         unsigned freshSupplyCurrent:1;
     };
@@ -82,6 +114,7 @@ typedef union
     UINT8 data[TRISTHIS_DATA_SIZE];
     struct
     {
+        /* each member should be 32 bits wide */
         TRISTHIS_STATUS_TYPE status;
         TRISTHIS_LED_TYPE LEDs;
         TRISTHIS_DIGITAL_PORT_TYPE digital;
