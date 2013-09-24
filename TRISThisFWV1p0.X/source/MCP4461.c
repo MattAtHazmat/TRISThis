@@ -105,14 +105,19 @@ BOOL DoDigipot(void)
     {
         case DIGIPOT_STATE_IDLE:
         {
-            if (digipotStatus.readAll) {
+            if (digipotStatus.readAll)
+            {
                 digipotStatus.reading = TRUE;
                 digipotStatus.channel = 0;
                 state = DIGIPOT_STATE_READ;
-            } else if (digipotStatus.readIndividual || digipotStatus.readStatus) {
+            } 
+            else if (digipotStatus.readIndividual || digipotStatus.readStatus)
+            {
                 digipotStatus.reading = TRUE;
                 state = DIGIPOT_STATE_READ;
-            } else {
+            } 
+            else
+            {
                 /* don't be greedy */
                 MasterI2CReleasePort();
             }
@@ -120,10 +125,13 @@ BOOL DoDigipot(void)
         }
         case DIGIPOT_STATE_READ:
         {
-            if (!MasterI2CIsBusy()) {
+            if (!MasterI2CIsBusy())
+            {
                 UINT8 digipotCommand = 0;
-                if (digipotStatus.readAll || digipotStatus.readIndividual) {
-                    switch (digipotStatus.channel) {
+                if (digipotStatus.readAll || digipotStatus.readIndividual)
+                {
+                    switch (digipotStatus.channel)
+                    {
                         case 0:
                         {
                             digipotCommand = MCP4461_VOLATILE_WIPER_0;
@@ -151,9 +159,13 @@ BOOL DoDigipot(void)
                         }
                     }
                     digipotCommand |= MCP4461_COMMAND_READ;
-                } else if (digipotStatus.readStatus) {
+                } 
+                else if (digipotStatus.readStatus)
+                {
                     digipotCommand = MCP4461_STATUS;
-                } else {
+                } 
+                else
+                {
                     /* not quite sure what is happening */
                     state = DIGIPOT_STATE_CLEANUP;
                     break;
@@ -163,7 +175,8 @@ BOOL DoDigipot(void)
                 command.Word[0] = digipotCommand;
                 command.WordSize = 1;
                 command.DataSize = 2;
-                if (MasterI2CQueueCommand(&command)) {
+                if (MasterI2CQueueCommand(&command))
+                {
                     state = DIGIPOT_STATE_READ_WAIT;
                 }
                 command.status.all = 0; /* just in case */
@@ -172,30 +185,43 @@ BOOL DoDigipot(void)
         }
         case DIGIPOT_STATE_READ_WAIT:
         {
-            if (MasterI2CIsQueuedCommandDone()) {
-                if (MasterI2CUpdateQueuedCommand(&command)) {
-                    if (digipotStatus.readStatus) {
+            if (MasterI2CIsQueuedCommandDone())
+            {
+                if (MasterI2CUpdateQueuedCommand(&command))
+                {
+                    if (digipotStatus.readStatus)
+                    {
                         digipot.STATUS.b = command.Data[1];
                         digipotStatus.readingReady = TRUE;
                         state = DIGIPOT_STATE_CLEANUP;
-                    } else {
+                    } 
+                    else
+                    {
                         digipot.value[digipotStatus.channel].word.byte.HB = command.Data[0];
                         digipot.value[digipotStatus.channel].word.byte.LB = command.Data[1];
                         digipot.value[digipotStatus.channel].goodRead = TRUE;
-                        if (digipotStatus.readIndividual) {
+                        if (digipotStatus.readIndividual)
+                        {
                             digipotStatus.readingReady = TRUE;
                             state = DIGIPOT_STATE_CLEANUP;
-                        } else if (digipotStatus.readAll) {
-                            if (digipotStatus.channel == 3) {
+                        } 
+                        else if (digipotStatus.readAll)
+                        {
+                            if (digipotStatus.channel == 3)
+                            {
                                 digipotStatus.readingReady = TRUE;
                                 state = DIGIPOT_STATE_CLEANUP;
-                            } else {
+                            } 
+                            else
+                            {
                                 digipotStatus.channel++;
                                 state = DIGIPOT_STATE_READ;
                             }
                         }
                     }
-                } else if (command.status.flags.I2C_error) {
+                } 
+                else if (command.status.flags.I2C_error)
+                {
                     digipotStatus.error = TRUE;
                     digipotStatus.errorNoACK = command.status.flags.I2C_no_slave_addr_ack;
                     digipotStatus.errorOnRead = TRUE;
