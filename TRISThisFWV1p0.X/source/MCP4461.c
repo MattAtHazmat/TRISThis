@@ -120,8 +120,9 @@ BOOL DoDigipot(void)
             {
                 /* don't be greedy */
                 MasterI2CReleasePort();
+                break;
             }
-            break;
+            /* no break */
         }
         case DIGIPOT_STATE_READ:
         {
