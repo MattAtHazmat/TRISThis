@@ -312,6 +312,7 @@ BOOL MasterI2CQueueCommand(I2CBUS_COMMAND_TYPE *command)
 
 BOOL MasterI2CUpdateQueuedCommand(I2CBUS_COMMAND_TYPE *command)
 {
+    BOOL returnValue=FAIL;
     if(MasterI2CPort.status.flags.I2C_action_complete)
     {
         /* just in case */
@@ -320,20 +321,14 @@ BOOL MasterI2CUpdateQueuedCommand(I2CBUS_COMMAND_TYPE *command)
         #endif
         command->status=MasterI2CPort.status;
         command->DataSize=MasterI2CPort.data_index;
-        if(MasterI2CPort.status.flags.I2C_error)
-        {
-            return FAIL;
-        }
-        else
-        {
-            return SUCCESS;
-        }
+        returnValue= !MasterI2CPort.status.flags.I2C_error;
+        
     }
-    else
-    {
-        return FAIL;  /* this port has not gone through a full I2C transaction*/
-                      /* cycle                                                */
-    }
+//    else
+//    {
+//            /* this port has not gone through a full I2C transaction cycle */
+//    }
+    return returnValue;
 }
 
 #ifdef I2C_PARANOID_INIT
