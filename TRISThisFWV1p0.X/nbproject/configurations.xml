@@ -15,7 +15,6 @@
         <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/i2c.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/int.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/proc/p32mx795f512l.h</itemPath>
-        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/plib.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/timer.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/int_5xx_6xx_7xx.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/SPI_Port_Mappings.h</itemPath>
@@ -102,8 +101,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
-        <property key="extra-include-directories"
-                  value="include;/opt/microchip/xc32/v1.21/pic32mx/include/peripheral"/>
+        <property key="extra-include-directories" value="include"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
         <property key="make-warnings-into-errors" value="false"/>
@@ -115,6 +113,7 @@
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
         <property key="use-cci" value="false"/>
+        <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
       </C32>
       <C32-AS>

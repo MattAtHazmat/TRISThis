@@ -7,8 +7,6 @@
 /******************************************************************************/
 
 #include <common.h>
-#include <system.h>
-#include <osc.h>
 #include <tick.h>
 #include <LED.h>
 #include <PAC1710.h>

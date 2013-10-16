@@ -11,8 +11,6 @@
 /******************************************************************************/
 
 #include <common.h>
-#include <i2c.h>
-#include <int.h>
 #include <delay.h>
 #include <I2C_Bus_Master.h>
 
