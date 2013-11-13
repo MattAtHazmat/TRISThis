@@ -9,11 +9,8 @@
     #define _COMMON_H_
     #define _PLIB_DISABLE_LEGACY
     #include <xc.h>
-    //#include <p32xxxx.h>
     #include <GenericTypeDefs.h>
     #include <plib.h>
-    #include <limits.h>
-    
     #include <hardwareConfiguration.h>
     #include <firmwareConfiguration.h>
     #include <clockomatic.h>

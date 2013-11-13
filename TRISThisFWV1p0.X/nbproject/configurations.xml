@@ -10,10 +10,6 @@
         <itemPath>include/hardwareConfiguration.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="Microchip" projectFiles="true">
-        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/spi_5xx_6xx_7xx.h</itemPath>
-        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/spi.h</itemPath>
-        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/i2c.h</itemPath>
-        <itemPath>/opt/microchip/xc32/v1.20/pic32mx/include/peripheral/int.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/proc/p32mx795f512l.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/timer.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/int_5xx_6xx_7xx.h</itemPath>
@@ -21,6 +17,11 @@
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/system.h</itemPath>
         <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/osc.h</itemPath>
         <itemPath>include/GenericTypeDefs.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/i2c.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/int.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/spi.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/peripheral/spi_5xx_6xx_7xx.h</itemPath>
+        <itemPath>/opt/microchip/xc32/v1.21/pic32mx/include/limits.h</itemPath>
       </logicalFolder>
       <itemPath>include/mainv1p0.h</itemPath>
       <itemPath>include/common.h</itemPath>
@@ -72,7 +73,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>1.21</languageToolchainVersion>
+        <languageToolchainVersion>1.22</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
