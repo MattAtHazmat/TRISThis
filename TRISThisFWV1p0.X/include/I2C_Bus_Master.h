@@ -10,7 +10,7 @@
 
 #ifndef _I2C_BUS_MASTER_H_
 #define _I2C_BUS_MASTER_H_
-
+#ifdef USE_I2C
 /******************************************************************************/
 /* I2C_receive: read with no write before it                                  */
 /* I2C_read:    write a command word first (which can be more than one byte)  */
@@ -220,7 +220,8 @@ BOOL MasterI2CClaimPort(enum MASTER_I2C_OWNER_TYPE);
 void MasterI2CReleasePort(void);
 BOOL MasterI2CAvailable(void);
 BOOL MasterI2CHasPort(enum MASTER_I2C_OWNER_TYPE);
+#endif /* #ifdef USE_I2C */
 
-
-
+#else
+#warning "Redundant include of I2C_Bus_Master.h"
 #endif

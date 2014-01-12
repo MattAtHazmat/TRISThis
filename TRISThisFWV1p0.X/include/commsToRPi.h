@@ -9,7 +9,7 @@
 #define	_COMMSTORPI_H_
 
 /******************************************************************************/
-
+#ifdef USE_SPI
 #if (RPI_SPI_CHANNEL==1)
 
     #define SPI_RX_INTERRUPT_ENABLE         IEC0bits.SPI1RXIE
@@ -114,7 +114,7 @@ BOOL ConfigSPIComms(void);
 inline BOOL RPiSelectStatus(void);
 BOOL SPIDataReady(void);
 BOOL SPIByteGet(UINT8, UINT8*);
-
+#endif /* #ifdef USE_SPI */
 #else
 
     #warning "Redundant include of commsToRPi.h"

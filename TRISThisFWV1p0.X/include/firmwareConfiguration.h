@@ -9,7 +9,7 @@
 #define	_FIRMWARE_CONFIGURATION_H_
 
 #define DELAY_USE_CORE_TIMER
-#define USE_I2C
+//#define USE_I2C
 #define USE_SPI
 #ifdef USE_I2C
 //#define USE_PAC1710
