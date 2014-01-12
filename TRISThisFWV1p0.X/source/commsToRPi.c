@@ -197,7 +197,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
         if(RPI_SPI_RX_BUF_FULL)
         {
             /* data in the buffer, read it */
-            SPITemp=RPI_SPI_BUF;
+            SPITemp=((0x000000FF)&RPI_SPI_BUF);
             switch(SPI.RXState)
             {
                 case STATE_SPI_RX_COMMAND:
@@ -322,14 +322,16 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
         {
             RPI_SPI_BUF=SPI.TXBuffer;
             SPI.TXIndex++;
-            if(SPI.TXIndex==sizeof(SPI.TXData))
+            if(SPI.TXIndex<sizeof(SPI.TXData))
+            {
+                /* get the next byte ready */
+                SPI.TXBuffer=SPI.TXData[SPI.TXIndex];
+            }
+            else
             {
                 /* there can be no more! */
                 SPI.status.TXEnd=TRUE;
             }
-            SPI.TXIndex = SPI.TXIndex % sizeof (TRISThisData);
-            /* get the next byte ready */
-            SPI.TXBuffer=TRISThisData.data[SPI.TXIndex];
         }
     }
     if(SPI_INTERRUPT_ERROR_ENABLE&&SPI_INTERRUPT_ERROR_FLAG)
