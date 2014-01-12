@@ -66,9 +66,9 @@ typedef union
         unsigned RXDataReady:1;
         unsigned CEStatus:1;
         unsigned inProgress:1;
-        unsigned RXOverrunError:1;
-        unsigned RXOverflow:1;
         unsigned RXOverrun:1;
+        unsigned RXOverflow:1;
+        unsigned TXOverrun:1;
         unsigned RXMysteryState:1;
         unsigned unknownCommandRX:1;
     };
@@ -96,6 +96,7 @@ typedef struct
     UINT8       TXCount;
     SPI_STATUS  status;
     UINT8 RXData[SPI_RX_BUFFER_SIZE];
+    UINT8 TXData[SPI_TX_BUFFER_SIZE];
     UINT8 RXIndex;
     UINT8 TXBuffer;
     UINT8 TXIndex;
@@ -106,8 +107,8 @@ typedef struct
 /* commands                                                                   */
 /******************************************************************************/
 
-#define SPI_READ    (0b00000011)
-#define SPI_WRITE   (0b00000010)
+#define SPI_READ_COMMAND    (0b00000011)
+#define SPI_WRITE_COMMAND   (0b00000010)
 
 /******************************************************************************/
 /* Prototypes                                                                 */

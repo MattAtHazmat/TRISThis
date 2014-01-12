@@ -126,7 +126,26 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
     }
     else if((SPI.status.CEStatus==TRUE)&&(SPI_DESELECTED))
     {
-        SPI.RXState=STATE_SPI_RX_COMPLETE;
+        switch(SPI.command)
+        {
+            case SPI_WRITE_COMMAND:
+            {
+                SPI.RXState=STATE_SPI_RX_SPI_WRITE_COMPLETE;
+                break;
+            }
+            case SPI_READ_COMMAND:
+            {
+                SPI.RXState=STATE_SPI_RX_COMPLETE;
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+    }
+    else
+    {
         SPI.status.RXDataReady=TRUE;
         SPI.status.CEStatus=FALSE;
     }
@@ -171,6 +190,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 }
                 case STATE_SPI_RX_ADDRESS_MSB:
                 {
+                    SPI.TXBuffer=NOT_YET_BYTE;
                     SPI.RXState=STATE_SPI_RX_ADDRESS_LSB;
                     SPI.address.byte.HB=SPITemp;
                     break;
@@ -179,26 +199,56 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                 {
                     SPI.RXState=STATE_SPI_RX_DATA;
                     SPI.address.byte.LB=SPITemp;
+                    switch(SPI.command)
+                    {
+                        case SPI_READ_COMMAND:
+                        {
+                            unsigned int index;
+                            /* the master is requesting data, make a copy and     */
+                            /* have it ready                                      */
+                            SPI.TXIndex=0;
+                            index=0;
+                            /* only really can use the low byte of the address    */
+                            SPI.TXIndex=SPI.address.byte.LB;
+                            /* bounds check */
+                            while((index<sizeof(TRISThisData))&&
+                                  (SPI.TXIndex<sizeof(SPI.TXData)))
+                            {
+                                SPI.TXData[SPI.TXIndex++]=TRISThisData[index++];
+                            }
+                            SPI.TXIndex=0;
+                            SPI.TXBuffer
+                        }
+                        case SPI_WRITE_COMMAND:
+                        {
+                            break;
+                        }
+                        default:
+                        {
+
+                        }
+                    }
                     break;
                 }
                 case STATE_SPI_RX_DATA:
                 {
-                    if(!SPI.status.RXOverrunError)
+                    /* master is sending data */
+                    if(!SPI.status.RXOverrun)
                     {
                         switch(SPI.command)
                         {
-                            case SPI_WRITE:
+                            case SPI_WRITE_COMMAND:
                             {
                                 SPI.RXData[SPI.RXCount++]=SPITemp;
                                 if(SPI.RXCount==SPI_RX_BUFFER_SIZE)
                                 {
                                     /* error-- went too long*/
-                                    SPI.status.RXOverrunError=TRUE;
+                                    SPI.status.RXOverrun=TRUE;
                                     SPI.RXState=STATE_SPI_RX_SPI_WRITE_COMPLETE;
                                 }
                                 break;
                             }
-                            case SPI_READ:
+                            case SPI_READ_COMMAND:
                             {
                                 SPI.TXIndex = SPI.address.byte.LB % sizeof (TRISThisData);
                                 SPI.TXBuffer= TRISThisData.data[SPI.TXIndex];
