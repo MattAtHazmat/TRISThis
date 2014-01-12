@@ -7,7 +7,7 @@
 
 #ifndef _COMMSTORPI_H_
 #define	_COMMSTORPI_H_
-
+#ifdef TALK_TO_RASPBERRY_PI
 /******************************************************************************/
 #ifdef USE_SPI
 #if (RPI_SPI_CHANNEL==1)
@@ -114,7 +114,11 @@ BOOL ConfigSPIComms(void);
 inline BOOL RPiSelectStatus(void);
 BOOL SPIDataReady(void);
 BOOL SPIByteGet(UINT8, UINT8*);
+
 #endif /* #ifdef USE_SPI */
+
+#endif /* #ifdef TALK_TO_RASPBERRY_PI */
+
 #else
 
     #warning "Redundant include of commsToRPi.h"

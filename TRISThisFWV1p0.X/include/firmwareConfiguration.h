@@ -11,6 +11,10 @@
 #define DELAY_USE_CORE_TIMER
 //#define USE_I2C
 #define USE_SPI
+
+#ifdef USE_SPI
+#define TALK_TO_RASPBERRY_PI
+#endif
 #ifdef USE_I2C
 //#define USE_PAC1710
 //#define USE_DIGIPOT
