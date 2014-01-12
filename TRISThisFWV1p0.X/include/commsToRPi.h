@@ -51,6 +51,9 @@
     #error "RPI_SPI_CHANNEL not defined"
 #endif
 
+#define SPI_SELECTED    (SPI_SELECT_CN_IN==FALSE)
+#define SPI_DESELECTED  (SPI_SELECT_CN_IN==TRUE)
+
 #define OVERRUN_BYTE    0xFF
 #define NOT_YET_BYTE    0x00
 
@@ -87,7 +90,7 @@ enum SPI_RX_STATE
 
 typedef struct
 {
-    UINT32_VAL  address;
+    UINT16_VAL  address;
     UINT8       command;
     UINT8       RXCount;
     UINT8       TXCount;

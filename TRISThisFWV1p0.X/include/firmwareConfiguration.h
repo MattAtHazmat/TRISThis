@@ -27,12 +27,6 @@
     #define USE_DIGIPOT
 #endif /* #ifdef USE_I2C */
 
-#ifdef USE_PAC1710
-    #define HISTORY_SIZE            (100)
-    #define CURRENT_HISTORY_SIZE    HISTORY_SIZE
-    #define VOLTAGE_HISTORY_SIZE    HISTORY_SIZE
-#endif /* #ifdef USE_PAC1710 */
-
 /******************************************************************************/
 /* LED Activity Definitions                                                   */
 /******************************************************************************/
@@ -90,7 +84,10 @@
 /******************************************************************************/
 
 #ifdef USE_PAC1710
-/* PAC1710 */
+    #define HISTORY_SIZE            (100)
+    #define CURRENT_HISTORY_SIZE    HISTORY_SIZE
+    #define VOLTAGE_HISTORY_SIZE    HISTORY_SIZE
+
     //#define MONITOR_1_ADDRESS     (0b10011000) /* 0x98 */
     #define PAC1710_ADDRESS         (0b00110000) /* 0x30 */
 

@@ -112,7 +112,7 @@ BOOL ConfigSPIComms(void)
 void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
 {
     IFS1CLR=_IFS1_CNIF_MASK;
-    if((SPI.status.CEStatus==FALSE)&&(SPI_SELECT_CN_IN==FALSE))
+    if((SPI.status.CEStatus==FALSE)&&(SPI_SELECTED))
     {
         if(SPI.status.RXDataReady)
         {
@@ -124,7 +124,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
         SPI.status.CEStatus=TRUE;
         SPI.RXCount=0;
     }
-    else if((SPI.status.CEStatus==TRUE)&&(SPI_SELECT_CN_IN==TRUE))
+    else if((SPI.status.CEStatus==TRUE)&&(SPI_DESELECTED))
     {
         SPI.RXState=STATE_SPI_RX_COMPLETE;
         SPI.status.RXDataReady=TRUE;
@@ -170,13 +170,6 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrutpt(void)
                     break;
                 }
                 case STATE_SPI_RX_ADDRESS_MSB:
-                {
-                    SPI.address.Val=0;
-                    SPI.RXState=STATE_SPI_RX_ADDRESS_2SB;
-                    SPI.address.byte.UB=SPITemp;
-                    break;
-                }
-                case STATE_SPI_RX_ADDRESS_2SB:
                 {
                     SPI.RXState=STATE_SPI_RX_ADDRESS_LSB;
                     SPI.address.byte.HB=SPITemp;
