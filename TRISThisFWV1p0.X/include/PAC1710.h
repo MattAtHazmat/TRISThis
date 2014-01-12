@@ -7,7 +7,7 @@
 
 #ifndef _PAC1710_H_
 #define	_PAC1710_H_
-
+#ifdef USE_PAC1710
 /* addresses from p 23-24 of PAC1710 datasheet */
 
 #define PAC1710_REG_CONFIGURATION               0x00
@@ -186,7 +186,7 @@ BOOL PAC1710SubsystemInitialize(UINT32);
 BOOL GetCurrentData(UINT32, INT16*);
 BOOL GetVoltageData(UINT32, INT16*);
 BOOL PAC1710GetData(enum PAC1710_DATA_TYPE, INT16 *);
-
+#endif /* #ifdef USE_PAC1710 */
 #else
     #warning "Redundant include of PAC1710.h"
 

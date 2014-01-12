@@ -9,6 +9,7 @@
 /******************************************************************************/
 
 #include <common.h>
+#ifdef USE_PAC1710
 #include <PAC1710.h>
 #include <I2C_Bus_Master.h>
 
@@ -438,4 +439,5 @@ BOOL PAC1710GetData(enum PAC1710_DATA_TYPE what, INT16 *data)
     }
     return returnValue;
 }
+#endif /* USE_PAC1710 */
 /******************************************************************************/

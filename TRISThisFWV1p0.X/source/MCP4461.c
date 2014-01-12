@@ -1,4 +1,5 @@
 #include <common.h>
+#ifdef USE_DIGIPOT
 #include <MCP4461.h>
 #include <I2C_Bus_Master.h>
 
@@ -250,3 +251,4 @@ BOOL DoDigipot(void)
     }
     return TRUE;
 }
+#endif

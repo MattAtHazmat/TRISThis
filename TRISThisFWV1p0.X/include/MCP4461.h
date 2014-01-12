@@ -7,7 +7,7 @@
 
 #ifndef _MCP4461_H_
 #define	_MCP4461_H_
-
+#ifdef USE_DIGIPOT
 /******************************************************************************/
 /******************************************************************************/
 
@@ -162,7 +162,7 @@ BOOL DoDigipot(void);
 BOOL DigipotSubsystemInitialize(void);
 
 /******************************************************************************/
-
+#endif /* #ifdef USE_DIGIPOT */
 #else
 
     #warning "Redundant define of MCP4461.h"

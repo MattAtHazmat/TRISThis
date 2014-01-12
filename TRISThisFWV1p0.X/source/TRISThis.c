@@ -154,6 +154,7 @@ void DoTRISThis(void)
     TRISThisData.digital.direction.Val=TRISThisReadDigitalDirection();
     TRISThisData.status.autoLEDmode=GetLEDAutoMode();
     TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
+#ifdef USE_SPI
     if(SPIDataReady())
     {
         /* if there is data available from the SPI, figure out what it is, and*/
@@ -194,7 +195,9 @@ void DoTRISThis(void)
         }
         INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     }
+#endif /* USE_SPI */
     /* update the data that the SPI might read */
+#ifdef USE_PAC1710
     if(PAC1710GetData(PAC1710_DATA_CURRENT,&tempHolding.w[0]))
     {
         TRISThisData.supplyCurrent.w[0]=tempHolding.w[0];
@@ -206,7 +209,7 @@ void DoTRISThis(void)
         TRISThisData.status.freshSupplyVoltage=TRUE;
     }
     TRISThisData.status.autoLEDmode=GetLEDAutoMode();
-    
+#endif /* #ifdef USE_PAC1710 */
 
 }
 

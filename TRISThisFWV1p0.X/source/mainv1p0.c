@@ -17,12 +17,14 @@
 #include <mainv1p0.h>
 
 /******************************************************************************/
-extern UINT16_VAL currentHolding;
-extern UINT16_VAL voltageHolding;
-/* file scope for DMCI */
-INT16 monitorCurrentReadings[CURRENT_HISTORY_SIZE];
-UINT16 monitorVoltageReadings[VOLTAGE_HISTORY_SIZE];
+#ifdef USE_PAC1710
+    extern UINT16_VAL currentHolding;
+    extern UINT16_VAL voltageHolding;
+    /* file scope for DMCI */
 
+    INT16 monitorCurrentReadings[CURRENT_HISTORY_SIZE];
+    UINT16 monitorVoltageReadings[VOLTAGE_HISTORY_SIZE];
+#endif
 /******************************************************************************/
 
 int main(void)
@@ -30,7 +32,9 @@ int main(void)
     /* variables local to main()                                              */
     UINT8 dataRead;
     TICK_TYPE timeoutTime;
+#ifdef USE_I2C
     I2CBUS_COMMAND_TYPE command;
+#endif
     UINT16_VAL vSource;
     //INT16 readingHoldingSigned;
     //UINT16 readingHoldingUnsigned;
@@ -42,6 +46,7 @@ int main(void)
     #endif
     /**************************************************************************/
     InitializeSystem();
+    #ifdef USE_I2C
     if(!MasterI2CStartup())
     {
         LED1_ON;
@@ -54,6 +59,8 @@ int main(void)
         LED8_OFF;
         while(TRUE);
     }
+    #endif
+    #ifdef USE_PAC1710
     if(!PAC1710SubsystemInitialize(PAC1710_ADDRESS))
     {
         LED1_ON;
@@ -66,6 +73,7 @@ int main(void)
         LED8_OFF;
         while(TRUE);
     }
+    #endif
     #ifdef USE_DIGIPOT
     DigipotSubsystemInitialize();
     #endif
@@ -81,7 +89,9 @@ int main(void)
     {
         mClearWatchdog();
         DoTRISThis();
-        DoPowerMonState();
+        #ifdef USE_PAC1710
+            DoPowerMonState();
+        #endif
         DoLEDs();
         #ifdef USE_DIGIPOT
         DoDigipot();
