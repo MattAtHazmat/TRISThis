@@ -11,6 +11,7 @@
 /******************************************************************************/
 
 #include <common.h>
+#ifdef USE_I2C
 #include <delay.h>
 #include <I2C_Bus_Master.h>
 
@@ -655,3 +656,4 @@ BOOL MasterI2CHasPort(enum MASTER_I2C_OWNER_TYPE owner)
     }
     return FALSE;
 }
+#endif /* #ifdef USE_I2C */
