@@ -144,10 +144,10 @@ BOOL TRISThisSetDigitalDirection(UINT32_VAL toSet)
 
 /******************************************************************************/
 
-void DoTRISThis(void)
+BOOL DoTRISThis(void)
 {
     static UINT32_VAL tempHolding;
-
+    BOOL returnValue=TRUE;
     TRISThisData.digital.port.Val=TRISThisReadDigitalInputs();
     TRISThisData.digital.latch.Val=TRISThisReadDigitalLatches();
     TRISThisData.digital.direction.Val=TRISThisReadDigitalDirection();
@@ -194,6 +194,11 @@ void DoTRISThis(void)
         }
         INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     }
+    if(SPIFUBAR())
+    {
+        /* try and reset the SPI */
+        returnValue=ConfigSPIComms();
+    }
     #endif /* USE_SPI */
     /* update the data that the SPI might read */
     #ifdef USE_PAC1710
@@ -209,7 +214,7 @@ void DoTRISThis(void)
     }
     TRISThisData.status.autoLEDmode=GetLEDAutoMode();
     #endif /* #ifdef USE_PAC1710 */
-
+    return returnValue;
 }
 
 /******************************************************************************/

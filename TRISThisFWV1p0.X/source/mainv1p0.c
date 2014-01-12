@@ -17,14 +17,15 @@
 #include <mainv1p0.h>
 
 /******************************************************************************/
+
 #ifdef USE_PAC1710
     extern UINT16_VAL currentHolding;
     extern UINT16_VAL voltageHolding;
     /* file scope for DMCI */
-
     INT16 monitorCurrentReadings[CURRENT_HISTORY_SIZE];
     UINT16 monitorVoltageReadings[VOLTAGE_HISTORY_SIZE];
 #endif
+
 /******************************************************************************/
 
 int main(void)
@@ -32,9 +33,9 @@ int main(void)
     /* variables local to main()                                              */
     UINT8 dataRead;
     TICK_TYPE timeoutTime;
-#ifdef USE_I2C
-    I2CBUS_COMMAND_TYPE command;
-#endif
+    #ifdef USE_I2C
+        I2CBUS_COMMAND_TYPE command;
+    #endif
     UINT16_VAL vSource;
     //INT16 readingHoldingSigned;
     //UINT16 readingHoldingUnsigned;
@@ -57,6 +58,7 @@ int main(void)
         LED6_OFF;
         LED7_ON;
         LED8_OFF;
+        /* TODO: consistent LED notification of an error */
         while(TRUE);
     }
     #endif
@@ -71,6 +73,7 @@ int main(void)
         LED6_OFF;
         LED7_ON;
         LED8_OFF;
+        /* TODO: consistent LED notification of an error */
         while(TRUE);
     }
     #endif
@@ -79,6 +82,7 @@ int main(void)
     #endif
     if(!ConfigSPIComms())
     {
+        /* TODO: consistent LED notification of an error */
         while(TRUE);
     }
     TRISThisConfigure();
@@ -88,7 +92,11 @@ int main(void)
     while(TRUE)
     {
         mClearWatchdog();
-        DoTRISThis();
+        if(!DoTRISThis())
+        {
+            /* TODO: consistent LED notification of an error */
+            while(TRUE);
+        }
         #ifdef USE_PAC1710
             DoPowerMonState();
         #endif
@@ -154,10 +162,15 @@ int main(void)
     }
 }
 
+/******************************************************************************/
+
 void __attribute__ ((interrupt(IPL0SOFT))) _DefaultInterrupt(void)
 {
+    /* TODO: consistent LED notification of an error */
     while(TRUE);
 }
+
+/******************************************************************************/
 
 void InitializeSystem(void)
 {
@@ -174,3 +187,5 @@ void InitializeSystem(void)
     TickInitialize();
     INTEnableInterrupts();
 }
+
+/******************************************************************************/

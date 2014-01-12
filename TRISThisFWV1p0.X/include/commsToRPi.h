@@ -68,9 +68,10 @@ typedef union
         unsigned inProgress:1;
         unsigned RXOverrun:1;
         unsigned RXOverflow:1;
-        unsigned TXOverrun:1;
+        unsigned TXEnd:1;
         unsigned RXMysteryState:1;
         unsigned unknownCommandRX:1;
+        unsigned CEOutOfSync:1;
     };
     UINT32 w;
 } SPI_STATUS;
@@ -109,6 +110,7 @@ typedef struct
 
 #define SPI_READ_COMMAND    (0b00000011)
 #define SPI_WRITE_COMMAND   (0b00000010)
+#define SPI_NO_COMMAND      (0b10101010)
 
 /******************************************************************************/
 /* Prototypes                                                                 */
@@ -116,6 +118,7 @@ typedef struct
 
 BOOL ConfigSPIComms(void);
 inline BOOL RPiSelectStatus(void);
+inline BOOL SPIFUBAR(void);
 BOOL SPIDataReady(void);
 BOOL SPIByteGet(UINT8, UINT8*);
 
