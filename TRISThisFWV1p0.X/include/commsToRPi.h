@@ -72,6 +72,7 @@ typedef union
         unsigned RXMysteryState:1;
         unsigned unknownCommandRX:1;
         unsigned CEOutOfSync:1;
+        unsigned TXDataReady:1;
     };
     UINT32 w;
 } SPI_STATUS;
@@ -80,11 +81,9 @@ enum SPI_RX_STATE
 {
     STATE_SPI_RX_COMMAND=0,
     STATE_SPI_RX_ADDRESS_MSB,
-    STATE_SPI_RX_ADDRESS_2SB,
     STATE_SPI_RX_ADDRESS_LSB,
+    STATE_SPI_RX_MASTER_READING,
     STATE_SPI_RX_DATA,
-    STATE_SPI_RX_READING,
-    STATE_SPI_RX_MYSTERY,
     STATE_SPI_RX_COMPLETE,
     STATE_SPI_RX_SPI_WRITE_COMPLETE
 };

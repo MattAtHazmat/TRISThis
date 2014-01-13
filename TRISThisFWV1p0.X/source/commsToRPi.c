@@ -58,7 +58,6 @@ BOOL ConfigSPIComms(void)
     INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
     INTEnable(INT_SOURCE_SPI_ERROR(RPI_SPI_CHANNEL),INT_DISABLED);
     INTEnable(INT_SOURCE_SPI(RPI_SPI_CHANNEL),INT_DISABLED);
-    RPI_SPI_BUF=0x00;
     SPI_DATA_IN_DIRECTION = TRIS_IN;
     SPI_DATA_OUT_DIRECTION = TRIS_OUT;
     SPI_CLOCK_IN_DIRECTION = TRIS_IN;
@@ -68,10 +67,9 @@ BOOL ConfigSPIComms(void)
     SPI.address.Val=0;
     SPI.command=SPI_NO_COMMAND;
     SpiChnOpen(RPI_SPI_CHANNEL,
-            SPI_OPEN_SLVEN|SPI_OPEN_CKE_REV/*|SPI_OPEN_CKP_HIGH*/|SPI_OPEN_MODE8|SPI_OPEN_SSEN,
+            SPI_OPEN_SLVEN|SPI_OPEN_CKE_REV|SPI_OPEN_MODE8|SPI_OPEN_SSEN,
             0);
     //TODO: Not acting consistently? RPI needs to send -b 8 -H parameters to spidev
-    RPI_SPI_BUF=0xFF;
     /* configure interrupts                                                   */
     INTSetVectorPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL), INT_PRIORITY_LEVEL_3);
     INTSetVectorSubPriority(INT_VECTOR_SPI(RPI_SPI_CHANNEL),
@@ -91,9 +89,9 @@ BOOL ConfigSPIComms(void)
     /* tie chip enable CE0 to pin20/RE5 CE1 */
     SPI_SELECT_CN_DIRECTION=TRIS_IN;
     CNCONbits.w=0;
-    CNCONbits.ON=TRUE;
+    CNCONSET=_CNCON_ON_MASK;
     CNENbits.w=0;
-    CNENbits.CNEN7=TRUE;
+    CNENSET=_CNEN_CNEN7_MASK;
     RPI_SPI_RX_OVERFLOW_CLEAR;
     SPI1CONbits.STXISEL=0b01;
     SPI.status.w=0;
@@ -140,7 +138,9 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
                 break;
             }
         }
+        SPI.command=SPI_NO_COMMAND;
         SPI.status.RXDataReady=TRUE;
+        SPI.status.TXDataReady=FALSE;
         SPI.status.CEStatus=FALSE;
     }
     else
@@ -150,7 +150,6 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
         INTEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL),INT_DISABLED);
         INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
         INTEnable(INT_SOURCE_SPI_ERROR(RPI_SPI_CHANNEL),INT_DISABLED);
-
     }
 }
 
@@ -203,6 +202,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 case STATE_SPI_RX_COMMAND:
                 {
                     SPI.command=SPITemp;
+                    SPI.TXIndex=0;
                     SPI.TXBuffer=NOT_YET_BYTE;
                     SPI.RXState=STATE_SPI_RX_ADDRESS_MSB;
                     break;
@@ -210,25 +210,27 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 case STATE_SPI_RX_ADDRESS_MSB:
                 {
                     SPI.TXBuffer=NOT_YET_BYTE;
+                    SPI.TXIndex=0;
                     SPI.RXState=STATE_SPI_RX_ADDRESS_LSB;
                     SPI.address.byte.HB=SPITemp;
                     break;
                 }
                 case STATE_SPI_RX_ADDRESS_LSB:
                 {
-                    SPI.RXState=STATE_SPI_RX_DATA;
+                    SPI.TXIndex=0;
                     SPI.address.byte.LB=SPITemp;
+                    /* now that we have address, what to do with it? */
                     switch(SPI.command)
                     {
                         case SPI_READ_COMMAND:
                         {
                             /* master is reading data (slave is transmitting) */
                             unsigned int index;
-                            /* the master is requesting data, make a copy and     */
-                            /* have it ready                                      */
+                            /* the master is requesting data, make a copy and */
+                            /* have it ready                                  */
                             SPI.TXIndex=0;
                             index=0;
-                            /* only really can use the low byte of the address    */
+                            /* only really can use the low byte of the address*/
                             SPI.TXIndex=SPI.address.byte.LB;
                             /* copy data into outgoing array and bounds check */
                             while((index<sizeof(TRISThisData))&&
@@ -240,6 +242,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             /* the data to send on next TX interrupt */
                             SPI.TXBuffer=SPI.TXData[SPI.TXIndex];
                             SPI.status.TXEnd=FALSE;
+                            SPI.status.TXDataReady=TRUE;
+                            SPI.RXState=STATE_SPI_RX_MASTER_READING;
                             break;
                         }
                         case SPI_WRITE_COMMAND:
@@ -249,6 +253,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             SPI.status.RXOverrun=FALSE;
                             /* the data to send on next TX interrupt */
                             SPI.TXBuffer=NOT_YET_BYTE;
+                            SPI.RXState=STATE_SPI_RX_DATA;
                             break;
                         }
                         default:
@@ -261,44 +266,22 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 }
                 case STATE_SPI_RX_DATA:
                 {
-                    /* master is sending data */
+                    /* master is sending data, slave receiving */
                     if(!SPI.status.RXOverrun)
                     {
-                        switch(SPI.command)
+                        SPI.RXData[SPI.RXCount++]=SPITemp;
+                        if(SPI.RXCount==SPI_RX_BUFFER_SIZE)
                         {
-                            case SPI_WRITE_COMMAND:
-                            {
-                                SPI.RXData[SPI.RXCount++]=SPITemp;
-                                if(SPI.RXCount==SPI_RX_BUFFER_SIZE)
-                                {
-                                    /* error-- went too long*/
-                                    SPI.status.RXOverrun=TRUE;
-                                    SPI.RXState=STATE_SPI_RX_SPI_WRITE_COMPLETE;
-                                }
-                                break;
-                            }
-                            case SPI_READ_COMMAND:
-                            {
-                                SPI.TXIndex = SPI.address.byte.LB % sizeof (TRISThisData);
-                                SPI.TXBuffer= TRISThisData.data[SPI.TXIndex];
-                                SPI.RXState = STATE_SPI_RX_READING;
-                                break;
-                            }
-                            default:
-                            {
-                                SPI.status.unknownCommandRX=TRUE;
-                                SPI.RXState=STATE_SPI_RX_MYSTERY;
-                                /* don't know what to do */
-                                break;
-                            }
-                        } 
+                            /* error-- went too long*/
+                            SPI.status.RXOverrun=TRUE;
+                            SPI.RXState=STATE_SPI_RX_COMPLETE;
+                        }
                     }
                     break;
                 }
+                case STATE_SPI_RX_MASTER_READING:
                 case STATE_SPI_RX_COMPLETE:
                 case STATE_SPI_RX_SPI_WRITE_COMPLETE:
-                case STATE_SPI_RX_READING:
-                case STATE_SPI_RX_MYSTERY:
                 {
                     break;
                 }
@@ -320,17 +303,27 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
         }
         else
         {
-            RPI_SPI_BUF=SPI.TXBuffer;
-            SPI.TXIndex++;
-            if(SPI.TXIndex<sizeof(SPI.TXData))
+            if(SPI.status.TXDataReady)
             {
-                /* get the next byte ready */
-                SPI.TXBuffer=SPI.TXData[SPI.TXIndex];
+                RPI_SPI_BUF=SPI.TXBuffer;
+                /* point at the next */
+                SPI.TXIndex++;
+                /* bounds check */
+                if(SPI.TXIndex<sizeof(SPI.TXData))
+                {
+                    /* get the next byte ready */
+                    SPI.TXBuffer=SPI.TXData[SPI.TXIndex];
+                }
+                else
+                {
+                    /* there can be no more! */
+                    SPI.status.TXEnd=TRUE;
+                    SPI.status.TXDataReady=FALSE;
+                }
             }
             else
             {
-                /* there can be no more! */
-                SPI.status.TXEnd=TRUE;
+                RPI_SPI_BUF=NOT_YET_BYTE;
             }
         }
     }
