@@ -154,6 +154,8 @@ BOOL LEDAutoMode(BOOL toSet)
     return returnValue;
 }
 
+/******************************************************************************/
+
 BOOL GetLEDAutoMode(void)
 {
     return (LEDState!=LED_STATE_MANUAL);
