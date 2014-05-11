@@ -15,6 +15,7 @@
 
 SPI_TYPE SPI;
 extern TRISTHIS_DATA_TYPE TRISThisData;
+unsigned int CNTemp;
 
 /******************************************************************************/
 
@@ -77,28 +78,29 @@ BOOL ConfigSPIComms(void)
     INTClearFlag(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL));
     INTEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL),INT_ENABLED);
     INTClearFlag(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL));
-    INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
+    //INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     INTClearFlag(INT_SOURCE_SPI_ERROR(RPI_SPI_CHANNEL));
     INTEnable(INT_SOURCE_SPI_ERROR(RPI_SPI_CHANNEL),INT_ENABLED);
     INTClearFlag(INT_SOURCE_SPI(RPI_SPI_CHANNEL));
-    INTEnable(INT_SOURCE_SPI(RPI_SPI_CHANNEL),INT_ENABLED);
+    //INTEnable(INT_SOURCE_SPI(RPI_SPI_CHANNEL),INT_ENABLED);
     /* configure change notice, as I can't figure out any other way to        */
     /* trigger the beginning of the slave select with just the SPI peripheral */
     /* buuut the change notice pins are not on the SS pins, so a white wire is*/
     /* needed                                                                 */
     /* tie chip enable CE0 to pin20/RE5 CE1 */
-    SPI_SELECT_CN_DIRECTION=TRIS_IN;
-    CNCONbits.w=0;
-    CNCONSET=_CNCON_ON_MASK;
-    CNENbits.w=0;
-    CNENSET=_CNEN_CNEN7_MASK;
+    //SPI_SELECT_CN_DIRECTION=TRIS_IN;
+    //CNCONbits.w=0;
+    //CNCONSET=_CNCON_ON_MASK;
+    //CNENbits.w=0;
+    //CNENSET=_CNEN_CNEN7_MASK;
+    //CNTemp=PORTB; /* read for change notice */
     RPI_SPI_RX_OVERFLOW_CLEAR;
     SPI1CONbits.STXISEL=0b01;
     SPI.status.w=0;
-    INTClearFlag(INT_CN);
-    INTSetVectorPriority(INT_CHANGE_NOTICE_VECTOR, INT_PRIORITY_LEVEL_2);
-    INTSetVectorSubPriority(INT_CHANGE_NOTICE_VECTOR, INT_SUB_PRIORITY_LEVEL_1);
-    INTEnable(INT_CN,INT_ENABLED);
+    //INTClearFlag(INT_CN);
+    //INTSetVectorPriority(INT_CHANGE_NOTICE_VECTOR, INT_PRIORITY_LEVEL_2);
+    //INTSetVectorSubPriority(INT_CHANGE_NOTICE_VECTOR, INT_SUB_PRIORITY_LEVEL_1);
+    //INTEnable(INT_CN,INT_ENABLED);
     return TRUE;
 }
 
@@ -106,8 +108,10 @@ BOOL ConfigSPIComms(void)
 
 void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
 {
+    BOOL SPISelected;
     IFS1CLR=_IFS1_CNIF_MASK;
-    if((SPI.status.CEStatus==FALSE)&&(SPI_SELECTED))
+    SPISelected=!SPI_SELECT_CN_IN;
+    if((SPI.status.CEStatus==FALSE)&&(SPISelected==TRUE))//(SPI_SELECTED))
     {
         if(SPI.status.RXDataReady)
         {
@@ -119,7 +123,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
         SPI.status.CEStatus=TRUE;
         SPI.RXCount=0;
     }
-    else if((SPI.status.CEStatus==TRUE)&&(SPI_DESELECTED))
+    else if((SPI.status.CEStatus==TRUE)&&(SPISelected==FALSE))//(SPI_DESELECTED))
     {
         switch(SPI.command)
         {
@@ -189,19 +193,22 @@ inline BOOL SPIFUBAR(void)
 
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
 {
-    static UINT8 SPITemp;
+    static UINT8 RXTemp;
     if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
     {
         SPI_RX_INTERRUPT_FLAG_CLEAR;
         if(RPI_SPI_RX_BUF_FULL)
         {
+            int temp=0;
             /* data in the buffer, read it */
-            SPITemp=((0x000000FF)&RPI_SPI_BUF);
+            RXTemp=((0x000000FF)&RPI_SPI_BUF);
+            //if (RPI_SPI_RX_BUF_FULL)
+            //    while(TRUE);
             switch(SPI.RXState)
             {
                 case STATE_SPI_RX_COMMAND:
                 {
-                    SPI.command=SPITemp;
+                    SPI.command=RXTemp;
                     SPI.TXIndex=0;
                     SPI.TXBuffer=NOT_YET_BYTE;
                     SPI.RXState=STATE_SPI_RX_ADDRESS_MSB;
@@ -212,13 +219,13 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                     SPI.TXBuffer=NOT_YET_BYTE;
                     SPI.TXIndex=0;
                     SPI.RXState=STATE_SPI_RX_ADDRESS_LSB;
-                    SPI.address.byte.HB=SPITemp;
+                    SPI.address.byte.HB=RXTemp;
                     break;
                 }
                 case STATE_SPI_RX_ADDRESS_LSB:
                 {
                     SPI.TXIndex=0;
-                    SPI.address.byte.LB=SPITemp;
+                    SPI.address.byte.LB=RXTemp;
                     /* now that we have address, what to do with it? */
                     switch(SPI.command)
                     {
@@ -243,6 +250,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             SPI.TXBuffer=SPI.TXData[SPI.TXIndex];
                             SPI.status.TXEnd=FALSE;
                             SPI.status.TXDataReady=TRUE;
+                            //SPI_TX_INTERRUPT_ENABLE_SET;
+                            INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
                             SPI.RXState=STATE_SPI_RX_MASTER_READING;
                             break;
                         }
@@ -269,7 +278,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                     /* master is sending data, slave receiving */
                     if(!SPI.status.RXOverrun)
                     {
-                        SPI.RXData[SPI.RXCount++]=SPITemp;
+                        SPI.RXData[SPI.RXCount++]=RXTemp;
                         if(SPI.RXCount==SPI_RX_BUFFER_SIZE)
                         {
                             /* error-- went too long*/
@@ -296,7 +305,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
     }
     if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
     {
-        SPI_TX_INTERRUPT_FLAG_CLEAR;
+        /* doesn't really do anything? */
+        //SPI_TX_INTERRUPT_FLAG_CLEAR;
         if(SPI.status.TXEnd)
         {
             RPI_SPI_BUF=OVERRUN_BYTE;
@@ -317,6 +327,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 else
                 {
                     /* there can be no more! */
+                    //SPI_TX_INTERRUPT_ENABLE_CLEAR;
+                    INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
                     SPI.status.TXEnd=TRUE;
                     SPI.status.TXDataReady=FALSE;
                 }
@@ -331,6 +343,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
     {
         SPI_INTERRUPT_ERROR_FLAG_CLEAR;
         RPI_SPI_RX_OVERFLOW_CLEAR;
+        INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
+        INTEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL),INT_DISABLED);
         SPI.status.RXOverflow=TRUE;
     }
 }
