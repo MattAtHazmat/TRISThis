@@ -142,6 +142,7 @@ inline BOOL SPIFUBAR(void)
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
 {
     static UINT8 RXTemp;
+    /* check for receive interrupt */
     if(INTGetEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL))&&
        INTGetFlag(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL)))
     
@@ -208,6 +209,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             SPI.status.TXEnd=FALSE;
                             SPI.status.TXDataReady=TRUE;
                             INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
+                            /* don't need to look for change notice any more */
+                            INTEnable(INT_CN,INT_DISABLED);
                             SPI.RXState=STATE_SPI_RX_MASTER_READING;
                             break;
                         }
@@ -251,7 +254,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                     SPI.status.RXOverrun=TRUE;
                     break;
                 }
-                case STATE_SPI_RX_MASTER_READING:                
+                case STATE_SPI_RX_MASTER_READING:
+                    /* if the master is reading, nothing to do here */
                 case STATE_SPI_RX_SPI_WRITE_COMPLETE:
                 {
                     break;
@@ -263,12 +267,11 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 }
             }
         }
-        //SPI_RX_INTERRUPT_FLAG_CLEAR;
     }
+    /* and then check for transmit interrupt */
     if(INTGetEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL))&&
        INTGetFlag(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL)))
-    {
-        
+    {        
         if(SPI.status.TXEnd)
         {
             RPI_SPI_BUF=OVERRUN_BYTE;
@@ -278,12 +281,12 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
         {
             if(SPI.status.TXDataReady)
             {
-                /* get data and point at the next */
+                /* send data and point at the next */
                 RPI_SPI_BUF=SPI.TXData[SPI.TXIndex++];
                 /* bounds check */
                 if(SPI.TXIndex<sizeof(SPI.TXData))
                 {
-                    
+                    /* all is good, no bounds violation */
                 }
                 else
                 {
