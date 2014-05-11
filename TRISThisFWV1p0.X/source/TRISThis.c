@@ -85,9 +85,9 @@ BOOL TRISThisDigitalConfigure(void)
         TRISThisData.data[index]=0;
     }
     /* read in the current state */
-    TRISThisData.digital.port.Val=TRISThisReadDigitalInputs();
-    TRISThisData.digital.latch.Val=TRISThisReadDigitalLatches();
-    TRISThisData.digital.direction.Val=TRISThisReadDigitalDirection();
+    TRISThisData.digital.port=TRISThisReadDigitalInputs();
+    TRISThisData.digital.latch=TRISThisReadDigitalLatches();
+    TRISThisData.digital.direction=TRISThisReadDigitalDirection();
     return TRUE;
 }
 
@@ -148,52 +148,58 @@ BOOL TRISThisSetDigitalDirection(UINT32_VAL toSet)
 
 BOOL DoTRISThis(void)
 {
+    #ifdef USE_PAC1710
     static UINT32_VAL tempHolding;
+    #endif
     BOOL returnValue=TRUE;
-    TRISThisData.digital.port.Val=TRISThisReadDigitalInputs();
-    TRISThisData.digital.latch.Val=TRISThisReadDigitalLatches();
-    TRISThisData.digital.direction.Val=TRISThisReadDigitalDirection();
+    TRISThisData.digital.port=TRISThisReadDigitalInputs();
+    TRISThisData.digital.latch=TRISThisReadDigitalLatches();
+    TRISThisData.digital.direction=TRISThisReadDigitalDirection();
     TRISThisData.status.autoLEDmode=GetLEDAutoMode();
     TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
     #ifdef USE_SPI
     if(SPIDataReady())
     {
+        /* used a lot- static to save churn on the stack?                     */
+        static UINT32_VAL tempData;
+        static uint8_t tempSPIRX[SPI_RX_BUFFER_SIZE];
         /* if there is data available from the SPI, figure out what it is, and*/
         /* put it */
-        INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
-        /* called a lot- save churn on the stack?                             */
-        static UINT32_VAL tempData;
+        //INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
         /* check the data we read                                             */
-        SPIByteGet(INDEX_STATUS_MB,&tempData.byte.MB);
-        SPIByteGet(INDEX_STATUS_UB,&tempData.byte.UB);
-        SPIByteGet(INDEX_STATUS_HB,&tempData.byte.HB);
-        SPIByteGet(INDEX_STATUS_LB,&tempData.byte.LB);
-        /* tempdata is the status */
-        tempData.Val|=STATUS_READ_ONLY_MASK;
-        if(tempData.Val!=(TRISThisReadStatus()|STATUS_READ_ONLY_MASK))
+        if(SPIGet(&tempSPIRX))
         {
-            TRISThisSetStatus(tempData.Val);            
+            /* tempdata is the status */
+            tempData.byte.MB=tempSPIRX[INDEX_STATUS_MB];
+            tempData.byte.UB=tempSPIRX[INDEX_STATUS_UB];
+            tempData.byte.HB=tempSPIRX[INDEX_STATUS_HB];
+            tempData.byte.LB=tempSPIRX[INDEX_STATUS_LB];
+            tempData.Val|=STATUS_READ_ONLY_MASK;
+            if(tempData.Val!=(TRISThisReadStatus()|STATUS_READ_ONLY_MASK))
+            {
+                TRISThisSetStatus(tempData.Val);
+            }
+            tempData.Val=0;
+            tempData.byte.LB=tempSPIRX[INDEX_LED];
+            if(tempData.byte.LB!=ReadLEDs())
+            {
+                SetLEDs(tempData.byte.LB);
+            }
+            tempData.Val=0;
+            tempData.byte.HB=tempSPIRX[INDEX_DIGITAL_DIRECTION_HB];
+            tempData.byte.LB=tempSPIRX[INDEX_DIGITAL_DIRECTION_LB];
+            if(tempData.Val!=TRISThisReadDigitalDirection())
+            {
+                TRISThisSetDigitalDirection(tempData);
+            }
+            tempData.Val=0;
+            tempData.byte.LB=tempSPIRX[INDEX_DIGITAL_LATCH_LB];
+            tempData.byte.HB=tempSPIRX[INDEX_DIGITAL_LATCH_HB];
+            if(tempData.Val!=TRISThisReadDigitalLatches())
+            {
+                TRISThisSetDigitalLatches(tempData);
+            }
         }
-        SPIByteGet(INDEX_LED,&tempData.byte.LB);
-        if(tempData.byte.LB!=ReadLEDs())
-        {
-            SetLEDs(tempData.byte.LB);
-        }
-        tempData.Val=0;
-        SPIByteGet(INDEX_DIGITAL_DIRECTION_LB,&tempData.byte.LB);
-        SPIByteGet(INDEX_DIGITAL_DIRECTION_HB,&tempData.byte.HB);
-        if(tempData.Val!=TRISThisReadDigitalDirection())
-        {
-            TRISThisSetDigitalDirection(tempData);
-        }
-        tempData.Val=0;
-        SPIByteGet(INDEX_DIGITAL_LATCH_LB,&tempData.byte.LB);
-        SPIByteGet(INDEX_DIGITAL_LATCH_HB,&tempData.byte.HB);
-        if(tempData.Val!=TRISThisReadDigitalLatches())
-        {
-            TRISThisSetDigitalLatches(tempData);
-        }
-        INTEnable( INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
     }
     if(SPIFUBAR())
     {

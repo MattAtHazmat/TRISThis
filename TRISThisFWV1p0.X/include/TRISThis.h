@@ -16,58 +16,58 @@
 
 /* TODO: can these be automatically generated? */
 typedef enum {
-    INDEX_STATUS_MB=0,
+    INDEX_STATUS_MB=0,  /* index = 0 */
     INDEX_STATUS_UB,
     INDEX_STATUS_HB,
     INDEX_STATUS_LB,
-    INDEX_LED_Z,
+    INDEX_LED_Z,        /* index = 4 */
     INDEX_LED_Y,
     INDEX_LED_X,
     INDEX_LED,
-    INDEX_DIGITAL_LATCH_MB,
+    INDEX_DIGITAL_LATCH_MB,     /* index = 8 */
     INDEX_DIGITAL_LATCH_UB,
     INDEX_DIGITAL_LATCH_HB,
     INDEX_DIGITAL_LATCH_LB,
-    INDEX_DIGITAL_DIRECTION_MB,
+    INDEX_DIGITAL_DIRECTION_MB, /* index = 12 */
     INDEX_DIGITAL_DIRECTION_UB,
     INDEX_DIGITAL_DIRECTION_HB,
     INDEX_DIGITAL_DIRECTION_LB,
-    INDEX_DIGITAL_PORT_MB,
+    INDEX_DIGITAL_PORT_MB,      /* index = 16 */
     INDEX_DIGITAL_PORT_UB,
     INDEX_DIGITAL_PORT_HB,
     INDEX_DIGITAL_PORT_LB,
-    INDEX_ANALOG0_GAIN_HB,
+    INDEX_ANALOG0_GAIN_HB,      /* index = 20 */
     INDEX_ANALOG0_GAIN_LB,
     INDEX_ANALOG0_HB,
     INDEX_ANALOG0_LB,
-    INDEX_ANALOG1_GAIN_HB,
+    INDEX_ANALOG1_GAIN_HB,      /* index = 24 */
     INDEX_ANALOG1_GAIN_LB,
     INDEX_ANALOG1_HB,
     INDEX_ANALOG1_LB,
-    INDEX_ANALOG2_GAIN_HB,
+    INDEX_ANALOG2_GAIN_HB,      /* index = 28 */
     INDEX_ANALOG2_GAIN_LB,
     INDEX_ANALOG2_HB,
     INDEX_ANALOG2_LB,
-    INDEX_ANALOG3_GAIN_HB,
+    INDEX_ANALOG3_GAIN_HB,      /* index = 32 */
     INDEX_ANALOG3_GAIN_LB,
     INDEX_ANALOG3_HB,
     INDEX_ANALOG3_LB,
-    INDEX_BOARD_CURRENT_MB,
+    INDEX_BOARD_CURRENT_MB,     /* index = 36 */
     INDEX_BOARD_CURRENT_UB,
     INDEX_BOARD_CURRENT_HB,
     INDEX_BOARD_CURRENT_LB,
-    INDEX_BOARD_VOLTAGE_MB,
+    INDEX_BOARD_VOLTAGE_MB,     /* index = 40 */
     INDEX_BOARD_VOLTAGE_UB,
     INDEX_BOARD_VOLTAGE_HB,
     INDEX_BOARD_VOLTAGE_LB,
-    TRISTHIS_DATA_SIZE
+    TRISTHIS_DATA_SIZE          /* 44         */
 } TRISTHIS_DATA_INDEX_TYPE;
 
 typedef struct
-{
-    UINT32_VAL latch;
-    UINT32_VAL port;
-    UINT32_VAL direction;
+{    
+    uint32_t    latch;   
+    uint32_t    port;
+    uint32_t    direction;
 } TRISTHIS_DIGITAL_PORT_TYPE;
 
 typedef union
@@ -77,7 +77,8 @@ typedef union
         UINT16_VAL reading;
         UINT16_VAL gain;
     };
-    UINT32_VAL w;
+    //UINT32_VAL
+    uint32_t    w;
 } TRISTHIS_ANALOG_PORT_TYPE;
 
 typedef union

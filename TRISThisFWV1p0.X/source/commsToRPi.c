@@ -19,33 +19,47 @@ unsigned int CNTemp;
 
 /******************************************************************************/
 
-BOOL SPIByteGet(uint8_t address, uint8_t *data)
-{
-    if(address>=sizeof(SPI.RXData))
-    {
-        return FALSE;
-    }
-    else
-    {
-        *data=SPI.RXData[address];
-        return TRUE;
-    }
-}
+//BOOL SPIByteGet(uint8_t address, uint8_t *data)
+//{
+//    if(address>=sizeof(SPI.RXData))
+//    {
+//        return FALSE;
+//    }
+//    else
+//    {
+//        *data=SPI.RXData[address];
+//        return TRUE;
+//    }
+//}
 
 BOOL SPIWordGet(uint8_t address, UINT32 *data)
 {
 
+}
+
+BOOL SPIGet(uint8_t *tempSPIRX)
+{
+    BOOL returnValue;
+    unsigned int index;
+    unsigned int intTemp;
+    intTemp = INTDisableInterrupts();
+    for(index=0;index<sizeof(SPI.RXData);index++)
+    {
+        tempSPIRX[index]=SPI.RXData[index];
+    }
+    INTRestoreInterrupts(intTemp);
+    return returnValue;
 }
 /******************************************************************************/
 
 BOOL SPIDataReady(void)
 {
     BOOL returnValue;
-    unsigned int statusTemp;
-    statusTemp = INTDisableInterrupts();
+    unsigned int intTemp;
+    intTemp = INTDisableInterrupts();
     returnValue=SPI.status.RXDataReady;
     SPI.status.RXDataReady=FALSE;
-    INTRestoreInterrupts(statusTemp);
+    INTRestoreInterrupts(intTemp);
     return returnValue;
 }
 
