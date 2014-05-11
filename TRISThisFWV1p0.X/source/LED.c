@@ -3,7 +3,7 @@
 #include <tick.h>
 #include <TRISThis.h>
 #include <LED.h>
-//BOOL autoMode;
+
 enum LED_STATE_TYPE LEDState;
 extern TRISTHIS_DATA_TYPE TRISThisData;
 
