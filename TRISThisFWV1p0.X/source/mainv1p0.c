@@ -30,7 +30,7 @@
 
 int main(void)
 {
-    /* variables local to main()                                              */
+    /*variables local to main()                                               */
     UINT8 dataRead;
     TICK_TYPE timeoutTime;
     #ifdef USE_I2C

@@ -75,8 +75,8 @@ typedef union
     struct
     {
         unsigned RXDataReady:1;
-       // unsigned CEStatus:1;
-        unsigned inProgress:1;
+        unsigned TXInProgress:1;
+        unsigned RXInProgress:1;
         unsigned RXOverrun:1;
         unsigned RXOverflow:1;
         unsigned TXEnd:1;
@@ -110,7 +110,6 @@ typedef struct
     UINT8 RXData[SPI_RX_BUFFER_SIZE];
     UINT8 TXData[SPI_TX_BUFFER_SIZE];
     UINT8 RXIndex;
-    UINT8 TXBuffer;
     UINT8 TXIndex;
     enum SPI_RX_STATE RXState;
 } SPI_TYPE;

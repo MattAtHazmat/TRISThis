@@ -16,10 +16,12 @@
 
 #include <common.h>
 #include <LED.h>
-#include <commsToRPi.h>
 #include <PAC1710.h>
 #include <TRISThis.h>
-
+/* usually I try to keep the .h file include that matches with the .c file at */
+/* the very end of the include file list, but the SPI type needs the size of  */
+/* TRISTHIS_DATA_TYPE                                                         */
+#include <commsToRPi.h>
 TRISTHIS_DATA_TYPE TRISThisData;
 
 /******************************************************************************/

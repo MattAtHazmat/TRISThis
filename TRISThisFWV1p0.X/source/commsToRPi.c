@@ -117,8 +117,13 @@ void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(voi
         /* disable the interrupt */
         INTEnable(INT_CN,INT_DISABLED);
         /* flag that data is ready */
-        SPI.status.RXDataReady=TRUE;
+        if(SPI.status.RXInProgress)
+        {
+            SPI.status.RXDataReady=TRUE;
+        }
         /* prepare for the next cycle */
+        SPI.status.RXInProgress=FALSE;
+        SPI.status.TXInProgress=FALSE;
         SPI.RXState=STATE_SPI_RX_COMMAND;
         /* to make sure that the port returns 0x00 the next time */
         RPI_SPI_BUF=0x00;
@@ -191,23 +196,20 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                         {
                             /* master is reading data from us, that is, we,   */
                             /* as the slave are transmitting                  */
-                            unsigned int index;
+                            unsigned int index=0;
                             /* the master is requesting data, make a copy and */
                             /* have it ready                                  */
-                            index=0;
                             /* only really can use the low byte of the address*/
                             SPI.TXIndex=SPI.address.byte.LB;
                             /* copy data into outgoing array and bounds check */
                             while((index<sizeof(TRISThisData))&&
-                                  (SPI.TXIndex<sizeof(SPI.TXData)))
+                                  (index<sizeof(SPI.TXData)))
                             {
-                                SPI.TXData[SPI.TXIndex++]=TRISThisData.data[index++];
+                                SPI.TXData[index]=TRISThisData.data[index++];
                             }
-                            SPI.TXIndex=0;
-                            /* the data to send on next TX interrupt */
-                            SPI.TXBuffer=SPI.TXData[SPI.TXIndex];
                             SPI.status.TXEnd=FALSE;
                             SPI.status.TXDataReady=TRUE;
+                            SPI.status.TXInProgress=TRUE;
                             INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
                             /* have to continue to look for change notice as  */
                             /* that is the only way to see that the           */
@@ -220,8 +222,8 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             /* master is writing data (slave is receiving)    */
                             SPI.status.RXOverflow=FALSE;
                             SPI.status.RXOverrun=FALSE;
+                            SPI.status.RXInProgress=TRUE;
                             /* the data to send on next TX interrupt */
-                            SPI.TXBuffer=NOT_YET_BYTE;
                             SPI.RXState=STATE_SPI_RX_DATA;
                             break;
                         }
@@ -241,9 +243,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                         SPI.RXData[SPI.RXCount++]=RXTemp;
                         if(SPI.RXCount==SPI_RX_BUFFER_SIZE)
                         {
-                            SPI.RXState=STATE_SPI_RX_COMMAND;
-                            SPI.status.RXDataReady=TRUE;
-                            INTEnable(INT_CN,INT_DISABLED);
+                            SPI.RXState=STATE_SPI_RX_COMPLETE;
                         }
                     }
                     RPI_SPI_BUF=0x00;
@@ -273,14 +273,13 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
     if(INTGetEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL))&&
        INTGetFlag(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL)))
     {        
-        if(SPI.status.TXEnd)
+        if(SPI.status.TXEnd||(SPI.status.TXDataReady==FALSE))
         {
-            RPI_SPI_BUF=OVERRUN_BYTE;
             INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
         }
         else
         {
-            if(SPI.status.TXDataReady)
+            while(SPI1STATbits.SPITBE&&SPI.status.TXDataReady)
             {
                 /* send data and point at the next */
                 RPI_SPI_BUF=SPI.TXData[SPI.TXIndex++];
@@ -288,6 +287,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 if(SPI.TXIndex<sizeof(SPI.TXData))
                 {
                     /* all is good, no bounds violation */
+                    SPI.TXCount++;
                 }
                 else
                 {
@@ -296,12 +296,6 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                     SPI.status.TXEnd=TRUE;
                     SPI.status.TXDataReady=FALSE;
                 }
-            }
-            else
-            {
-                /* harrumph. shouldn't even be here. disable this interrupt.  */
-                RPI_SPI_BUF=NOT_YET_BYTE;
-                INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
             }
         }
     }

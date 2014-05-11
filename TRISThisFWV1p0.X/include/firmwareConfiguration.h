@@ -65,7 +65,7 @@
     #define RPI_SPI_CHANNEL         (1)
     #define RPI_COMMS_INT_PRIORITY  IPL3SOFT
     #define RPI_COMMS_CE_PRIORITY   IPL4SOFT
-    #define SPI_BUFFER_SIZE         (0xFF)
+    #define SPI_BUFFER_SIZE         sizeof(TRISTHIS_DATA_TYPE)//(0xFF)
     #define SPI_RX_BUFFER_SIZE      SPI_BUFFER_SIZE
     #define SPI_TX_BUFFER_SIZE      SPI_BUFFER_SIZE
 #endif
