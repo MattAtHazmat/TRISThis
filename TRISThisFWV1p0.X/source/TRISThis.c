@@ -170,8 +170,7 @@ BOOL DoTRISThis(void)
         tempData.Val|=STATUS_READ_ONLY_MASK;
         if(tempData.Val!=(TRISThisReadStatus()|STATUS_READ_ONLY_MASK))
         {
-            TRISThisSetStatus(tempData.Val);
-            LEDAutoMode(TRISThisData.status.autoLEDmode);
+            TRISThisSetStatus(tempData.Val);            
         }
         SPIByteGet(INDEX_LED,&tempData.byte.LB);
         if(tempData.byte.LB!=ReadLEDs())

@@ -91,7 +91,7 @@ BOOL ConfigSPIComms(void)
     CNCONSET=_CNCON_ON_MASK;
     CNENbits.w=0;
     CNENSET=_CNEN_CNEN7_MASK;
-    CNTemp=PORTB; /* read for change notice */
+    CNTemp=CE_PORT; /* read for change notice */
     RPI_SPI_RX_OVERFLOW_CLEAR;
     SPI1CONbits.STXISEL=0b01;
     SPI.status.w=0;
@@ -103,95 +103,27 @@ BOOL ConfigSPIComms(void)
 
 /******************************************************************************/
 
-//void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
-//{
-//    BOOL SPISelected;
-//    IFS1CLR=_IFS1_CNIF_MASK;
-//    SPISelected=!SPI_SELECT_CN_IN;
-//    if((SPI.status.CEStatus==FALSE)&&(SPISelected==TRUE))//(SPI_SELECTED))
-//    {
-//        if(SPI.status.RXDataReady)
-//        {
-//            /* we missed some data */
-//            SPI.status.RXDataReady=FALSE;
-//            SPI.status.RXOverrun=TRUE;
-//        }
-//        SPI.RXState=STATE_SPI_RX_COMMAND;
-//        SPI.status.CEStatus=TRUE;
-//        SPI.RXCount=0;
-//    }
-//    else if((SPI.status.CEStatus==TRUE)&&(SPISelected==FALSE))//(SPI_DESELECTED))
-//    {
-//        switch(SPI.command)
-//        {
-//            case SPI_WRITE_COMMAND:
-//            {
-//                SPI.RXState=STATE_SPI_RX_SPI_WRITE_COMPLETE;
-//                break;
-//            }
-//            case SPI_READ_COMMAND:
-//            {
-//                SPI.RXState=STATE_SPI_RX_COMPLETE;
-//                break;
-//            }
-//            default:
-//            {
-//                break;
-//            }
-//        }
-//        SPI.command=SPI_NO_COMMAND;
-//        SPI.status.RXDataReady=TRUE;
-//        SPI.status.TXDataReady=FALSE;
-//        SPI.status.CEStatus=FALSE;
-//    }
-//    else
-//    {
-//        SPI.status.CEOutOfSync=TRUE;
-//        INTEnable(INT_CN,INT_DISABLED);
-//        INTEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL),INT_DISABLED);
-//        INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
-//        INTEnable(INT_SOURCE_SPI_ERROR(RPI_SPI_CHANNEL),INT_DISABLED);
-//    }
-//}
-
 /* want CN interrupt on de-assertion of the CE signal to indicate the end of  */
 /* the SPI transaction */
 
 void __ISR(_CHANGE_NOTICE_VECTOR , RPI_COMMS_CE_PRIORITY) RPiSPICNInterrutpt(void)
 {
-    IFS1CLR=_IFS1_CNIF_MASK;
+    INTClearFlag(INT_CN);
     /* read of portb to reload the change notice registers for next time */
-    CNTemp=PORTB;
-    if(CNTemp&0b00000000000000000000000000100000)//SPI_DESELECTED)
+    CNTemp=CE_PORT;
+    if(CNTemp&CE_MASK)
     {
+        /* if CE is set (the SPI transaction is over) */
         /* disable the interrupt */
         INTEnable(INT_CN,INT_DISABLED);
         /* flag that data is ready */
         SPI.status.RXDataReady=TRUE;
+        /* prepare for the next cycle */
+        SPI.RXState=STATE_SPI_RX_COMMAND;
         /* to make sure that the port returns 0x00 the next time */
         RPI_SPI_BUF=0x00;
-    }
-    else
-    {
-        Nop();
-    }
+    }   
 }
-
-/******************************************************************************/
-
-//inline BOOL RPiSelectStatus(void)
-//{
-//    BOOL returnValue;
-//    unsigned int intEnabled;
-//    intEnabled=INTGetEnable(INT_CN);
-//    INTEnable(INT_CN,INT_DISABLED);
-//    returnValue=SPI.status.CEStatus;
-//    if(intEnabled)
-//    {
-//        INTEnable(INT_CN,INT_ENABLED);
-//    }
-//    return returnValue;
-//}
 
 /******************************************************************************/
 
@@ -199,13 +131,9 @@ inline BOOL SPIFUBAR(void)
 {
     BOOL returnValue;
     unsigned int intEnabled;
-    intEnabled=INTGetEnable(INT_CN);
-    INTEnable(INT_CN,INT_DISABLED);
+    intEnabled=INTDisableInterrupts();
     returnValue=FALSE;
-    if(intEnabled)
-    {
-        INTEnable(INT_CN,INT_ENABLED);
-    }
+    INTRestoreInterrupts(intEnabled);
     return returnValue;
 }
 
@@ -214,7 +142,9 @@ inline BOOL SPIFUBAR(void)
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
 {
     static UINT8 RXTemp;
-    if(SPI_RX_INTERRUPT_ENABLE&&SPI_RX_INTERRUPT_FLAG)
+    if(INTGetEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL))&&
+       INTGetFlag(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL)))
+    
     {
         INTClearFlag(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL));
         if(RPI_SPI_RX_BUF_FULL)
@@ -226,7 +156,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 case STATE_SPI_RX_COMMAND:
                 {
                     /* want to detect when CE is de-asserted */
-                    CNTemp=PORTB; /* read for change notice */
+                    CNTemp=CE_PORT; /* read for change notice */
                     INTClearFlag(INT_CN);
                     INTEnable(INT_CN,INT_ENABLED);
                     if(SPI.status.RXDataReady)
@@ -242,7 +172,6 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                 }
                 case STATE_SPI_RX_ADDRESS_MSB:
                 {
-                    //SPI.TXBuffer=NOT_YET_BYTE;
                     RPI_SPI_BUF=RXTemp;
                     RXTemp=RPI_SPI_BUF;
                     SPI.TXIndex=0;
@@ -259,11 +188,11 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                     {
                         case SPI_READ_COMMAND:
                         {
-                            /* master is reading data (slave is transmitting) */
+                            /* master is reading data from us, that is, we,   */
+                            /* as the slave is transmitting                   */
                             unsigned int index;
                             /* the master is requesting data, make a copy and */
                             /* have it ready                                  */
-                            SPI.TXIndex=0;
                             index=0;
                             /* only really can use the low byte of the address*/
                             SPI.TXIndex=SPI.address.byte.LB;
@@ -308,20 +237,12 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                         SPI.RXData[SPI.RXCount++]=RXTemp;
                         if(SPI.RXCount==SPI_RX_BUFFER_SIZE)
                         {
-                            SPI.RXState=STATE_SPI_RX_COMPLETE;
+                            SPI.RXState=STATE_SPI_RX_COMMAND;
                             SPI.status.RXDataReady=TRUE;
                             INTEnable(INT_CN,INT_DISABLED);
                         }
                     }
-//                    if(SPI.status.TXDataReady)
-//                    {
-//                        /* should be receiving, not transmitting! */
-//                        RPI_SPI_BUF=0x55;
-//                    }
-//                    else
-//                    {
-                        RPI_SPI_BUF=0x00;
-//                    }
+                    RPI_SPI_BUF=0x00;
                     break;
                 }
                 case STATE_SPI_RX_COMPLETE:
@@ -344,31 +265,29 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
         }
         //SPI_RX_INTERRUPT_FLAG_CLEAR;
     }
-    if(SPI_TX_INTERRUPT_ENABLE&&SPI_TX_INTERRUPT_FLAG)
+    if(INTGetEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL))&&
+       INTGetFlag(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL)))
     {
-        /* doesn't really do anything? */
-        //SPI_TX_INTERRUPT_FLAG_CLEAR;
+        
         if(SPI.status.TXEnd)
         {
             RPI_SPI_BUF=OVERRUN_BYTE;
+            INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
         }
         else
         {
             if(SPI.status.TXDataReady)
             {
-                RPI_SPI_BUF=SPI.TXBuffer;
-                /* point at the next */
-                SPI.TXIndex++;
+                /* get data and point at the next */
+                RPI_SPI_BUF=SPI.TXData[SPI.TXIndex++];
                 /* bounds check */
                 if(SPI.TXIndex<sizeof(SPI.TXData))
                 {
-                    /* get the next byte ready */
-                    SPI.TXBuffer=SPI.TXData[SPI.TXIndex];
+                    
                 }
                 else
                 {
                     /* there can be no more! */
-                    //SPI_TX_INTERRUPT_ENABLE_CLEAR;
                     INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
                     SPI.status.TXEnd=TRUE;
                     SPI.status.TXDataReady=FALSE;
@@ -376,18 +295,12 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
             }
             else
             {
+                /* harrumph. shouldn't even be here. disable this interrupt.  */
                 RPI_SPI_BUF=NOT_YET_BYTE;
+                INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
             }
         }
     }
-//    if(SPI_INTERRUPT_ERROR_ENABLE&&SPI_INTERRUPT_ERROR_FLAG)
-//    {
-//        INTClearFlag(INT_SOURCE_SPI_ERROR(RPI_SPI_CHANNEL));
-//        //SPI_INTERRUPT_ERROR_FLAG_CLEAR;
-//        RPI_SPI_RX_OVERFLOW_CLEAR;
-//        INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
-//        INTEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL),INT_DISABLED);
-//    }
 }
 
 /******************************************************************************/
