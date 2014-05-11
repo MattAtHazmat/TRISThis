@@ -14,19 +14,19 @@
 
     #define SPI_RX_INTERRUPT_ENABLE         IEC0bits.SPI1RXIE
     #define SPI_RX_INTERRUPT_FLAG           IFS0bits.SPI1RXIF
-    #define SPI_RX_INTERRUPT_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1RXIF_MASK
+    //#define SPI_RX_INTERRUPT_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1RXIF_MASK
 
     #define SPI_TX_INTERRUPT_ENABLE         IEC0bits.SPI1TXIE
-    #define SPI_TX_INTERRUPT_ENABLE_SET     IEC0SET=_IEC0_SPI1TXIE_MASK
-    #define SPI_TX_INTERRUPT_ENABLE_CLEAR   IEC0CLR=_IEC0_SPI1TXIE_MASK
+    //#define SPI_TX_INTERRUPT_ENABLE_SET     IEC0SET=_IEC0_SPI1TXIE_MASK
+    //#define SPI_TX_INTERRUPT_ENABLE_CLEAR   IEC0CLR=_IEC0_SPI1TXIE_MASK
     #define SPI_TX_INTERRUPT_FLAG           IFS0bits.SPI1TXIF
     #define SPI_TX_INTERRUPT_FLAG_CLEAR     IFS0CLR=_IFS0_SPI1TXIF_MASK
 
     #define SPI_INTERRUPT_ERROR_ENABLE      IEC0bits.SPI1EIE
-    #define SPI_INTERRUPT_ERROR_ENABLE_SET  IEC0SET=_IEC0_SPI1EIE_MASK
-    #define SPI_INTERRUPT_ERROR_ENABLE_CLEAR IEC0CLR=_IEC0_SPI1EIE_MASK
+    //#define SPI_INTERRUPT_ERROR_ENABLE_SET  IEC0SET=_IEC0_SPI1EIE_MASK
+    //#define SPI_INTERRUPT_ERROR_ENABLE_CLEAR IEC0CLR=_IEC0_SPI1EIE_MASK
     #define SPI_INTERRUPT_ERROR_FLAG        IFS0bits.SPI1EIF
-    #define SPI_INTERRUPT_ERROR_FLAG_CLEAR  IFS0CLR=_IFS0_SPI1EIF_MASK
+    //#define SPI_INTERRUPT_ERROR_FLAG_CLEAR  IFS0CLR=_IFS0_SPI1EIF_MASK
 
     #define RPI_SPI_INTERRUPT               _SPI_1_VECTOR
     #define RPI_SPI_BUF                     SPI1BUF
@@ -39,7 +39,7 @@
 
     #define SPI_RX_INTERRUPT_ENABLE         IEC1bits.SPI2RXIE
     #define SPI_RX_INTERRUPT_FLAG           IFS1bits.SPI2RXIF
-    #define SPI_RX_INTERRUPT_FLAG_CLEAR     IFS1CLR=_IFS1_SPI2RXIF_MASK
+    //#define SPI_RX_INTERRUPT_FLAG_CLEAR     IFS1CLR=_IFS1_SPI2RXIF_MASK
 
     #define SPI_TX_INTERRUPT_ENABLE         IEC1bits.SPI2TXIE
     #define SPI_TX_INTERRUPT_ENABLE_SET     IEC1SET=_IEC1_SPI2TXIE_MASK
@@ -73,15 +73,16 @@ typedef union
     struct
     {
         unsigned RXDataReady:1;
-        unsigned CEStatus:1;
+       // unsigned CEStatus:1;
         unsigned inProgress:1;
         unsigned RXOverrun:1;
         unsigned RXOverflow:1;
         unsigned TXEnd:1;
         unsigned RXMysteryState:1;
         unsigned unknownCommandRX:1;
-        unsigned CEOutOfSync:1;
+        //unsigned CEOutOfSync:1;
         unsigned TXDataReady:1;
+        unsigned TXDataLoaded:1;
     };
     UINT32 w;
 } SPI_STATUS;
