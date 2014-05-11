@@ -164,9 +164,7 @@ BOOL DoTRISThis(void)
         static UINT32_VAL tempData;
         static uint8_t tempSPIRX[SPI_RX_BUFFER_SIZE];
         /* if there is data available from the SPI, figure out what it is, and*/
-        /* put it */
-        //INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_DISABLED);
-        /* check the data we read                                             */
+        /* put it                                                             */
         if(SPIGet(&tempSPIRX))
         {
             /* tempdata is the status */

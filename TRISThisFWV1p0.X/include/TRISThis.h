@@ -94,7 +94,7 @@ typedef union
         unsigned LED7:1;
         unsigned LED8:1;
     };
-    UINT32_VAL w;
+    uint32_t w;
 } TRISTHIS_LED_TYPE;
 
 typedef union
@@ -107,6 +107,7 @@ typedef union
         unsigned freshSupplyVoltage:1;
         unsigned freshSupplyCurrent:1;
     };
+
     uint32_t w;
 } TRISTHIS_STATUS_TYPE;
 
@@ -115,10 +116,9 @@ typedef union
     uint8_t data[TRISTHIS_DATA_SIZE];
     struct
     {
-        /* each member should be 32 bits wide */
-        TRISTHIS_STATUS_TYPE status;
-        TRISTHIS_LED_TYPE LEDs;
-        TRISTHIS_DIGITAL_PORT_TYPE digital;
+        TRISTHIS_STATUS_TYPE status; /* one 32 bit word */
+        TRISTHIS_LED_TYPE LEDs;     /* one 32 bit word */
+        TRISTHIS_DIGITAL_PORT_TYPE digital; /* three 32 bit words */
         TRISTHIS_ANALOG_PORT_TYPE analog[TRISTHIS_NUMBER_ANALOG_PORTS];
         UINT32_VAL supplyCurrent;
         UINT32_VAL supplyVoltage;
