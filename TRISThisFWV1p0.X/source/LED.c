@@ -3,35 +3,32 @@
 #include <tick.h>
 #include <TRISThis.h>
 #include <LED.h>
-BOOL autoMode;
+//BOOL autoMode;
 enum LED_STATE_TYPE LEDState;
 extern TRISTHIS_DATA_TYPE TRISThisData;
 
 /******************************************************************************/
 
-BOOL LEDInitialize(void)
+BOOL LEDInitialize(BOOL automode)
 {
     LED_ALL_OFF;
     SET_LED_DIRECTION;
-    //LED1_DIRECTION=TRIS_OUT;
-    //LED2_DIRECTION=TRIS_OUT;
-    //LED3_DIRECTION=TRIS_OUT;
-    //LED4_DIRECTION=TRIS_OUT;
-    //LED5_DIRECTION=TRIS_OUT;
-    //LED6_DIRECTION=TRIS_OUT;
-    //LED7_DIRECTION=TRIS_OUT;
-    //LED8_DIRECTION=TRIS_OUT;
-    //LEDState=LED_STATE_MANUAL;
-    LEDState=LED_STATE_ALL_OFF;
-    autoMode=TRUE;
-    TRISThisData.status.autoLEDmode=autoMode;
+    if(automode)
+    {
+        LEDState=LED_STATE_ALL_OFF;
+    }
+    else
+    {
+        LEDState=LED_STATE_MANUAL;
+    }
+    TRISThisData.status.autoLEDmode=(LEDState!=LED_STATE_MANUAL);
     TRISThisData.LEDs.w.Val=0;
     return TRUE;
 }
 
 /******************************************************************************/
 
-UINT8 ReadLEDs(void)
+uint8_t ReadLEDs(void)
 {
     UINT8_VAL LEDTemp;
     LEDTemp.bits.b0=!LED1_OUT;
@@ -47,7 +44,7 @@ UINT8 ReadLEDs(void)
 
 /******************************************************************************/
 
-void SetLEDs(UINT8 toSet)
+void SetLEDs(uint8_t toSet)
 {
     UINT8_VAL tempLEDs;
     tempLEDs.Val=toSet;
@@ -159,6 +156,6 @@ BOOL LEDAutoMode(BOOL toSet)
 
 BOOL GetLEDAutoMode(void)
 {
-    return autoMode;
+    return (LEDState!=LED_STATE_MANUAL);
 }
 /******************************************************************************/

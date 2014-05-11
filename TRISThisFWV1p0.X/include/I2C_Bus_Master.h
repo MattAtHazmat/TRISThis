@@ -85,15 +85,15 @@ typedef union
 typedef struct
 {
     I2CBus_master_I2C_status_type status;
-    UINT8 data_index;     /* pointer to where we are in the transmit/receive  */
+    uint8_t data_index;     /* pointer to where we are in the transmit/receive  */
                           /* buffers                                          */
-    UINT8 target_address; /* address of what we're talking to. left justified:*/
+    uint8_t target_address; /* address of what we're talking to. left justified:*/
                           /* LSB must always be '0' as this is where the read/*/
                           /* write bit is put (as appropriate)                */
-    UINT8 *Word;	  /* points to arrays in I2CBUS_COMMAND_TYPE variable */
-    UINT8 *Data;
-    UINT8 DataSize;       /* length of what I want to receive                 */
-    UINT8 WordSize;       /* length of what I want to transmit                */
+    uint8_t *Word;	  /* points to arrays in I2CBUS_COMMAND_TYPE variable */
+    uint8_t *Data;
+    uint8_t DataSize;       /* length of what I want to receive                 */
+    uint8_t WordSize;       /* length of what I want to transmit                */
     enum MASTER_I2C_INTERRUPT_STATE_TYPE state;
     __I2C2STATbits_t STATShadow;
 } I2C_MASTER_PORT_TYPE;
@@ -103,11 +103,11 @@ typedef struct
 typedef struct
 {
     I2CBus_master_I2C_status_type status;
-    UINT8 target_address;           /*                                        */
-    UINT8 Word[I2CBUS_WORD_LENGTH]; /* what to send                           */
-    UINT8 Data[I2CBUS_DATA_LENGTH]; /* location for data to be received       */
-    UINT8 DataSize;                 /* length of what I want to receive       */
-    UINT8 WordSize;                 /* length of what I want to transmit      */
+    uint8_t target_address;           /*                                        */
+    uint8_t Word[I2CBUS_WORD_LENGTH]; /* what to send                           */
+    uint8_t Data[I2CBUS_DATA_LENGTH]; /* location for data to be received       */
+    uint8_t DataSize;                 /* length of what I want to receive       */
+    uint8_t WordSize;                 /* length of what I want to transmit      */
 } I2CBUS_COMMAND_TYPE;
 
 /* Macros to give a consistent look/feel for I2C commands.  Also, if you need */
@@ -210,11 +210,11 @@ BOOL MasterI2CIOCheck(void);
 void I2CInitCommand(I2CBUS_COMMAND_TYPE*);
 #endif
 inline BOOL MasterI2CIsBusy(void);
-//BOOL  MasterI2CWriteVerifyByte(UINT8, UINT8, UINT8, UINT8);
-BOOL  MasterI2CWriteVerifyByteNoRetry(UINT8, UINT8, UINT8);
-BOOL MasterI2CReadByte(UINT8, UINT8, UINT8 *);
+//BOOL  MasterI2CWriteVerifyByte(uint8_t, uint8_t, uint8_t, uint8_t);
+BOOL  MasterI2CWriteVerifyByteNoRetry(uint8_t, uint8_t, uint8_t);
+BOOL MasterI2CReadByte(uint8_t, uint8_t, uint8_t *);
 BOOL MasterI2CReadGPIO(UINT16*);
-BOOL  MasterI2CWriteVerifyWordNoRetry(UINT8, UINT8, UINT16);
+BOOL  MasterI2CWriteVerifyWordNoRetry(uint8_t, uint8_t, UINT16);
 
 BOOL MasterI2CClaimPort(enum MASTER_I2C_OWNER_TYPE);
 void MasterI2CReleasePort(void);

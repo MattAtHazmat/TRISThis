@@ -102,15 +102,16 @@ enum SPI_RX_STATE
 
 typedef struct
 {
-    UINT16_VAL  address;
-    UINT8       command;
-    UINT8       RXCount;
-    UINT8       TXCount;
+    //UINT16_VAL
+    uint16_t    address;
+    uint8_t     command;
+    uint8_t       RXCount;
+    uint8_t       TXCount;
     SPI_STATUS  status;
-    UINT8 RXData[SPI_RX_BUFFER_SIZE];
-    UINT8 TXData[SPI_TX_BUFFER_SIZE];
-    UINT8 RXIndex;
-    UINT8 TXIndex;
+    uint8_t RXData[SPI_RX_BUFFER_SIZE];
+    uint8_t TXData[SPI_TX_BUFFER_SIZE];
+    uint8_t RXIndex;
+    uint8_t TXIndex;
     enum SPI_RX_STATE RXState;
 } SPI_TYPE;
 
@@ -130,7 +131,7 @@ BOOL ConfigSPIComms(void);
 inline BOOL RPiSelectStatus(void);
 inline BOOL SPIFUBAR(void);
 BOOL SPIDataReady(void);
-BOOL SPIByteGet(UINT8, UINT8*);
+BOOL SPIByteGet(uint8_t, uint8_t*);
 
 #endif /* #ifdef USE_SPI */
 

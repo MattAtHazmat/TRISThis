@@ -8,10 +8,11 @@
 #ifndef _TRISTHIS_H_
 #define	_TRISTHIS_H_
 
-//#define TRISTHIS_DATA_SIZE              (0x20)
+#define CONFIGURED_BIT_POSITION         (0)
+#define V5P0GOOD_BIT_POSITION           (1)
 #define TRISTHIS_NUMBER_DIGITAL_PORTS   (2)
 #define TRISTHIS_NUMBER_ANALOG_PORTS    (4)
-#define STATUS_READ_ONLY_MASK           (0x00000003)
+#define STATUS_READ_ONLY_MASK           ((1<<CONFIGURED_BIT_POSITION)&(1<<V5P0GOOD_BIT_POSITION))
 
 /* TODO: can these be automatically generated? */
 typedef enum {
@@ -99,19 +100,18 @@ typedef union
 {
     struct
     {
-
         unsigned configured:1; /* read only */
         unsigned V5p0Good:1;   /* read only */
         unsigned autoLEDmode:1;
         unsigned freshSupplyVoltage:1;
         unsigned freshSupplyCurrent:1;
     };
-    UINT32_VAL w;
+    uint32_t w;
 } TRISTHIS_STATUS_TYPE;
 
 typedef union
 {
-    UINT8 data[TRISTHIS_DATA_SIZE];
+    uint8_t data[TRISTHIS_DATA_SIZE];
     struct
     {
         /* each member should be 32 bits wide */

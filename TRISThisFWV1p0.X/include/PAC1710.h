@@ -74,7 +74,7 @@ typedef union
         unsigned CS_SAMP_TIME:3;
         unsigned :1;
     };
-    UINT8 b;
+    uint8_t b;
 } PAC1710_VSENSE_REG_TYPE;
 
 typedef union
@@ -97,7 +97,7 @@ typedef union
         unsigned VSRC_AVG:2;
         unsigned :4;
     };
-    UINT8 b;
+    uint8_t b;
 } PAC1710_VSOURCE_SAMPLING_CONFIG_REG_TYPE;
 
 typedef union
@@ -112,7 +112,7 @@ typedef union
         unsigned CONV_DONE_EN:1;
         unsigned :1;
     };
-    UINT8 b;
+    uint8_t b;
 } PAC1710_CONFIGURATION_REG_TYPE;
 
 typedef union
@@ -124,7 +124,7 @@ typedef union
         unsigned :5;
         unsigned CONV_DONE:1;
     };
-    UINT8 b;
+    uint8_t b;
 } PAC1710_HIGH_LIMIT_STATUS_REG_TYPE;
 
 typedef union

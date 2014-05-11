@@ -31,7 +31,7 @@
 int main(void)
 {
     /*variables local to main()                                               */
-    UINT8 dataRead;
+    uint8_t dataRead;
     TICK_TYPE timeoutTime;
     #ifdef USE_I2C
         I2CBUS_COMMAND_TYPE command;
@@ -115,7 +115,7 @@ int main(void)
         {
             if(DigipotReadingReady())
             {
-                UINT8 reading;
+                uint8_t reading;
                 reading=DigipotGetStatus();
                 Nop();
                 Nop();
@@ -183,7 +183,7 @@ void InitializeSystem(void)
     INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
     AD1PCFG=0xFFFF;
     P5V_POWER_GOOD_DIRECTION=TRIS_IN;
-    LEDInitialize();
+    LEDInitialize(TRUE);
     TickInitialize();
     INTEnableInterrupts();
 }

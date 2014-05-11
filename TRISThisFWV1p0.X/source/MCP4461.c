@@ -16,12 +16,12 @@ BOOL DigipotStartGetStatus(void)
     return FALSE;
 }
 
-UINT8 DigipotGetStatus(void)
+uint8_t DigipotGetStatus(void)
 {
     return digipot.STATUS.b;
 }
 
-BOOL DigipotGetReading(UINT8 channel,UINT16 *data)
+BOOL DigipotGetReading(uint8_t channel,UINT16 *data)
 {
     if((channel<4)&&(digipot.value[channel].goodRead))
     {
@@ -47,7 +47,7 @@ BOOL DigipotStartReadingAll(void)
     return FALSE;
 }
 
-BOOL DigipotStartReading(UINT8 channelToRead)
+BOOL DigipotStartReading(uint8_t channelToRead)
 {
     if(!digipotStatus.reading&&!digipotStatus.readAll&&!digipotStatus.readIndividual)
     {
@@ -129,7 +129,7 @@ BOOL DoDigipot(void)
         {
             if (!MasterI2CIsBusy())
             {
-                UINT8 digipotCommand = 0;
+                uint8_t digipotCommand = 0;
                 if (digipotStatus.readAll || digipotStatus.readIndividual)
                 {
                     switch (digipotStatus.channel)

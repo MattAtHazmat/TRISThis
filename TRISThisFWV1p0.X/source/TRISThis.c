@@ -223,17 +223,17 @@ BOOL DoTRISThis(void)
 UINT32 TRISThisReadStatus(void)
 {
     TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
-    return TRISThisData.status.w.Val;
+    return TRISThisData.status.w;
 }
 
 /******************************************************************************/
 
 UINT32 TRISThisSetStatus(UINT32 toSet)
 {
-    TRISThisData.status.w.Val=(toSet & ~STATUS_READ_ONLY_MASK)|
-            (STATUS_READ_ONLY_MASK & TRISThisData.status.w.Val);
+    TRISThisData.status.w=(toSet & ~STATUS_READ_ONLY_MASK)|
+            (STATUS_READ_ONLY_MASK & TRISThisData.status.w);
     LEDAutoMode(TRISThisData.status.autoLEDmode);
-    return TRISThisData.status.w.Val;
+    return TRISThisData.status.w;
 }
 
 /******************************************************************************/

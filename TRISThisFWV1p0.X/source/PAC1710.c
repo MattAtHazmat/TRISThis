@@ -60,9 +60,9 @@ BOOL PAC1710SubsystemInitialize(UINT32 address)
 
 BOOL PAC1710Present(UINT32 address)
 {
-    UINT8 productID=0;
-    UINT8 SMSCID=0;
-    UINT8 revision=0;
+    uint8_t productID=0;
+    uint8_t SMSCID=0;
+    uint8_t revision=0;
     BOOL productIDGoodRead=FALSE;
     BOOL SMSCIDGoodRead=FALSE;
     BOOL revisionGoodRead=FALSE;
@@ -97,7 +97,7 @@ BOOL PAC1710Present(UINT32 address)
 
 BOOL PAC1710Configure(UINT32 address)
 {
-    UINT8 dataRead;
+    uint8_t dataRead;
     PAC1710_CONFIGURATION_REG_TYPE config;
     PAC1710_VSENSE_REG_TYPE vsense;
     PAC1710_VSOURCE_SAMPLING_CONFIG_REG_TYPE vsourceConfig;

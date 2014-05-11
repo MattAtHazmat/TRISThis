@@ -19,7 +19,7 @@ unsigned int CNTemp;
 
 /******************************************************************************/
 
-BOOL SPIByteGet(UINT8 address, UINT8 *data)
+BOOL SPIByteGet(uint8_t address, uint8_t *data)
 {
     if(address>=sizeof(SPI.RXData))
     {
@@ -32,7 +32,7 @@ BOOL SPIByteGet(UINT8 address, UINT8 *data)
     }
 }
 
-BOOL SPIWordGet(UINT8 address, UINT32 *data)
+BOOL SPIWordGet(uint8_t address, UINT32 *data)
 {
 
 }
@@ -65,7 +65,7 @@ BOOL ConfigSPIComms(void)
     SPI_SELECT_IN_DIRECTION = TRIS_IN;
     SPI.RXCount=0;
     SPI.TXCount=0;
-    SPI.address.Val=0;
+    SPI.address=0;
     SPI.command=SPI_NO_COMMAND;
     SpiChnOpen(RPI_SPI_CHANNEL,
             SPI_OPEN_SLVEN|SPI_OPEN_CKE_REV|SPI_OPEN_MODE8|SPI_OPEN_SSEN,
@@ -146,7 +146,7 @@ inline BOOL SPIFUBAR(void)
 
 void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
 {
-    static UINT8 RXTemp;
+    static uint8_t RXTemp;
     /* check for receive interrupt */
     if(INTGetEnable(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL))&&
        INTGetFlag(INT_SOURCE_SPI_RX(RPI_SPI_CHANNEL)))
@@ -182,13 +182,13 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                     RXTemp=RPI_SPI_BUF;
                     SPI.TXIndex=0;
                     SPI.RXState=STATE_SPI_RX_ADDRESS_LSB;
-                    SPI.address.byte.HB=RXTemp;
+                    SPI.address=(0xff00)&(RXTemp<<8);
                     break;
                 }
                 case STATE_SPI_RX_ADDRESS_LSB:
                 {
                     SPI.TXIndex=0;
-                    SPI.address.byte.LB=RXTemp;
+                    SPI.address|=((0x00ff)&RXTemp);
                     /* now that we have address, what to do with it? */
                     switch(SPI.command)
                     {
@@ -200,7 +200,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             /* the master is requesting data, make a copy and */
                             /* have it ready                                  */
                             /* only really can use the low byte of the address*/
-                            SPI.TXIndex=SPI.address.byte.LB;
+                            SPI.TXIndex=(SPI.address&0x00ff);
                             /* copy data into outgoing array and bounds check */
                             while((index<sizeof(TRISThisData))&&
                                   (index<sizeof(SPI.TXData)))

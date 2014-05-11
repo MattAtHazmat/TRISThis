@@ -42,7 +42,7 @@ typedef union
         unsigned WiperLock3:1;
         unsigned :2;
     };
-    UINT8 b;
+    uint8_t b;
 } DIGIPOT_STATUS_TYPE;
 
 typedef union
@@ -58,7 +58,7 @@ typedef union
         unsigned R1A:1;
         unsigned R1HW:1;
     };
-    UINT8 b;
+    uint8_t b;
 } DIGIPOT_TCON0_TYPE;
 
 typedef union
@@ -74,7 +74,7 @@ typedef union
         unsigned R3A:1;
         unsigned R3HW:1;
     };
-    UINT8 b;
+    uint8_t b;
 } DIGIPOT_TCON1_TYPE;
 
 typedef union
@@ -152,11 +152,11 @@ enum DIGIPOT_STATE_TYPE
 /******************************************************************************/
 
 BOOL DigipotStartGetStatus(void);
-UINT8 DigipotGetStatus(void);
-BOOL DigipotGetReading(UINT8,UINT16*);
+uint8_t DigipotGetStatus(void);
+BOOL DigipotGetReading(uint8_t,UINT16*);
 BOOL DigipotStartReadingStatus(void);
 BOOL DigipotStartReadingAll(void);
-BOOL DigipotStartReading(UINT8);
+BOOL DigipotStartReading(uint8_t);
 BOOL DigipotReadingReady(void);
 BOOL DoDigipot(void);
 BOOL DigipotSubsystemInitialize(void);

@@ -47,7 +47,7 @@ void __ISR(/*INT_TIMER_VECTOR(I2C_TIMEOUT_TIMER)*/_TIMER_5_VECTOR,TIMEOUT_INT_PR
 
 void __ISR (_I2C_2_VECTOR,MI2C_INT_PRIORITY_ISR) _MI2C2Interrupt(void)
 {
-    static UINT8 temp; /* used by dummy read to clear RBF flag */
+    static uint8_t temp; /* used by dummy read to clear RBF flag */
     INTClearFlag(INT_SOURCE_I2C_MASTER(I2C_PORT));
     /* save a copy of I2C2STAT */
     MasterI2CPort.STATShadow.w=I2C_STATUS;
@@ -468,7 +468,7 @@ inline BOOL MasterI2CIsQueuedCommandDone(void)
     return returnValue;
 }
 
-BOOL MasterI2CReadByte(UINT8 address, UINT8 toReadRegister, UINT8 *dataRead)
+BOOL MasterI2CReadByte(uint8_t address, uint8_t toReadRegister, uint8_t *dataRead)
 {
     I2CBUS_COMMAND_TYPE RI2CCommand;
     #ifdef I2C_PARANOID_INIT
@@ -497,7 +497,7 @@ BOOL MasterI2CReadByte(UINT8 address, UINT8 toReadRegister, UINT8 *dataRead)
     return FALSE;
 }
 
-BOOL MasterI2CReadWord(UINT8 address, UINT8 toReadRegister, UINT16 *dataRead)
+BOOL MasterI2CReadWord(uint8_t address, uint8_t toReadRegister, UINT16 *dataRead)
 {
     I2CBUS_COMMAND_TYPE RI2CCommand;
     UINT16_VAL tempDataRead;
@@ -529,10 +529,10 @@ BOOL MasterI2CReadWord(UINT8 address, UINT8 toReadRegister, UINT16 *dataRead)
     return FALSE;
 }
 
-BOOL  MasterI2CWriteVerifyByteNoRetry(UINT8 address, UINT8 toWriteRegister, UINT8 toWriteData)
+BOOL  MasterI2CWriteVerifyByteNoRetry(uint8_t address, uint8_t toWriteRegister, uint8_t toWriteData)
 {
     I2CBUS_COMMAND_TYPE WVI2CCommand;
-    UINT8 dataRead;
+    uint8_t dataRead;
     #ifdef I2C_PARANOID_INIT
         I2CInitCommand(&WVI2CCommand);
     #else
@@ -566,7 +566,7 @@ BOOL  MasterI2CWriteVerifyByteNoRetry(UINT8 address, UINT8 toWriteRegister, UINT
     return FALSE;
 }
 
-BOOL  MasterI2CWriteVerifyWordNoRetry(UINT8 address, UINT8 toWriteRegister, UINT16 toWriteData)
+BOOL  MasterI2CWriteVerifyWordNoRetry(uint8_t address, uint8_t toWriteRegister, UINT16 toWriteData)
 {
     I2CBUS_COMMAND_TYPE WVI2CCommand;
     UINT16_VAL tempWord;
