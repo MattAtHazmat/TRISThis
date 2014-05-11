@@ -190,7 +190,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                         case SPI_READ_COMMAND:
                         {
                             /* master is reading data from us, that is, we,   */
-                            /* as the slave is transmitting                   */
+                            /* as the slave are transmitting                  */
                             unsigned int index;
                             /* the master is requesting data, make a copy and */
                             /* have it ready                                  */
@@ -209,8 +209,9 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             SPI.status.TXEnd=FALSE;
                             SPI.status.TXDataReady=TRUE;
                             INTEnable(INT_SOURCE_SPI_TX(RPI_SPI_CHANNEL),INT_ENABLED);
-                            /* don't need to look for change notice any more */
-                            INTEnable(INT_CN,INT_DISABLED);
+                            /* have to continue to look for change notice as  */
+                            /* that is the only way to see that the           */
+                            /* transaction is over                            */
                             SPI.RXState=STATE_SPI_RX_MASTER_READING;
                             break;
                         }
