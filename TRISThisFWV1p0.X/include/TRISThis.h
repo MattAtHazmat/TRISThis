@@ -102,6 +102,10 @@ typedef union
         unsigned autoLEDmode:1;
         unsigned freshSupplyVoltage:1;
         unsigned freshSupplyCurrent:1;
+        unsigned :1;
+        unsigned :1;
+        unsigned :1;
+        unsigned :16;
     };
     struct
     {

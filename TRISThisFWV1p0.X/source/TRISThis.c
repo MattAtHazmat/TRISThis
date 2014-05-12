@@ -124,6 +124,13 @@ UINT32 TRISThisReadDigitalDirection(void)
     return readTemp.Val;
 }
 
+BOOL TRISThisReadDigital(TRISTHIS_DIGITAL_PORT_TYPE *tempDigital)
+{
+    tempDigital->direction=TRISThisReadDigitalDirection();
+    tempDigital->latch=TRISThisReadDigitalLatches();
+    tempDigital->port=TRISThisReadDigitalInputs();
+    return TRUE;
+}
 /******************************************************************************/
 
 BOOL TRISThisSetDigitalLatches(UINT32_VAL toSet)
@@ -152,11 +159,9 @@ BOOL DoTRISThis(void)
     static UINT32_VAL tempHolding;
     #endif
     BOOL returnValue=TRUE;
-    TRISThisData.digital.port=TRISThisReadDigitalInputs();
-    TRISThisData.digital.latch=TRISThisReadDigitalLatches();
-    TRISThisData.digital.direction=TRISThisReadDigitalDirection();
-    TRISThisData.status.autoLEDmode=GetLEDAutoMode();
-    TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
+    returnValue=TRISThisReadDigital(&TRISThisData.digital);
+    returnValue=TRISThisReadStatus(&TRISThisData.status);
+    TRISTHIS_STATUS_TYPE;
     #ifdef USE_SPI
     if(SPIDataReady())
     {
@@ -168,7 +173,7 @@ BOOL DoTRISThis(void)
         if(SPIGet(&tempSPIRX))
         {
             /* tempdata is the status */
-            tempData.byte.MB=tempSPIRX[INDEX_STATUS_MB];
+            tempData.byte.MB=tempSPIRX[INDEX_LED];
             tempData.byte.UB=tempSPIRX[INDEX_STATUS_UB];
             tempData.byte.HB=tempSPIRX[INDEX_STATUS_HB];
             tempData.byte.LB=tempSPIRX[INDEX_STATUS_LB];
@@ -224,10 +229,12 @@ BOOL DoTRISThis(void)
 
 /******************************************************************************/
 
-UINT32 TRISThisReadStatus(void)
+BOOL TRISThisReadStatus(TRISTHIS_STATUS_TYPE *tempStatus)
 {
-    TRISThisData.status.V5p0Good=P5V_POWER_GOOD;
-    return TRISThisData.status.w;
+    tempStatus->led.w       =ReadLEDs();
+    tempStatus->autoLEDmode =TRISThisReadLEDMode();
+    tempStatus->V5p0Good    =P5V_POWER_GOOD;
+    return TRUE;
 }
 
 /******************************************************************************/

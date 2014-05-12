@@ -22,7 +22,7 @@ BOOL LEDInitialize(BOOL automode)
         LEDState=LED_STATE_MANUAL;
     }
     TRISThisData.status.autoLEDmode=(LEDState!=LED_STATE_MANUAL);
-    TRISThisData.LEDs.w=0;
+    TRISThisData.status.led.w=0;
     return TRUE;
 }
 
@@ -134,7 +134,7 @@ void DoLEDs(void)
             }
         }
     }
-    TRISThisData.LEDs.w=ReadLEDs();
+    TRISThisData.status.led.w=ReadLEDs();
 }
 
 /******************************************************************************/
