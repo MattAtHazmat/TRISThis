@@ -16,51 +16,47 @@
 
 /* TODO: can these be automatically generated? */
 typedef enum {
-    INDEX_STATUS_MB=0,  /* index = 0 */
-    INDEX_STATUS_UB,
+    INDEX_STATUS_UB =0,  /* index = 0 */
     INDEX_STATUS_HB,
     INDEX_STATUS_LB,
-    INDEX_LED_Z,        /* index = 4 */
-    INDEX_LED_Y,
-    INDEX_LED_X,
     INDEX_LED,
-    INDEX_DIGITAL_LATCH_MB,     /* index = 8 */
+    INDEX_DIGITAL_LATCH_MB,     /* index = 4 */
     INDEX_DIGITAL_LATCH_UB,
     INDEX_DIGITAL_LATCH_HB,
     INDEX_DIGITAL_LATCH_LB,
-    INDEX_DIGITAL_DIRECTION_MB, /* index = 12 */
+    INDEX_DIGITAL_DIRECTION_MB, /* index = 8 */
     INDEX_DIGITAL_DIRECTION_UB,
     INDEX_DIGITAL_DIRECTION_HB,
     INDEX_DIGITAL_DIRECTION_LB,
-    INDEX_DIGITAL_PORT_MB,      /* index = 16 */
+    INDEX_DIGITAL_PORT_MB,      /* index = 12 */
     INDEX_DIGITAL_PORT_UB,
     INDEX_DIGITAL_PORT_HB,
     INDEX_DIGITAL_PORT_LB,
-    INDEX_ANALOG0_GAIN_HB,      /* index = 20 */
+    INDEX_ANALOG0_GAIN_HB,      /* index = 16 */
     INDEX_ANALOG0_GAIN_LB,
     INDEX_ANALOG0_HB,
     INDEX_ANALOG0_LB,
-    INDEX_ANALOG1_GAIN_HB,      /* index = 24 */
+    INDEX_ANALOG1_GAIN_HB,      /* index = 20 */
     INDEX_ANALOG1_GAIN_LB,
     INDEX_ANALOG1_HB,
     INDEX_ANALOG1_LB,
-    INDEX_ANALOG2_GAIN_HB,      /* index = 28 */
+    INDEX_ANALOG2_GAIN_HB,      /* index = 24 */
     INDEX_ANALOG2_GAIN_LB,
     INDEX_ANALOG2_HB,
     INDEX_ANALOG2_LB,
-    INDEX_ANALOG3_GAIN_HB,      /* index = 32 */
+    INDEX_ANALOG3_GAIN_HB,      /* index = 28 */
     INDEX_ANALOG3_GAIN_LB,
     INDEX_ANALOG3_HB,
     INDEX_ANALOG3_LB,
-    INDEX_BOARD_CURRENT_MB,     /* index = 36 */
+    INDEX_BOARD_CURRENT_MB,     /* index = 32 */
     INDEX_BOARD_CURRENT_UB,
     INDEX_BOARD_CURRENT_HB,
     INDEX_BOARD_CURRENT_LB,
-    INDEX_BOARD_VOLTAGE_MB,     /* index = 40 */
+    INDEX_BOARD_VOLTAGE_MB,     /* index = 36 */
     INDEX_BOARD_VOLTAGE_UB,
     INDEX_BOARD_VOLTAGE_HB,
     INDEX_BOARD_VOLTAGE_LB,
-    TRISTHIS_DATA_SIZE          /* 44         */
+    TRISTHIS_DATA_SIZE          /* 40         */
 } TRISTHIS_DATA_INDEX_TYPE;
 
 typedef struct
@@ -94,7 +90,7 @@ typedef union
         unsigned LED7:1;
         unsigned LED8:1;
     };
-    uint32_t w;
+    uint8_t w;
 } TRISTHIS_LED_TYPE;
 
 typedef union
@@ -107,7 +103,11 @@ typedef union
         unsigned freshSupplyVoltage:1;
         unsigned freshSupplyCurrent:1;
     };
-
+    struct
+    {
+        unsigned :24;
+        TRISTHIS_LED_TYPE led;
+    };
     uint32_t w;
 } TRISTHIS_STATUS_TYPE;
 
@@ -117,7 +117,6 @@ typedef union
     struct
     {
         TRISTHIS_STATUS_TYPE status; /* one 32 bit word */
-        TRISTHIS_LED_TYPE LEDs;     /* one 32 bit word */
         TRISTHIS_DIGITAL_PORT_TYPE digital; /* three 32 bit words */
         TRISTHIS_ANALOG_PORT_TYPE analog[TRISTHIS_NUMBER_ANALOG_PORTS];
         UINT32_VAL supplyCurrent;
