@@ -7,6 +7,7 @@
 
 #include <common.h>
 #include <MCP4461.h>
+#include <TRISThis.h>
 #include <TRISThisDigital.h>
 
 /******************************************************************************/
