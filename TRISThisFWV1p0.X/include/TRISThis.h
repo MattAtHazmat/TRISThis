@@ -77,6 +77,8 @@ typedef union
     uint32_t    w;
 } TRISTHIS_ANALOG_PORT_TYPE;
 
+
+
 typedef union
 {
     struct
@@ -97,6 +99,22 @@ typedef union
 {
     struct
     {
+        unsigned ready0:1;
+        unsigned ready1:1;
+        unsigned ready2:1;
+        unsigned ready3:1;
+        unsigned start0:1;
+        unsigned start1:1;
+        unsigned start2:1;
+        unsigned start3:1;
+    };
+    uint8_t w;
+} TRISTHIS_ANALOG_PORT_STATUS_TYPE;
+
+typedef struct
+{
+    union
+    {
         unsigned configured:1; /* read only */
         unsigned V5p0Good:1;   /* read only */
         unsigned autoLEDmode:1;
@@ -105,11 +123,17 @@ typedef union
         unsigned :1;
         unsigned :1;
         unsigned :1;
-        unsigned :16;
     };
+    uint8_t w;
+} TRISTHIS_STATUS_FIELDS_TYPE;
+
+typedef union
+{
     struct
     {
-        unsigned :24;
+        TRISTHIS_STATUS_FIELDS_TYPE system;
+        TRISTHIS_ANALOG_PORT_STATUS_TYPE analog;
+        unsigned :8;
         TRISTHIS_LED_TYPE led;
     };
     uint32_t w;
