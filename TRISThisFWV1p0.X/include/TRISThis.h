@@ -139,7 +139,7 @@ typedef union
 /******************************************************************************/
 /* Prototypes                                                                 */
 /******************************************************************************/
-
+#ifdef PIC32_CODE
 BOOL TRISThisDigitalConfigure(void);
 UINT32 TRISThisReadDigitalInputs(void);
 UINT32 TRISThisReadDigitalLatches(void);
@@ -154,7 +154,7 @@ UINT32 TRISThisSetStatus(UINT32);
 BOOL TRISThisConfigure(void);
 BOOL TRISThisSetDigitalLatches(UINT32_VAL);
 BOOL TRISThisSetDigitalDirection(UINT32_VAL);
-
+#endif
 #else /* #ifndef TRISTHIS_H */
 
 #warning "Redundant include of TRISThis.h"

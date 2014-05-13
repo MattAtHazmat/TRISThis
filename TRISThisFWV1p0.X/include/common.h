@@ -9,7 +9,8 @@
     #define _COMMON_H_
     #define _PLIB_DISABLE_LEGACY
     #include <xc.h>
-#include <inttypes.h>
+    #define PIC32_CODE
+    #include <inttypes.h>
     #include <GenericTypeDefs.h>
     #include <plib.h>
     #include <hardwareConfiguration.h>
