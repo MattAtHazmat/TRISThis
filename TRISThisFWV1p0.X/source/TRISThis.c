@@ -17,6 +17,7 @@
 #include <common.h>
 #include <LED.h>
 #include <PAC1710.h>
+#include <analog.h>
 #include <TRISThis.h>
 /* usually I try to keep the .h file include that matches with the .c file at */
 /* the very end of the include file list, but the SPI type needs the size of  */
@@ -151,6 +152,10 @@ BOOL TRISThisSetDigitalDirection(UINT32_VAL toSet)
     return returnValue;
 }
 
+BOOL TRISThisGetAnalogGain(uint16_t *gain)
+{
+
+}
 /******************************************************************************/
 
 BOOL DoTRISThis(void)
