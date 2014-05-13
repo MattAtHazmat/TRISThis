@@ -70,8 +70,8 @@ typedef union
 {
     struct
     {
-        UINT16_VAL reading;
-        UINT16_VAL gain;
+        uint16_t reading;
+        uint16_t gain;
     };
     //UINT32_VAL
     uint32_t    w;
