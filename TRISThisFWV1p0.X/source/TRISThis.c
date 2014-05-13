@@ -161,13 +161,13 @@ BOOL DoTRISThis(void)
     BOOL returnValue=TRUE;
     returnValue=TRISThisReadDigital(&TRISThisData.digital);
     returnValue=TRISThisReadStatus(&TRISThisData.status);
-    TRISTHIS_STATUS_TYPE;
     #ifdef USE_SPI
     if(SPIDataReady())
     {
         /* used a lot- static to save churn on the stack?                     */
         static UINT32_VAL tempData;
         static uint8_t tempSPIRX[SPI_RX_BUFFER_SIZE];
+        static TRISTHIS_STATUS_TYPE tempStatus;
         /* if there is data available from the SPI, figure out what it is, and*/
         /* put it                                                             */
         if(SPIGet(&tempSPIRX))
@@ -178,7 +178,8 @@ BOOL DoTRISThis(void)
             tempData.byte.HB=tempSPIRX[INDEX_STATUS_HB];
             tempData.byte.LB=tempSPIRX[INDEX_STATUS_LB];
             tempData.Val|=STATUS_READ_ONLY_MASK;
-            if(tempData.Val!=(TRISThisReadStatus()|STATUS_READ_ONLY_MASK))
+            TRISThisReadStatus(&tempStatus);
+            if(tempData.Val!=(tempStatus.w|STATUS_READ_ONLY_MASK))
             {
                 TRISThisSetStatus(tempData.Val);
             }
