@@ -8,6 +8,19 @@
 #ifndef _TRISTHIS_ANALOG_H_
 #define	_TRISTHIS_ANALOG_H_
 
+typedef enum
+{
+    ANALOG_STATE_IDLE=0,
+    ANALOG_STATE_START0,
+    ANALOG_STATE_WAIT0,
+    ANALOG_STATE_START1,
+    ANALOG_STATE_WAIT1,
+    ANALOG_STATE_START2,
+    ANALOG_STATE_WAIT2,
+    ANALOG_STATE_START3,
+    ANALOG_STATE_WAIT3
+} TRISTHIS_ANALOG_STATE;
+
 typedef union
 {
     struct
@@ -24,6 +37,9 @@ typedef union
 BOOL TRISThisGetAnalogGain(unsigned int,uint16_t *);
 BOOL TRISThisSetAnalogGain(unsigned int,uint16_t);
 BOOL TRISThisGetAnalog(unsigned int ,uint16_t *);
+BOOL TRISThisStart(unsigned int);
+BOOL TRISThisDone(unsigned int channel);
+BOOL TRISThisSetAnalog(unsigned int, uint16_t);
 BOOL DoTRISThisAnalog(void);
 
 #else

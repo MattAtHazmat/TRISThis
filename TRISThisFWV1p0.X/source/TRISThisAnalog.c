@@ -12,6 +12,7 @@
 
 uint16_t analogGain[TRISTHIS_NUMBER_ANALOG_PORTS];
 uint16_t analogReading[TRISTHIS_NUMBER_ANALOG_PORTS];
+TRISTHIS_ANALOG_START_TYPE start;
 /******************************************************************************/
 
 BOOL TRISThisGetAnalogGain(unsigned int channel,uint16_t *gain)
@@ -50,7 +51,65 @@ BOOL TRISThisSetAnalogGain(unsigned int channel,uint16_t tempGain)
 BOOL DoTRISThisAnalog(void)
 {
     BOOL returnValue=FALSE;
-    
+    static TRISTHIS_ANALOG_STATE state=ANALOG_STATE_IDLE;
+    switch (TRISTHIS_ANALOG_STATE)
+    {
+        case ANALOG_STATE_IDLE:
+        {
+            if(AnalogStartTupe)
+            TRISTHIS_ANALOG_START_TYPE;
+            break:
+        };
+        case ANALOG_STATE_START0:
+        {
+
+            break;
+        };
+        case ANALOG_STATE_WAIT0:
+        {
+
+            break;
+        };
+        case ANALOG_STATE_START1:
+        {
+
+            break;
+        };
+        case ANALOG_STATE_WAIT1:
+        {
+
+            break;
+        };
+        case ANALOG_STATE_START2:
+        {
+
+            break;
+        };
+        case ANALOG_STATE_WAIT2:
+        {
+
+            break;
+        };
+        case ANALOG_STATE_START3:
+        {
+
+            break;
+        };
+        case ANALOG_STATE_WAIT3:
+        {
+
+            break;
+        };
+        default:
+        {
+           TRISTHIS_ANALOG_STATE= ANALOG_STATE_IDLE:
+            break;
+        }
+    }
     return returnValue;
 }
+
+BOOL TRISThisStart(unsigned int channel)
+BOOL TRISThisDone(unsigned int channel);
+BOOL TRISThisSetAnalog(unsigned int channel, uint16_t *analogValue);
 /******************************************************************************/
