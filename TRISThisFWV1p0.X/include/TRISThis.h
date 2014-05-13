@@ -120,13 +120,21 @@ typedef union
     uint8_t data[TRISTHIS_DATA_SIZE];
     struct
     {
-        TRISTHIS_STATUS_TYPE status; /* one 32 bit word */
+        TRISTHIS_STATUS_TYPE status;        /* one 32 bit word */
         TRISTHIS_DIGITAL_PORT_TYPE digital; /* three 32 bit words */
         TRISTHIS_ANALOG_PORT_TYPE analog[TRISTHIS_NUMBER_ANALOG_PORTS];
         UINT32_VAL supplyCurrent;
         UINT32_VAL supplyVoltage;
     };
 } TRISTHIS_DATA_TYPE;
+
+/******************************************************************************/
+/* commands                                                                   */
+/******************************************************************************/
+
+#define TRISTHIS_SPI_READ_COMMAND    (0x03)
+#define TRISTHIS_SPI_WRITE_COMMAND   (0x02)
+#define TRISTHIS_SPI_NO_COMMAND      (0b10101010)
 
 /******************************************************************************/
 /* Prototypes                                                                 */

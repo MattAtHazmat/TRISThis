@@ -80,7 +80,7 @@ BOOL ConfigSPIComms(void)
     SPI.RXCount=0;
     SPI.TXCount=0;
     SPI.address=0;
-    SPI.command=SPI_NO_COMMAND;
+    SPI.command=TRISTHIS_SPI_NO_COMMAND;
     SpiChnOpen(RPI_SPI_CHANNEL,
             SPI_OPEN_SLVEN|SPI_OPEN_CKE_REV|SPI_OPEN_MODE8|SPI_OPEN_SSEN,
             0);
@@ -206,7 +206,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                     /* now that we have address, what to do with it? */
                     switch(SPI.command)
                     {
-                        case SPI_READ_COMMAND:
+                        case TRISTHIS_SPI_READ_COMMAND:
                         {
                             /* master is reading data from us, that is, we,   */
                             /* as the slave are transmitting                  */
@@ -231,7 +231,7 @@ void __ISR(RPI_SPI_INTERRUPT , RPI_COMMS_INT_PRIORITY) RPiSPIInterrupt(void)
                             SPI.RXState=STATE_SPI_RX_MASTER_READING;
                             break;
                         }
-                        case SPI_WRITE_COMMAND:
+                        case TRISTHIS_SPI_WRITE_COMMAND:
                         {
                             /* master is writing data (slave is receiving)    */
                             SPI.status.RXOverflow=FALSE;
