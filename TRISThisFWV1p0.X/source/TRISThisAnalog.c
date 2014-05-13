@@ -7,8 +7,11 @@
 
 #include <common.h>
 #include <MCP4461.h>
+#include <TRISThis.h>
 #include <TRISThisAnalog.h>
 
+uint16_t analogGain[TRISTHIS_NUMBER_ANALOG_PORTS];
+uint16_t analogReading[TRISTHIS_NUMBER_ANALOG_PORTS];
 /******************************************************************************/
 
 

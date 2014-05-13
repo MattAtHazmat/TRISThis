@@ -21,7 +21,7 @@ BOOL LEDInitialize(BOOL automode)
     {
         LEDState=LED_STATE_MANUAL;
     }
-    TRISThisData.status.autoLEDmode=(LEDState!=LED_STATE_MANUAL);
+    TRISThisData.status.system.autoLEDmode=(LEDState!=LED_STATE_MANUAL);
     TRISThisData.status.led.w=0;
     return TRUE;
 }

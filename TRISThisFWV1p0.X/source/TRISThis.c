@@ -17,7 +17,7 @@
 #include <common.h>
 #include <LED.h>
 #include <PAC1710.h>
-#include <analog.h>
+#include <TRISThisAnalog.h>
 #include <TRISThis.h>
 /* usually I try to keep the .h file include that matches with the .c file at */
 /* the very end of the include file list, but the SPI type needs the size of  */
@@ -35,12 +35,12 @@ BOOL TRISThisConfigure(void)
     {
         TRISThisData.data[index]=0;
     }
-    TRISThisData.status.configured=FALSE;
+    TRISThisData.status.system.configured=FALSE;
     if(TRISThisDigitalConfigure())
     {
-        TRISThisData.status.configured=TRUE;
+        TRISThisData.status.system.configured=TRUE;
     }
-    return TRISThisData.status.configured;
+    return TRISThisData.status.system.configured;
 }
 
 /******************************************************************************/
@@ -238,8 +238,8 @@ BOOL DoTRISThis(void)
 BOOL TRISThisReadStatus(TRISTHIS_STATUS_TYPE *tempStatus)
 {
     tempStatus->led.w       =ReadLEDs();
-    tempStatus->autoLEDmode =TRISThisReadLEDMode();
-    tempStatus->V5p0Good    =P5V_POWER_GOOD;
+    tempStatus->system.autoLEDmode =TRISThisReadLEDMode();
+    tempStatus->system.V5p0Good    =P5V_POWER_GOOD;
     return TRUE;
 }
 
@@ -249,7 +249,7 @@ UINT32 TRISThisSetStatus(UINT32 toSet)
 {
     TRISThisData.status.w=(toSet & ~STATUS_READ_ONLY_MASK)|
             (STATUS_READ_ONLY_MASK & TRISThisData.status.w);
-    LEDAutoMode(TRISThisData.status.autoLEDmode);
+    LEDAutoMode(TRISThisData.status.system.autoLEDmode);
     return TRISThisData.status.w;
 }
 
@@ -257,14 +257,14 @@ UINT32 TRISThisSetStatus(UINT32 toSet)
 
 BOOL TRISThisReadLEDMode(void)
 {
-    return TRISThisData.status.autoLEDmode;
+    return TRISThisData.status.system.autoLEDmode;
 }
 
 /******************************************************************************/
 
 void TRISThisSetLEDAutoMode(BOOL autoLED)
 {
-    TRISThisData.status.autoLEDmode=LEDAutoMode(autoLED);
+    TRISThisData.status.system.autoLEDmode=LEDAutoMode(autoLED);
 }
 
 /******************************************************************************/
