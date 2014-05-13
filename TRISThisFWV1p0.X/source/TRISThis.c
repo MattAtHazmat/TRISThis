@@ -152,10 +152,7 @@ BOOL TRISThisSetDigitalDirection(UINT32_VAL toSet)
     return returnValue;
 }
 
-BOOL TRISThisGetAnalogGain(uint16_t *gain)
-{
 
-}
 /******************************************************************************/
 
 BOOL DoTRISThis(void)
@@ -173,6 +170,7 @@ BOOL DoTRISThis(void)
         static UINT32_VAL tempData;
         static uint8_t tempSPIRX[SPI_RX_BUFFER_SIZE];
         static TRISTHIS_STATUS_TYPE tempStatus;
+        static uint16_t tempAnalog;
         /* if there is data available from the SPI, figure out what it is, and*/
         /* put it                                                             */
         if(SPIGet(&tempSPIRX))
@@ -207,6 +205,14 @@ BOOL DoTRISThis(void)
             if(tempData.Val!=TRISThisReadDigitalLatches())
             {
                 TRISThisSetDigitalLatches(tempData);
+            }
+            tempData.Val=0;
+            tempData.byte.LB=tempSPIRX[INDEX_ANALOG0_GAIN_LB];
+            tempData.byte.HB=tempSPIRX[INDEX_ANALOG0_GAIN_HB];
+            TRISThisGetAnalogGain(0,&tempAnalog);
+            if(tempAnalog!=tempData.word.LW)
+            {
+                TRISThisSetAnalogGain(0,tempAnalog);
             }
         }
     }
