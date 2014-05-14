@@ -52,57 +52,108 @@ BOOL DoTRISThisAnalog(void)
 {
     BOOL returnValue=FALSE;
     static TRISTHIS_ANALOG_STATE state=ANALOG_STATE_IDLE;
-    switch (TRISTHIS_ANALOG_STATE)
+    switch (state)
     {
         case ANALOG_STATE_IDLE:
         {
-            if(AnalogStartTupe)
-            TRISTHIS_ANALOG_START_TYPE;
-            break:
-        };
+            if(start.w!=0)
+            {
+                state=ANALOG_STATE_START0;
+            }
+            break;
+        }
         case ANALOG_STATE_START0:
         {
-
+            if(start.start0)
+            {
+                /* start ADC channel 0 */
+                start.start0=FALSE;
+                state=ANALOG_STATE_WAIT0;
+            }
+            else
+            {
+                /* check the next channel */
+                state=ANALOG_STATE_START1;
+            }
             break;
-        };
-        case ANALOG_STATE_WAIT0:
+        }
+        case ANALQG_STATE_WAIT0:
         {
+            /* wait for ADC to complete */
 
+            /* when the ADC is done, check the next channel */
+            state=ANALOG_STATE_START1;
             break;
-        };
+        }
         case ANALOG_STATE_START1:
         {
-
+            if(start.start1)
+            {
+                /* start ADC channel 0 */
+                start.start1=FALSE;
+                state=ANALOG_STATE_WAIT1;
+            }
+            else
+            {
+                /* check the next channel */
+                state=ANALOG_STATE_START2;
+            }
             break;
-        };
+        }
         case ANALOG_STATE_WAIT1:
         {
+            /* wait for ADC to complete */
 
+            /* when the ADC is done, check the next channel */
+            state=ANALOG_STATE_START2;
             break;
-        };
+        }
         case ANALOG_STATE_START2:
         {
-
+            if(start.start2)
+            {
+                /* start ADC channel 0 */
+                start.start2=FALSE;
+                state=ANALOG_STATE_WAIT2;
+            }
+            else
+            {
+                /* check the next channel */
+                state=ANALOG_STATE_START3;
+            }
             break;
-        };
+        }
         case ANALOG_STATE_WAIT2:
         {
+            /* wait for ADC to complete */
 
+            /* when the ADC is done, check the next channel */
+            state=ANALOG_STATE_START3;
             break;
-        };
+        }
         case ANALOG_STATE_START3:
         {
-
+            if(start.start3)
+            {
+                /* start ADC channel 0 */
+                start.start3=FALSE;
+                state=ANALOG_STATE_WAIT3;
+            }
+            else
+            {
+                /* done, start over */
+                state=ANALOG_STATE_IDLE;
+            }
             break;
-        };
+        }
         case ANALOG_STATE_WAIT3:
         {
-
+            state=ANALOG_STATE_IDLE;
             break;
-        };
+        }
         default:
         {
-           TRISTHIS_ANALOG_STATE= ANALOG_STATE_IDLE:
+            TRISTHIS_ANALOG_STATE= ANALOG_STATE_IDLE:
             break;
         }
     }
