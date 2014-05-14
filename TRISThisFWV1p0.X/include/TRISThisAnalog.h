@@ -25,7 +25,10 @@ typedef union
 {
     struct
     {
-        unsigned :4;
+        unsigned ready0:1;
+        unsigned ready1:1;
+        unsigned ready2:1;
+        unsigned ready3:1;
         unsigned start0:1;
         unsigned start1:1;
         unsigned start2:1;
@@ -41,6 +44,8 @@ BOOL TRISThisStart(unsigned int);
 BOOL TRISThisDone(unsigned int channel);
 BOOL TRISThisSetAnalog(unsigned int, uint16_t);
 BOOL DoTRISThisAnalog(void);
+BOOL TRISThisStartADCConversion(unsigned int);
+BOOL TRISThisAnalogConversionDone(void);
 
 #else
     #warning "Redundant include of TRISThisAnalog.h"

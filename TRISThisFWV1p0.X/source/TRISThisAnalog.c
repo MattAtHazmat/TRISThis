@@ -10,9 +10,13 @@
 #include <TRISThis.h>
 #include <TRISThisAnalog.h>
 
+/******************************************************************************/
+
 uint16_t analogGain[TRISTHIS_NUMBER_ANALOG_PORTS];
 uint16_t analogReading[TRISTHIS_NUMBER_ANALOG_PORTS];
-TRISTHIS_ANALOG_START_TYPE start;
+TRISTHIS_ANALOG_STATUS_TYPE status;
+TRISTHIS_DATA_TYPE TRISThisData;
+
 /******************************************************************************/
 
 BOOL TRISThisGetAnalogGain(unsigned int channel,uint16_t *gain)
@@ -26,6 +30,8 @@ BOOL TRISThisGetAnalogGain(unsigned int channel,uint16_t *gain)
     return returnValue;
 }
 
+/******************************************************************************/
+
 BOOL TRISThisGetAnalog(unsigned int channel,uint16_t *analog)
 {
     BOOL returnValue=FALSE;
@@ -37,16 +43,54 @@ BOOL TRISThisGetAnalog(unsigned int channel,uint16_t *analog)
     return returnValue;
 }
 
+/******************************************************************************/
+
 BOOL TRISThisSetAnalogGain(unsigned int channel,uint16_t tempGain)
 {
     BOOL returnValue=FALSE;
     if(channel<TRISTHIS_NUMBER_ANALOG_PORTS)
     {
-        analogGain[channel]=tempGain;
+        TRISThisData.analog[channel].gain=tempGain;
         returnValue=TRUE;
     }
     return returnValue;
 }
+
+/******************************************************************************/
+
+BOOL TRISThisStartADCConversion(unsigned int channel)
+{
+    BOOL returnValue=FALSE;
+    if(channel<TRISTHIS_NUMBER_ANALOG_PORTS)
+    {
+        
+    }
+    return returnValue;
+}
+
+/******************************************************************************/
+
+BOOL TRISThisAnalogConversionDone(void)
+{
+    return TRUE;
+}
+
+/******************************************************************************/
+
+BOOL TRISThisSetAnalog(unsigned int channel, uint16_t analogValue)
+{
+    BOOL returnValue=FALSE;
+    if(channel<TRISTHIS_NUMBER_ANALOG_PORTS)
+    {
+        /* get the analog value from the ADC register */
+        TRISThisData.analog[channel].reading=analogValue;
+        /* write the value into the SPI output directory*/
+
+    }
+    return returnValue;
+}
+
+/******************************************************************************/
 
 BOOL DoTRISThisAnalog(void)
 {
@@ -56,7 +100,7 @@ BOOL DoTRISThisAnalog(void)
     {
         case ANALOG_STATE_IDLE:
         {
-            if(start.w!=0)
+            if(Status.w!=0)
             {
                 state=ANALOG_STATE_START0;
             }
@@ -64,103 +108,118 @@ BOOL DoTRISThisAnalog(void)
         }
         case ANALOG_STATE_START0:
         {
-            if(start.start0)
+            if(status.start0)
             {
-                /* start ADC channel 0 */
-                start.start0=FALSE;
-                state=ANALOG_STATE_WAIT0;
+                /* status ADC channel 0 */
+                status.start0=FALSE;
+                if(TRISThisStartADCConversion(0))
+                {
+                    state=ANALOG_STATE_WAIT0;
+                    break;
+                }
             }
-            else
+            /* check the next channel */
+            state=ANALOG_STATE_START1;
+            
+            break;
+        }
+        case ANALOG_STATE_WAIT0:
+        {
+            /* wait for ADC to complete */
+            if(TRISThisAnalogConversionDone())
             {
-                /* check the next channel */
+                status.ready0=FALSE;
+                /* when the ADC is done, check the next channel */
                 state=ANALOG_STATE_START1;
             }
             break;
         }
-        case ANALQG_STATE_WAIT0:
-        {
-            /* wait for ADC to complete */
-
-            /* when the ADC is done, check the next channel */
-            state=ANALOG_STATE_START1;
-            break;
-        }
         case ANALOG_STATE_START1:
         {
-            if(start.start1)
+            if(status.start1)
             {
-                /* start ADC channel 0 */
-                start.start1=FALSE;
-                state=ANALOG_STATE_WAIT1;
+                /* status ADC channel 1 */
+                status.start1=FALSE;
+                if(TRISThisStartADCConversion(1))
+                {
+                    state=ANALOG_STATE_WAIT1;
+                    break;
+                }
             }
-            else
-            {
-                /* check the next channel */
-                state=ANALOG_STATE_START2;
-            }
+            /* check the next channel */
+            state=ANALOG_STATE_START2;
             break;
         }
         case ANALOG_STATE_WAIT1:
         {
             /* wait for ADC to complete */
-
-            /* when the ADC is done, check the next channel */
-            state=ANALOG_STATE_START2;
+            if(TRISThisAnalogConversionDone())
+            {
+                /* when the ADC is done, check the next channel */
+                state=ANALOG_STATE_START2;
+            }
             break;
         }
         case ANALOG_STATE_START2:
         {
-            if(start.start2)
+            if(status.start2)
             {
-                /* start ADC channel 0 */
-                start.start2=FALSE;
-                state=ANALOG_STATE_WAIT2;
+                /* status ADC channel 2 */
+                status.start2=FALSE;
+                if(TRISThisStartADCConversion(2))
+                {
+                    state=ANALOG_STATE_WAIT2;
+                    break;
+                }
             }
-            else
-            {
-                /* check the next channel */
-                state=ANALOG_STATE_START3;
-            }
+            /* check the next channel */
+            state=ANALOG_STATE_START3;
             break;
         }
         case ANALOG_STATE_WAIT2:
         {
             /* wait for ADC to complete */
-
-            /* when the ADC is done, check the next channel */
-            state=ANALOG_STATE_START3;
+            if(TRISThisAnalogConversionDone())
+            {
+                /* when the ADC is done, check the next channel */
+                state=ANALOG_STATE_START3;
+            }
             break;
         }
         case ANALOG_STATE_START3:
         {
-            if(start.start3)
+            if(status.start3)
             {
-                /* start ADC channel 0 */
-                start.start3=FALSE;
-                state=ANALOG_STATE_WAIT3;
+                /* status ADC channel 3 */
+                status.start3=FALSE;
+                if(TRISThisStartADCConversion(3))
+                {
+                    state=ANALOG_STATE_WAIT3;
+                    break;
+                }
             }
-            else
-            {
-                /* done, start over */
-                state=ANALOG_STATE_IDLE;
-            }
+            /* done, start over */
+            state=ANALOG_STATE_IDLE;
             break;
         }
         case ANALOG_STATE_WAIT3:
         {
-            state=ANALOG_STATE_IDLE;
+            if(TRISThisAnalogConversionDone())
+            {
+                TRISThisAnalogStatus.
+                state=ANALOG_STATE_IDLE;
+            }
             break;
         }
         default:
         {
-            TRISTHIS_ANALOG_STATE= ANALOG_STATE_IDLE:
+            state = ANALOG_STATE_IDLE;
             break;
         }
     }
     return returnValue;
 }
 
-BOOL TRISThisStart(unsigned int channel)
-BOOL TRISThisDone(unsigned int channel);
-BOOL TRISThisSetAnalog(unsigned int channel, uint16_t *analogValue);
+
+
 /******************************************************************************/
