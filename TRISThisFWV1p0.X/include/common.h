@@ -30,6 +30,7 @@
         #define mClearWatchdog()    WDTCONSET = _WDTCON_WDTCLR_MASK
         #define mEnableWatchdog()   WDTCONSET = _WDTCON_ON_MASK
     #endif
+    #define Convert2BytesToWord(low,high)  ((0x00ff&low)&(0xff00&(high<<8))
 #else
     #warning "Redundant include of common.h"
 

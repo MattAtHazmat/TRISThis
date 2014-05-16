@@ -14,7 +14,7 @@
 
 uint16_t analogGain[TRISTHIS_NUMBER_ANALOG_PORTS];
 uint16_t analogReading[TRISTHIS_NUMBER_ANALOG_PORTS];
-TRISTHIS_ANALOG_STATUS_TYPE status;
+TRISTHIS_ANALOG_PORT_STATUS_TYPE status;
 TRISTHIS_DATA_TYPE TRISThisData;
 
 /******************************************************************************/
@@ -100,7 +100,7 @@ BOOL DoTRISThisAnalog(void)
     {
         case ANALOG_STATE_IDLE:
         {
-            if(Status.w!=0)
+            if(status.w!=0)
             {
                 state=ANALOG_STATE_START0;
             }
@@ -206,7 +206,6 @@ BOOL DoTRISThisAnalog(void)
         {
             if(TRISThisAnalogConversionDone())
             {
-                TRISThisAnalogStatus.
                 state=ANALOG_STATE_IDLE;
             }
             break;
