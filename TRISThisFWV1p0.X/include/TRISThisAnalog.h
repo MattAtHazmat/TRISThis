@@ -46,6 +46,7 @@ BOOL TRISThisSetAnalog(unsigned int, uint16_t);
 BOOL DoTRISThisAnalog(void);
 BOOL TRISThisStartADCConversion(unsigned int);
 BOOL TRISThisAnalogConversionDone(void);
+BOOL TRISThisAnalogConfigure(void);
 
 #else
     #warning "Redundant include of TRISThisAnalog.h"

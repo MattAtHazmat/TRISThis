@@ -18,6 +18,12 @@ TRISTHIS_ANALOG_PORT_STATUS_TYPE status;
 TRISTHIS_DATA_TYPE TRISThisData;
 
 /******************************************************************************/
+BOOL TRISThisAnalogConfigure(void)
+{
+    BOOL returnValue=FALSE;
+    /* TODO: this */
+    return returnValue;
+}
 
 BOOL TRISThisGetAnalogGain(unsigned int channel,uint16_t *gain)
 {

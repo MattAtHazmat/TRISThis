@@ -30,16 +30,14 @@ TRISTHIS_DATA_TYPE TRISThisData;
 BOOL TRISThisConfigure(void)
 {
     int index;
+    TRISThisData.status.system.configured=FALSE;
     index=sizeof(TRISThisData);
     for(index=0;index<sizeof(TRISThisData);index++)
     {
         TRISThisData.data[index]=0;
     }
-    TRISThisData.status.system.configured=FALSE;
-    if(TRISThisDigitalConfigure())
-    {
-        TRISThisData.status.system.configured=TRUE;
-    }
+    TRISThisData.status.system.configured=TRISThisDigitalConfigure();
+    TRISThisData.status.system.configured=TRISThisAnalogConfigure();
     return TRISThisData.status.system.configured;
 }
 
@@ -163,6 +161,7 @@ BOOL DoTRISThis(void)
     BOOL returnValue=TRUE;
     returnValue=TRISThisReadDigital(&TRISThisData.digital);
     returnValue=TRISThisReadStatus(&TRISThisData.status);
+    DoTRISThisAnalog();
     #ifdef USE_SPI
     if(SPIDataReady())
     {
