@@ -8,6 +8,8 @@
 #ifndef _COMMON_H_
     #define _COMMON_H_
     #define _PLIB_DISABLE_LEGACY
+    #define _SUPPRESS_PLIB_WARNING
+    #define _DISABLE_OPENADC10_CONFIGPORT_WARNING
     #include <xc.h>
     #define PIC32_CODE
     #include <inttypes.h>

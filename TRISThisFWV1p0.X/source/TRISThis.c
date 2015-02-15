@@ -226,14 +226,14 @@ BOOL DoTRISThis(void)
     if(PAC1710GetData(PAC1710_DATA_CURRENT,&tempHolding.w[0]))
     {
         TRISThisData.supplyCurrent.w[0]=tempHolding.w[0];
-        TRISThisData.status.freshSupplyCurrent=TRUE;
+        TRISThisData.status.system.freshSupplyCurrent=TRUE;
     }
     if(PAC1710GetData(PAC1710_DATA_VOLTAGE,&tempHolding.w[0]))
     {
         TRISThisData.supplyVoltage.w[0]=tempHolding.w[0];
-        TRISThisData.status.freshSupplyVoltage=TRUE;
+        TRISThisData.status.system.freshSupplyVoltage=TRUE;
     }
-    TRISThisData.status.autoLEDmode=GetLEDAutoMode();
+    TRISThisData.status.system.autoLEDmode=GetLEDAutoMode();
     #endif /* #ifdef USE_PAC1710 */
     return returnValue;
 }

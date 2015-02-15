@@ -12,7 +12,7 @@
 
 /* lower layer protocols */
 
-//#define USE_I2C
+#define USE_I2C
 #define USE_SPI
 
 /* have to use certain protocols to talk, so if those protocols are not       */
@@ -93,7 +93,7 @@
     #define PAC1710_ADDRESS         (0b00110000) /* 0x30 */
 
     #define ALERT_INT_PRIORITY      INT_PRIORITY_LEVEL_4
-    #define ALERT_INT_PRIORITY_ISR  ipl4
+    #define ALERT_INT_PRIORITY_ISR  IPL4AUTO
 #endif
 
 /******************************************************************************/
